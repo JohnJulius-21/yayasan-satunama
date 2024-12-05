@@ -1,0 +1,217 @@
+/* General container for the page */
+.container-fluid {
+    padding: 0;
+    margin: 0;
+}
+
+/* Navbar Styles */
+.navbar {
+    padding: 5px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.navbar-brand img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+.nav-separator {
+    color: #333; /* Warna untuk separator | */
+    font-size: 1.2rem; /* Ukuran font untuk | */
+    display: flex;
+    align-items: center;
+    margin: 0 15px; /* Jarak antara dua grup navigasi */
+}
+
+/* Styling item navigasi */
+.navbar-nav .nav-link {
+    margin-right: 20px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Styling untuk tombol Sign Up */
+.navbar-nav .btn {
+    padding: 5px 15px;
+    font-size: 0.9rem;
+}
+
+/* Hover effect */
+.navbar-nav .nav-link:hover,
+.navbar-nav .btn:hover {
+    color: #fff;
+}
+
+/* Mengatur dropdown muncul pada hover */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block; /* Menampilkan dropdown saat item dihover */
+    visibility: visible; /* Memastikan dropdown terlihat */
+    opacity: 5; /* Mengatur opacity menjadi 1 untuk efek transisi */
+    transition: opacity 1.6s ease; /* Memberikan transisi halus */
+}
+
+/* Mengatur dropdown secara default menjadi tidak terlihat */
+.nav-item .dropdown-menu {
+    display: none; /* Secara default dropdown tidak terlihat */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease; /* Transisi efek fade */
+}
+
+
+
+/* Hide separator on mobile */
+@media (max-width: 768px) {
+    .nav-separator {
+        display: none; /* Hide separator on mobile */
+    }
+}
+
+
+
+/* Hero Section */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 50px 10%;
+    border-radius: 20px;
+    margin: 10px 20px;
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+.buttons a {
+    padding: 10px 25px; /* Ukuran padding */
+    border-radius: 50px; /* Membuat bentuk oval */
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Menambahkan transition untuk shadow */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Shadow default */
+}
+
+.btn-succes {
+    background-color: #28a745; /* Warna hijau */
+    color: #fff; /* Warna teks */
+    border: none;
+}
+
+.btn-outline-succes {
+    background-color: transparent;
+    color: #28a745; /* Warna hijau untuk teks */
+    border: 2px solid #28a745; /* Warna hijau untuk border */
+    box-shadow: none; /* Shadow default pada outline none */
+}
+
+/* Hover effects dengan shadow */
+.btn-succes:hover {
+    background-color: #218838; /* Warna hijau yang lebih gelap saat di-hover */
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Menambahkan shadow lebih besar saat di-hover */
+}
+
+.btn-outline-succes:hover {
+    background-color: #28a745; /* Latar hijau saat di-hover */
+    color: #fff;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Menambahkan shadow saat hover */
+}
+
+
+
+.hero-text {
+    flex: 1;
+    max-width: 50%;
+}
+
+.hero-image {
+    flex: 1;
+    max-width: 50%;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* Responsive Layout for Mobile */
+@media (max-width: 768px) {
+    .hero-content {
+        flex-direction: column-reverse; /* Membuat gambar berada di atas teks */
+        text-align: center;
+    }
+
+    .hero-text,
+    .hero-image {
+        max-width: 100%; /* Menyesuaikan lebar menjadi 100% di mobile */
+    }
+
+    .hero-text {
+        margin-bottom: 20px; /* Jarak antara gambar dan teks */
+    }
+
+    .hero-image img {
+        margin-bottom: 20px; /* Memberikan jarak di bawah gambar */
+    }
+}
+
+
+/* Styling for About Section */
+.about-section {
+    padding: 60px 0;
+    background-color: #f9f9f9;
+}
+
+.about-section h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.video-container {
+    position: relative;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Optional shadow for video */
+    border-radius: 10px; /* Rounded corners like in the image */
+    overflow: hidden;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 45%; /* Rasio aspek yang lebih kecil dari 16:9 untuk mengurangi tinggi video */
+    height: 0;
+    overflow: hidden;
+    max-width: 80%; /* Batas maksimal lebar video 80% dari kontainer */
+    margin: 0 auto; /* Memastikan video terpusat */
+    background-color: #000; /* Opsional: latar belakang hitam untuk area video */
+    border-radius: 10px; /* Sudut membulat */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Shadow opsional */
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+
+
+
+
+
+

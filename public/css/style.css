@@ -1,0 +1,576 @@
+:root {
+    --primary-font: 'Arial', sans-serif;
+    --secondary-font: 'Roboto', sans-serif;
+}
+
+
+
+
+/* General container for the page */
+.container-fluid {
+    padding: 0;
+    margin: 0;
+}
+
+/* Navbar Styles */
+.navbar {
+    padding: 5px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.navbar-brand img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+.nav-separator {
+    color: #333;
+    /* Warna untuk separator | */
+    font-size: 1.2rem;
+    /* Ukuran font untuk | */
+    display: flex;
+    align-items: center;
+    margin: 0 15px;
+    /* Jarak antara dua grup navigasi */
+}
+
+/* Styling item navigasi */
+.navbar-nav .nav-link {
+    margin-right: 20px;
+    font-size: 1rem;
+    color: #333;
+    transition: color 0.3s ease;
+    /* Smooth transition for hover effect */
+}
+
+/* Styling untuk tombol Sign Up */
+.navbar-nav .btn {
+    padding: 5px 15px;
+    font-size: 0.9rem;
+}
+
+/* Styling untuk nav-link saat aktif dan dihover */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #438848 !important;
+    /* Warna hijau */
+    /* text-decoration: underline;  */
+    font-weight: 600;
+}
+
+/* Mengatur dropdown muncul pada hover */
+.nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* Mengatur dropdown secara default menjadi tidak terlihat */
+.nav-item .dropdown-menu {
+    display: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Hide separator on mobile */
+@media (max-width: 768px) {
+    .nav-separator {
+        display: none;
+    }
+}
+
+
+
+/* Hero Section */
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+    padding: 50px 10%;
+    border-radius: 20px;
+    margin: 10px 20px;
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+.buttons a {
+    padding: 10px 25px;
+    /* Ukuran padding */
+    border-radius: 50px;
+    /* Membuat bentuk oval */
+    font-size: 1rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    /* Menambahkan transition untuk shadow */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    /* Shadow default */
+}
+
+.btn-succes {
+    background-color: #28a745;
+    /* Warna hijau */
+    color: #fff;
+    /* Warna teks */
+    border: none;
+}
+
+.btn-outline-succes {
+    background-color: transparent;
+    color: #28a745;
+    /* Warna hijau untuk teks */
+    border: 2px solid #28a745;
+    /* Warna hijau untuk border */
+    box-shadow: none;
+    /* Shadow default pada outline none */
+}
+
+/* Hover effects dengan shadow */
+.btn-succes:hover {
+    background-color: #218838;
+    /* Warna hijau yang lebih gelap saat di-hover */
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    /* Menambahkan shadow lebih besar saat di-hover */
+}
+
+.btn-outline-succes:hover {
+    background-color: #28a745;
+    /* Latar hijau saat di-hover */
+    color: #fff;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    /* Menambahkan shadow saat hover */
+}
+
+
+
+.hero-text {
+    flex: 1;
+    max-width: 50%;
+}
+
+.hero-image {
+    flex: 1;
+    max-width: 50%;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+/* Responsive Layout for Mobile */
+@media (max-width: 768px) {
+    .hero-content {
+        flex-direction: column-reverse;
+        /* Membuat gambar berada di atas teks */
+        text-align: center;
+    }
+
+    .hero-text,
+    .hero-image {
+        max-width: 100%;
+        /* Menyesuaikan lebar menjadi 100% di mobile */
+    }
+
+    .hero-text {
+        margin-bottom: 20px;
+        /* Jarak antara gambar dan teks */
+    }
+
+    .hero-image img {
+        margin-bottom: 20px;
+        /* Memberikan jarak di bawah gambar */
+    }
+}
+
+
+/* Styling for About Section */
+.about-section {
+    padding: 60px 0;
+    background-color: #ffffff;
+}
+
+.about-section h2 {
+    /* font-size: 2rem; */
+    /* font-weight: bold; */
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.video-container {
+    position: relative;
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Optional shadow for video */
+    border-radius: 10px;
+    /* Rounded corners like in the image */
+    overflow: hidden;
+}
+
+.video-container {
+    position: relative;
+    padding-bottom: 45%;
+    /* Rasio aspek yang lebih kecil dari 16:9 untuk mengurangi tinggi video */
+    height: 0;
+    overflow: hidden;
+    max-width: 80%;
+    /* Batas maksimal lebar video 80% dari kontainer */
+    margin: 0 auto;
+    /* Memastikan video terpusat */
+    background-color: #000;
+    /* Opsional: latar belakang hitam untuk area video */
+    border-radius: 10px;
+    /* Sudut membulat */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    /* Shadow opsional */
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.why-satunama-section .row {
+    display: flex;
+    justify-content: center;
+    /* Menengahkan kartu */
+    flex-wrap: wrap;
+    /* Memungkinkan kartu untuk membungkus di perangkat lebih kecil */
+}
+
+.why-satunama-section .col-md-4 {
+    display: flex;
+    /* Menjadikan kolom sebagai flex container */
+    justify-content: center;
+    /* Menengahkan konten di dalam kolom */
+    margin-bottom: 15px;
+    /* Mengurangi jarak antar kartu */
+}
+
+.why-satunama-section .card {
+    border: 2px solid #438848;
+    /* Garis border warna hijau */
+    border-radius: 12px;
+    /* Sudut kartu melengkung */
+    transition: transform 0.3s;
+    /* Efek transisi saat hover */
+    max-width: 300px;
+    /* Membatasi lebar maksimum kartu */
+    width: 100%;
+    /* Kartu akan mengisi lebar kolom */
+}
+
+.why-satunama-section .card:hover {
+    transform: scale(1.05);
+    /* Efek zoom saat hover */
+}
+
+.why-satunama-section .icon {
+    display: flex;
+    /* Agar konten di dalam icon bisa terpusat */
+    justify-content: center;
+    /* Memusatkan konten horizontal */
+    align-items: center;
+    /* Memusatkan konten vertikal */
+    width: 160px;
+    /* Lebar area ikon */
+    height: 160px;
+    /* Tinggi area ikon */
+    border: 2px solid #438848;
+    /* Warna border */
+    border-radius: 50%;
+    /* Membuat border menjadi bulat */
+    background-color: #fff;
+    /* Warna latar belakang ikon */
+    margin: 0 auto 20px;
+    /* Memberikan margin bawah untuk jarak ke judul */
+}
+
+.icon img {
+    max-width: 80%;
+    /* Membatasi lebar gambar di dalam ikon */
+    max-height: 80%;
+    /* Membatasi tinggi gambar di dalam ikon */
+}
+
+
+
+footer .nav-link {
+    color: white !important;
+    /* Menetapkan warna putih khusus untuk footer */
+}
+
+
+.products-section {
+    background-color: #fff8e5;
+    /* Warna latar belakang */
+    padding: 50px 0;
+}
+
+.products-section h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.products-section p {
+    color: #555;
+    margin: 0 0 40px;
+}
+
+.products-section .card-wrapper {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.products-section .card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.products-section .card:hover {
+    transform: translateY(-10px);
+}
+
+.products-section .card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.products-section .card h3 {
+    font-size: 20px;
+    margin: 20px 0 10px;
+    color: #333;
+}
+
+.products-section .card p {
+    color: #777;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #f1b600;
+    /* Warna kuning tombol */
+    color: #333;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #d6a400;
+}
+
+.scroll-to-top {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: white;
+    border: 2px solid #438848;
+    /* Sesuaikan dengan warna yang Anda inginkan */
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    display: none;
+    /* Default disembunyikan */
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.scroll-to-top:hover {
+    background-color: #438848;
+    ;
+    transform: translateY(-5px);
+}
+
+.scroll-to-top svg {
+    stroke: #438848;
+    ;
+    /* Warna panah */
+}
+
+.scroll-to-top:hover svg {
+    stroke: #ffffff;
+    /* Warna panah ketika tombol di-hover */
+}
+
+.facilitators-section {
+    background-color: #ffcc00;
+    /* Warna latar belakang bagian */
+    padding: 60px 0;
+    /* Tambahkan padding atas dan bawah */
+}
+
+.facilitators-section .row {
+    display: flex;
+    justify-content: center;
+    /* Menengahkan kartu */
+    flex-wrap: wrap;
+    /* Memungkinkan kartu untuk membungkus di perangkat lebih kecil */
+}
+
+.facilitators-section h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #333;
+    /* Atur warna judul */
+}
+
+.facilitators-section .card {
+    border: 1px solid #000000;
+    /* Border untuk kartu */
+    border-radius: 12px;
+    /* Sudut melengkung pada kartu */
+    transition: transform 0.3s, box-shadow 0.3s;
+    /* Transisi saat hover */
+    margin: 40px;
+    /* Memberikan jarak antar kartu */
+    max-width: 300px;
+    /* Membatasi lebar maksimum kartu */
+    width: 100%;
+    /* Kartu akan mengisi lebar kolom */
+    background-color: #fff;
+    /* Warna latar belakang kartu */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Bayangan untuk kartu */
+}
+
+.facilitators-section .card:hover {
+    transform: scale(1.05);
+    /* Efek zoom saat hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Bayangan lebih besar saat hover */
+}
+
+.facilitators-section .card-img-top {
+    border-top-left-radius: 12px;
+    /* Bulatkan sudut atas kiri gambar */
+    border-top-right-radius: 12px;
+    /* Bulatkan sudut atas kanan gambar */
+    max-height: 200px;
+    /* Batasi tinggi gambar */
+    object-fit: cover;
+    /* Mengatur gambar agar memenuhi area */
+}
+
+.facilitators-section .card-title {
+    font-size: 1.25rem;
+    /* Ukuran font untuk judul */
+    margin: 15px 0 10px;
+    /* Margin untuk judul */
+}
+
+.facilitators-section .card-text {
+    font-size: 0.9rem;
+    /* Ukuran font untuk deskripsi */
+    color: #555;
+    /* Warna teks deskripsi */
+}
+
+/* Indikator carousel */
+.facilitators-section .carousel-indicators button {
+    background-color: #000000;
+    /* Warna latar belakang indikator */
+    width: 50px;
+    /* Ukuran indikator */
+    height: 10px;
+    /* Ukuran indikator */
+}
+
+.facilitators-section .carousel-indicators .active {
+    background-color: #fff;
+    /* Warna indikator aktif */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .facilitators-section .carousel-item .col-md-4 {
+        flex: 0 0 100%;
+        /* Membuat kartu memenuhi lebar penuh */
+        max-width: 100%;
+        /* Membatasi lebar maksimum kartu */
+    }
+}
+
+
+.contact-section {
+    position: relative;
+    background: url('/images/contact.png') center/cover no-repeat;
+    color: #fff;
+    min-height: 300px;
+    /* Pastikan tinggi minimum agar terlihat baik */
+}
+
+.contact-section .layoff {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    /* Overlay dengan transparansi */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+}
+
+.contact-section h2 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+}
+
+.contact-section p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.contact-section .btn {
+    background-color: #fcfcfc;
+    /* Warna tombol */
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.contact-section .btn:hover {
+    background-color: #bebebe;
+    /* Warna tombol saat hover */
+    color: #fff;
+}
+
