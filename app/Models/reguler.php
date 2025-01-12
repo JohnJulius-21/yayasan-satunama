@@ -9,7 +9,7 @@ class reguler extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'id_pelatihan';
-    protected $table = 'pelatihans';
+    protected $primaryKey = 'id_reguler';
+    protected $table = 'reguler';
 
 }

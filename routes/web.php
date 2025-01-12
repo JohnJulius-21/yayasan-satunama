@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RegulerController;
 use App\Http\Controllers\TrainingController;
 use App\Http\Middleware\UserMiddleware;
 use Illuminate\Support\Facades\Route;
@@ -56,3 +57,5 @@ Route::middleware(['user'])->group(function () {
     
     
 });
+
+Route::get('/admin/reguler', [RegulerController::class, 'index'])->name('regulerAdmin');

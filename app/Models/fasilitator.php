@@ -9,5 +9,5 @@ class fasilitator extends Model
 {
     use HasFactory;
 
-    protected $table = 'fasilitator_pelatihan_tests';
+    protected $table = 'fasilitator_pelatihan_reguler';
 }
