@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class tema extends Model
 {
     use HasFactory;
+
+    protected $primaryKey = 'id';
+    protected $table = 'tema';
 }
