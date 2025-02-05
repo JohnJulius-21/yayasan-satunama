@@ -16,10 +16,10 @@
                 <option value="eval">Evaluasi Form</option>
             </select>
             {{-- Hidden form for storing form data --}}
-            <form id="hidden-form" action="" method="post" style="display: none;">
+            <form id="hidden-form" action="{{ route('evaluasiStoreRegulerAdmin') }}" method="post" style="display: none;">
                 @csrf
                 <input type="hidden" id="form" name="form">
-                {{-- <input type="hidden" id="id_pelatihan" name="id_pelatihan" value="{{ $id_pelatihan }}"> --}}
+                <input type="hidden" id="id_reguler" name="id_reguler" value="{{ $reguler->id_reguler }}">
             </form>
 
             {{-- Form builder container --}}

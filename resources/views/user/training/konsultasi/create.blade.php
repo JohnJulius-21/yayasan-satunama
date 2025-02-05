@@ -1,6 +1,17 @@
-@extends('layouts.main')
+@extends('layouts.user')
 
 @section('content')
+    <div class="section py-5"
+        style="position: relative; background-image: url('../images/contact.png'); background-size: cover; background-position: center; color: #ffffff;">
+        <div
+            style="content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(40, 66, 41, 0.6); z-index: 1;">
+        </div>
+        <div class="container text-left" style="position: relative; z-index: 2; ">
+            <h5 style="color: #ffffff;">Pelatihan Konsultasi</h5>
+            <h2 style="color: #ffffff;">SATUNAMA <span>Training Center </span></h2>
+        </div>
+    </div>
+
     <div class="container my-3">
         <div class="card px-3 mb-4">
             @if (Session::has('success'))

@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class fasilitator_pelatihan_reguler extends Model
+class mitra extends Model
 {
     use HasFactory;
-
-    protected $table = 'reguler_fasilitators';
+    protected $table = 'mitra';
+    protected $primaryKey = 'id_mitra';
 }

@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
 @section('content')
-    {{-- <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-    </div> --}}
-
-    <h1 class="h2">Form Tambah Pelatihan</h1>
-    <form method="post" action="{{ route('regulerStoreAdmin') }}" enctype="multipart/form-data">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
+        <h1 class="h2">Form Edit Pelatihan</h1>
+    </div>
+    <form method="post" action="{{ route('regulerUpdateAdmin', $reguler->id_reguler) }}" enctype="multipart/form-data">
+        @method('PUT')
         @csrf
         <div class="row">
             <div class="col-sm-7 mb-4">
@@ -21,7 +21,7 @@
                             <label for="nama_pelatihan" class="form-label">Nama Pelatihan</label>
                             <input type="text" class="form-control @error('nama_pelatihan') is-invalid @enderror"
                                 placeholder="Masukkan Nama Pelatihan" name="nama_pelatihan" id="nama_pelatihan"
-                                value="{{ old('nama_pelatihan') }}" autofocus>
+                                value="{{ old('nama_pelatihan', $reguler->nama_pelatihan) }}">
                             @error('nama_pelatihan')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -31,22 +31,26 @@
 
                         <div class="mb-3">
                             <label for="tema" class="form-label">Tema Pelatihan</label>
-                            <select class="form-control" name="id_tema" >
+                            <select class="form-control @error('id_tema') is-invalid @enderror" name="id_tema">
                                 <option value="">Pilih Tema Pelatihan</option>
                                 @foreach ($tema as $item)
-                                    <option value="{{ $item->id }}" {{ old('id_tema') == $item->id ? 'selected' : '' }}>
-                                        {{ $item->judul_tema }}
-                                    </option>
+                                    <option value="{{ $item->id }}"
+                                        {{ $item->id == $reguler->id_tema ? 'selected' : '' }}>
+                                        {{ $item->judul_tema }}</option>
                                 @endforeach
                             </select>
+                            @error('id_tema')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
-
 
                         <div class="mb-3">
                             <label for="fee_pelatihan" class="form-label">Fee Pelatihan</label>
-                            <input type="number" class="form-control @error('fee_pelatihan') is-invalid @enderror"
+                            <input type="text" class="form-control @error('fee_pelatihan') is-invalid @enderror"
                                 placeholder="Masukkan Fee Pelatihan" name="fee_pelatihan" id="fee_pelatihan"
-                                value="{{ old('fee_pelatihan') }}" >
+                                value="{{ old('fee_pelatihan', $reguler->fee_pelatihan) }}">
                             @error('fee_pelatihan')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -56,21 +60,28 @@
 
                         <div class="mb-3">
                             <label for="metode_pelatihan" class="form-label">Metode Pelatihan</label>
-                            <select class="form-control" name="metode_pelatihan" >
+                            <select class="form-control @error('metode_pelatihan') is-invalid @enderror"
+                                name="metode_pelatihan" value="{{ old('metode_pelatihan') }}">
                                 <option value="">Pilih Metode Pelatihan</option>
-                                <option value="Online" {{ old('metode_pelatihan') == 'Online' ? 'selected' : '' }}>Online
+                                <option value="Online" {{ $reguler->metode_pelatihan === 'Online' ? 'selected' : '' }}>
+                                    Online
                                 </option>
-                                <option value="Offline" {{ old('metode_pelatihan') == 'Offline' ? 'selected' : '' }}>Offline
+                                <option value="Offline" {{ $reguler->metode_pelatihan === 'Offline' ? 'selected' : '' }}>
+                                    Offline
                                 </option>
                             </select>
+                            @error('metode_pelatihan')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
-
 
                         <div class="mb-3">
                             <label for="lokasi_pelatihan" class="form-label">Lokasi Pelatihan</label>
                             <input type="text" class="form-control @error('lokasi_pelatihan') is-invalid @enderror"
                                 placeholder="Masukkan Lokasi Pelatihan" name="lokasi_pelatihan" id="lokasi_pelatihan"
-                                value="{{ old('lokasi_pelatihan') }}">
+                                value="{{ old('lokasi_pelatihan', $reguler->lokasi_pelatihan) }}">
                             @error('lokasi_pelatihan')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -80,10 +91,9 @@
 
                         <div class="mb-3">
                             <label for="kuota_peserta" class="form-label">Kuota Peserta</label>
-                            <input type="number" value="{{ old('kuota_peserta') }}"
-                                class="form-control @error('kuota_peserta') is-invalid @enderror"
+                            <input type="number" class="form-control @error('kuota_peserta') is-invalid @enderror"
                                 placeholder="Masukkan Kuota Peserta" name="kuota_peserta" id="kuota_peserta"
-                                value="{{ old('kuota_peserta') }}" >
+                                value="{{ old('kuota_peserta', $reguler->kuota_peserta) }}">
                             @error('kuota_peserta')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -94,32 +104,41 @@
                         <!-- Gambar, Materi, dan Deskripsi -->
                         <div class="mb-3">
                             <label for="image" class="form-label">Upload Poster Pelatihan</label>
-                            <input value="{{ old('image') }}" class="form-control @error('image.*') is-invalid @enderror"
-                                type="file" id="image" name="image[]" multiple >
-                            @error('image.*')
+                            <input value="{{ old('images') }}"
+                                class="form-control mb-2 @error('image.*') is-invalid @enderror" type="file"
+                                id="image" name="image[]" multiple>
+                            @error('images.*')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
+                            @foreach ($images as $image)
+                                <img src="{{ $image->image_url }}" alt="Gambar Lama" class="img-thumbnail"
+                                    style="max-width: 200px; max-height: 200px;">
+                            @endforeach
                         </div>
 
                         <div class="mb-3">
                             <label for="file" class="form-label">Upload Materi</label>
-                            <input value="{{ old('file') }}" class="form-control @error('file.*') is-invalid @enderror"
-                                type="file" id="file" name="file[]" multiple>
+                            <input value="{{ old('file') }}"
+                                class="form-control mb-2 @error('file.*') is-invalid @enderror" type="file"
+                                id="file" name="file[]" multiple>
                             @error('file.*')
                                 <div class="invalid-feedback">
                                     {{ $message }}
                                 </div>
                             @enderror
+                            @foreach ($files as $file)
+                                <a href="{{ $file->file_url }}" target="_blank">Download File</a><br>
+                            @endforeach
                         </div>
 
-                        <div class="trix-content mb-3">
+                        <div class="mb-3">
                             <label for="deskripsi_pelatihan" class="form-label">Deskripsi Pelatihan</label>
-                            <input id="deskripsi_pelatihan" type="hidden" name="deskripsi_pelatihan"
-                                value="{{ old('deskripsi_pelatihan') }}">
-                            <trix-editor class="{{ $errors->has('deskripsi_pelatihan') ? 'is-invalid' : '' }}"
-                                input="deskripsi_pelatihan" upload-url="/dashboard/reguler/upload/image"></trix-editor>
+                            <input id="x" type="hidden" name="deskripsi_pelatihan"
+                                value="{{ old('deskripsi_pelatihan', $reguler->deskripsi_pelatihan) }}">
+                            <trix-editor class="@error('deskripsi_pelatihan') is-invalid @enderror"
+                                input="x"></trix-editor>
                             @error('deskripsi_pelatihan')
                                 <div class="invalid-feedback">
                                     <p class="text-danger">{{ $message }}</p>
@@ -143,7 +162,8 @@
                             <label for="tanggal_pendaftaran" class="form-label">Tanggal Pendaftaran Pelatihan</label>
                             <input type="date" id="tanggal_pendaftaran"
                                 class="form-control @error('tanggal_pendaftaran') is-invalid @enderror"
-                                name="tanggal_pendaftaran" value="{{ old('tanggal_pendaftaran') }}">
+                                name="tanggal_pendaftaran"
+                                value="{{ old('tanggal_pendaftaran', $reguler->tanggal_pendaftaran) }}">
                             @error('tanggal_pendaftaran')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -156,7 +176,8 @@
                                 Pelatihan</label>
                             <input type="date" id="tanggal_batas_pendaftaran"
                                 class="form-control @error('tanggal_batas_pendaftaran') is-invalid @enderror"
-                                name="tanggal_batas_pendaftaran" value="{{ old('tanggal_batas_pendaftaran') }}">
+                                name="tanggal_batas_pendaftaran"
+                                value="{{ old('tanggal_batas_pendaftaran', $reguler->tanggal_batas_pendaftaran) }}">
                             @error('tanggal_batas_pendaftaran')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -167,7 +188,7 @@
                             <label for="tanggal_mulai" class="form-label">Tanggal Mulai Pelatihan</label>
                             <input type="date" id="tanggal_mulai"
                                 class="form-control @error('tanggal_mulai') is-invalid @enderror" name="tanggal_mulai"
-                                value="{{ old('tanggal_mulai') }}">
+                                value="{{ old('tanggal_mulai', $reguler->tanggal_mulai) }}">
                             @error('tanggal_mulai')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -178,8 +199,8 @@
                         <div class="mb-3">
                             <label for="tanggal_selesai" class="form-label">Tanggal Selesai Pelatihan</label>
                             <input type="date" id="tanggal_selesai"
-                                class="form-control @error('tanggal_selesai') is-invalid @enderror" name="tanggal_selesai"
-                                value="{{ old('tanggal_selesai') }}">
+                                class="form-control @error('tanggal_selesai') is-invalid @enderror"
+                                name="tanggal_selesai" value="{{ old('tanggal_selesai', $reguler->tanggal_selesai) }}">
                             @error('tanggal_selesai')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -199,120 +220,37 @@
                     <div class="card-body">
                         <label for="fasilitator-pelatihan">Fasilitator Pelatihan</label>
                         <div class="form-group mb-2">
-                            <select id="fasilitator" class="form-control" name="id_fasilitator[]" 
-                                multiple="multiple" style="width: 100%">
-                                @foreach ($fasilitator as $item)
+                            <select id="fasilitator" class="form-control @error('id_fasilitator') is-invalid @enderror"
+                                name="id_fasilitator[]" multiple="multiple" style="width: 100%">
+                                @foreach ($fasilitators as $item)
                                     <option value="{{ $item->id_fasilitator }}"
                                         @if (in_array($item->id_fasilitator, $oldIdFasilitator)) selected @endif>{{ $item->nama_fasilitator }}
                                     </option>
                                 @endforeach
                             </select>
+                            @error('id_fasilitator')
+                                <div class="invalid-feedback">
+                                    {{ $message }}
+                                </div>
+                            @enderror
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
+
         <button type="submit" class="btn btn-success mb-3">Simpan</button>
     </form>
 
 
 
-
-    <!-- Tambahkan CSS -->
-    <style>
-        .step-indicator .step {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #e9ecef;
-            border-radius: 50px;
-            margin: 5px;
-            font-weight: bold;
-        }
-
-        .step-indicator .step.active {
-            background-color: #28a745;
-            color: white;
-        }
-
-        .step-content {
-            display: none;
-        }
-
-        .step-content.active {
-            display: block;
-        }
-
-        /* Stepper container */
-        .stepper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        /* Individual step */
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-        }
-
-        /* Circle */
-        .circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            color: #28a745;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        /* Active circle */
-        .step.active .circle {
-            background-color: #28a745;
-            color: white;
-        }
-
-        /* Step label */
-        .label {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #6c757d;
-        }
-
-        /* Line between steps */
-        .line {
-            flex-grow: 1;
-            height: 2px;
-            background-color: #e0e0e0;
-        }
-
-        /* Active line */
-        .step.active~.line {
-            background-color: #28a745;
-        }
-    </style>
-
-    <!-- Tambahkan JavaScript -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script>
-       
         $(document).ready(function() {
             $('#fasilitator').select2({
                 placeholder: "Pilih Fasilitator",
                 theme: "classic"
-            });
-
-            $('.form-control').on('input', function() {
-                $(this).removeClass('is-invalid'); // Menghapus kelas 'is-invalid'
-                $(this).siblings('.invalid-feedback').remove(); // Menghapus pesan kesalahan
             });
         });
 

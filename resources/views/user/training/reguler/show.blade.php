@@ -1,4 +1,4 @@
-@extends('layouts.main')
+@extends('layouts.user')
 
 @section('content')
     <style>
@@ -89,79 +89,49 @@
             opacity: 1;
         }
     </style>
+    <div class="page-title">
+        <div class="container d-lg-flex justify-content-between align-items-center">
+            <h1 class="mb-2 mb-lg-0">Detail Pelatihan</h1>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="{{ route('beranda') }}">Beranda</a></li>
+                    <li><a href="{{ route('pelatihan') }}">Pelatihan</a></li>
+                    <li class="current">Detail Pelatihan</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
     <div class="container overflow-hidden">
         <!-- Adjust the image size and add border radius -->
         <!-- Container for the image gallery -->
         <div class="container">
-
             <!-- Full-width images with number text -->
-            <div class="mySlides">
-                <div class="numbertext">1 / 6</div>
-                <img src="{{ asset('images/pelatihan4.png') }}" style="width:100%">
-            </div>
-
-            <div class="mySlides">
-                <div class="numbertext">2 / 6</div>
-                <img src="{{ asset('images/pelatihan4.png') }}" style="width:100%">
-            </div>
-
-            <div class="mySlides">
-                <div class="numbertext">3 / 6</div>
-                <img src="{{ asset('images/pelatihan4.png') }}" style="width:100%">
-            </div>
-
-            <div class="mySlides">
-                <div class="numbertext">4 / 6</div>
-                <img src="{{ asset('images/pelatihan4.png') }}" style="width:100%">
-            </div>
-
-            <div class="mySlides">
-                <div class="numbertext">5 / 6</div>
-                <img src="{{ asset('images/pelatihan4.png') }}" style="width:100%">
-            </div>
-
-            <div class="mySlides">
-                <div class="numbertext">6 / 6</div>
-                <img src="{{ asset('images/pelatihan4.png') }}" style="width:100%">
-            </div>
-
+            @foreach($imageUrls as $index => $url)
+                <div class="mySlides">
+                    <div class="numbertext">{{ $index + 1 }} / {{ count($imageUrls) }}</div>
+                    <img src="{{ $url }}" style="width:100%">
+                </div>
+            @endforeach
+        
             <!-- Next and previous buttons -->
             <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
             <a class="next" onclick="plusSlides(1)">&#10095;</a>
-
+        
             <!-- Image text -->
             <div class="caption-container">
                 <p id="caption"></p>
             </div>
-
+        
             <!-- Thumbnail images -->
             <div class="row">
-                <div class="column">
-                    <img class="demo cursor" src="{{ asset('images/pelatihan4.png') }}" style="width:100%" onclick="currentSlide(1)"
-                        alt="The Woods">
-                </div>
-                <div class="column">
-                    <img class="demo cursor" src="{{ asset('images/pelatihan4.png') }}" style="width:100%" onclick="currentSlide(2)"
-                        alt="Cinque Terre">
-                </div>
-                <div class="column">
-                    <img class="demo cursor" src="{{ asset('images/pelatihan4.png') }}" style="width:100%" onclick="currentSlide(3)"
-                        alt="Mountains and fjords">
-                </div>
-                <div class="column">
-                    <img class="demo cursor" src="{{ asset('images/pelatihan4.png') }}" style="width:100%" onclick="currentSlide(4)"
-                        alt="Northern Lights">
-                </div>
-                <div class="column">
-                    <img class="demo cursor" src="{{ asset('images/pelatihan4.png') }}" style="width:100%" onclick="currentSlide(5)"
-                        alt="Nature and sunrise">
-                </div>
-                <div class="column">
-                    <img class="demo cursor"src="{{ asset('images/pelatihan4.png') }}" style="width:100%" onclick="currentSlide(6)"
-                        alt="Snowy Mountains">
-                </div>
+                @foreach($imageUrls as $index => $url)
+                    <div class="column">
+                        <img class="demo cursor" src="{{ $url }}" style="width:100%" onclick="currentSlide({{ $index + 1 }})" alt="Image {{ $index + 1 }}">
+                    </div>
+                @endforeach
             </div>
         </div>
+        
         <hr class="container mt-5" style="height: 3px; background-color: #000000; border: none;">
 
         <div class="row gx-6">
@@ -201,10 +171,17 @@
                     </small>
                     <hr>
                     <h5>Informasi Pelatihan</h5>
-                    <span>Fasilitator : Budiono Siregar </span>
+                    <span>Fasilitator : 
+                        @foreach ($fasilitators as $fasilitator)
+                            {{ $fasilitator->nama_fasilitator }}@if (!$loop->last)
+                                ,
+                            @endif
+                        @endforeach </span>
                     <span>Kuota Peserta : {{ $pelatihan->kuota_peserta }} Orang</span>
                     <span>Metode Pelatihan : {{ $pelatihan->metode_pelatihan }} </span>
                     <span>Lokasi Pelatihan : {{ $pelatihan->lokasi_pelatihan }} </span>
+                    <span>Fee Pelatihan : Rp {{ number_format($pelatihan->fee_pelatihan, 0, ',', '.') }}</span>
+
 
                     <div class="card-footer text-center mt-2">
                         @php
@@ -215,14 +192,14 @@
 
                         @guest
                             <!-- If user is not logged in, send them to login page -->
-                            <a href="{{ !$isRegistrationClosed && isset($pelatihan->id_pelatihan) ? route('masuk') : '#' }}"
+                            <a href="{{ !$isRegistrationClosed && isset($pelatihan->id_reguler) ? route('masuk') : '#' }}"
                                 class="btn btn-success daftar-button {{ $isRegistrationClosed ? 'disabled-link' : '' }}"
                                 {{ $isRegistrationClosed ? 'aria-disabled=true tabindex=-1' : '' }}>
                                 Daftar Pelatihan
                             </a>
                         @else
                             <!-- If user is logged in, send them directly to the registration page -->
-                            <a href="{{ !$isRegistrationClosed && isset($pelatihan->id_pelatihan) ? route('reguler.create', ['id' => $pelatihan->id_pelatihan]) : '#' }}"
+                            <a href="{{ !$isRegistrationClosed && isset($pelatihan->id_reguler) ? route('reguler.create', ['id' => $pelatihan->id_reguler]) : '#' }}"
                                 class="btn btn-success daftar-button {{ $isRegistrationClosed ? 'disabled-link' : '' }}"
                                 {{ $isRegistrationClosed ? 'aria-disabled=true tabindex=-1' : '' }}>
                                 Daftar Pelatihan

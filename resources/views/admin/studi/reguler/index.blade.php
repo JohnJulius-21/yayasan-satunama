@@ -2,11 +2,7 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Daftar Pelatihan Reguler</h1>
-        <div class="d-flex justify-content-end">
-            <a href="{{ route('regulerCreateAdmin') }}" class="btn btn-success "><i style="width:17px" data-feather="plus"></i>
-                Tambah Pelatihan</a>
-        </div>
+        <h1 class="h2">Studi Dampak Pelatihan</h1>
     </div>
     @if (Session::has('success'))
         <div class="pt-3">
@@ -42,24 +38,16 @@
                         <tbody>
                             @foreach ($reguler as $item)
                                 <tr>
-                                    <td>{{ $item['nama_pelatihan'] }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->locale('id')->isoFormat('D MMMM') }} - 
-                                        {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}</td>
-                                    <td>
-                                        <a href="{{ route('regulerShowAdmin', $item->id_reguler) }}"
-                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
-                                        <a href="{{ route('regulerEditAdmin', $item->id_reguler) }}"
-                                            class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
-                                        <form class="d-inline m-0" action="{{ route('regulerDestroyAdmin', $item->id_reguler) }}"
-                                            method="post">
-                                            @method('DELETE')
-                                            @csrf
-                                            <button class="btn btn-danger px-2" type="submit"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"><i
-                                                    style="width:17px" data-feather="trash"></i></button>
 
-                                        </form>
+                                    <td>{{ $item['nama_pelatihan'] }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }}</td>
+                                    <td>
+                                        <a href="{{ route('studidampakShowRegulerAdmin', $item->id_reguler) }}"
+                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i>Lihat Detail</a>
+                                        <a href="{{ url('/admin/studidampak/edit-form-studidampak-reguler/' . $item->id_reguler) }}" class="btn btn-warning px-2"><i style="width:17px"
+                                                data-feather="edit"></i>Edit Form</a>
                                     </td>
+
                                 </tr>
                             @endforeach
                         </tbody>
@@ -68,7 +56,6 @@
             </div>
         </div>
     </div>
-
     <!-- Sertakan jQuery dan DataTables JS -->
     {{-- <link
         href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.css"
@@ -82,6 +69,36 @@
         $(document).ready(function() {
             // Inisialisasi DataTable
             $('#reguler').DataTable({
+                lengthChange: true,
+                responsive: true,
+                paging: true,
+                lengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, 'All']
+                ],
+                rowReorder: true,
+                columnDefs: [{
+                    orderable: false,
+                    targets: 2
+                }]
+            });
+
+            $('#permintaan').DataTable({
+                lengthChange: true,
+                responsive: true,
+                paging: true,
+                lengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, 'All']
+                ],
+                rowReorder: true,
+                columnDefs: [{
+                    orderable: false,
+                    targets: 2
+                }]
+            });
+
+            $('#konsultasi').DataTable({
                 lengthChange: true,
                 responsive: true,
                 paging: true,

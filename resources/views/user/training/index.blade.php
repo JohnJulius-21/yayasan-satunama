@@ -1,14 +1,14 @@
-@extends('layouts.main')
+@extends('layouts.user')
 
 @section('content')
     <!-- Pelatihan Section -->
-    <div class="section py-5"
+    {{-- <div class="section py-5"
         style="position: relative; background-image: url('../images/contact.png'); background-size: cover; background-position: center; color: #ffffff;">
         <div
             style="content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(68, 117, 71, 0.6); z-index: 1;">
         </div>
         <div class="container text-left" style="position: relative; z-index: 2;">
-            <h3>Pelatihan</h3>
+            <h3 style="color: #ffffff;">Pelatihan</h3>
             <!-- <h2 style="color: #438848;">SATUNAMA <span style="color: #000000;">Training Center </span></h2> -->
 
             <!-- Descriptive Text -->
@@ -21,10 +21,21 @@
                 hal-hal praktis, seperti akupuntur, ekonomi rumah tangga, dan sebagainya.
             </p>
         </div>
-    </div>
+    </div> --}}
+    <div class="page-title">
+        <div class="container d-lg-flex justify-content-between align-items-center">
+          <h1 class="mb-2 mb-lg-0">Pelatihan</h1>
+          <nav class="breadcrumbs">
+            <ol>
+              <li><a href="{{ route('beranda') }}">Beranda</a></li>
+              <li class="current">Pelatihan</li>
+            </ol>
+          </nav>
+        </div>
+      </div><!-- End Page Title -->
 
 
-    <div class="container px-4">
+    {{-- <div class="container px-4">
         <div class="row gx-5">
             <!-- Section Header Column -->
             <div class="col" style="margin-top: 150px;">
@@ -82,7 +93,7 @@
                                 <div class="card-body">
                                     <img src="{{ asset('images/hero.png') }}" alt="Innovation Lab"
                                         class="img-fluid mb-3 icon-image">
-                                    <h4 class="card-title">Innovation Lab</h4>
+                                    <h4 class="card-title">CTGA</h4>
                                 </div>
                             </div>
                         </div>
@@ -91,9 +102,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    <hr class="container" style="height: 3px; background-color: #000000; border: none;">
+    {{-- <hr class="container" style="height: 3px; background-color: #000000; border: none;"> --}}
 
 
     <section class="pelatihan" id="pelatihan">
@@ -115,7 +126,7 @@
                                     {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
                                 </p>
 
-                                <a href="{{ route('reguler.show', ['id' => $item->id_pelatihan]) }}"
+                                <a href="{{ route('reguler.show', ['id' => $item->id_reguler]) }}"
                                     class="btn btn-outline-success btn-sm">Lihat Detail</a>
 
                             </div>
@@ -137,7 +148,7 @@
 
         <div class="container">
             <div class="row d-flex justify-content-center">
-                <div class="col-md-4 text-center"><img src="{{ asset('images/hero.png') }}" alt="Permintaan" class="img-fluid icon-image" style="width: 70%"></div>
+                <div class="col-md-4 text-center"><img src="{{ asset('images/permintaan1.png') }}" alt="Permintaan" class="img-fluid icon-image" style="width: 70%"></div>
                 <div class="col-md-6"><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, voluptates, non adipisci nesciunt dolore nisi
                     corrupti commodi expedita quod omnis iste soluta mollitia veniam ut corporis suscipit debitis distinctio,
                     quisquam nulla tenetur et. Iusto, ex, hic eaque officiis, earum molestiae necessitatibus esse quis fuga
@@ -153,7 +164,7 @@
             <div class="row">
 
                 <div class="d-flex justify-content-center">
-                    <a href="{{ route('permintaan.create') }}" class="btn btn-outline-success my-5">Lihat Pelatihan
+                    <a href="{{ route('permintaan.create') }}" class="btn btn-outline-success my-5">Daftar Pelatihan
                         Permintaan</a>
                     {{-- <button class="btn btn-outline-success my-5">Lebih banyak</button> --}}
                 </div>
@@ -195,7 +206,7 @@
         <div class="container">
             <div class="row">
                 <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 text-center"><img src="{{ asset('images/hero.png') }}" alt="Permintaan" class="img-fluid icon-image" style="width: 70%"></div>
+                    <div class="col-md-4 text-center"><img src="{{ asset('images/konsultasi1.png') }}" alt="Permintaan" class="img-fluid icon-image" style="width: 70%"></div>
                     <div class="col-md-6"><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, voluptates, non adipisci nesciunt dolore nisi
                         corrupti commodi expedita quod omnis iste soluta mollitia veniam ut corporis suscipit debitis distinctio,
                         quisquam nulla tenetur et. Iusto, ex, hic eaque officiis, earum molestiae necessitatibus esse quis fuga
@@ -207,7 +218,7 @@
                         dolores aliquid similique, impedit molestias? Voluptatem sint voluptate voluptas consequuntur ab!</p></div>
                 </div>
                 <div class="d-flex justify-content-center">
-                    <a href="{{ route('konsultasi.create') }}" class="btn btn-outline-success my-5">Lihat Pelatihan
+                    <a href="{{ route('konsultasi.create') }}" class="btn btn-outline-success my-5">Daftar Pelatihan
                         Konsultasi</a>
                     {{-- <button class="btn btn-outline-success my-5">Lebih banyak</button> --}}
                 </div>

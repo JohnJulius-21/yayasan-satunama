@@ -1,5 +1,5 @@
 <!-- partial -->
-<div class="container-fluid page-body-wrapper">
+<div class="container-fluid page-body-wrapper zindex-absolute">
     <!-- partial:../../partials/_sidebar.html -->
     <nav class="sidebar sidebar-offcanvas" id="sidebar">
       <ul class="nav">
@@ -35,7 +35,22 @@
             <ul class="nav flex-column sub-menu">
               <li class="nav-item"> <a class="nav-link" href="{{ route('evaluasiRegulerAdmin') }}">Reguler</a></li>
               <li class="nav-item"> <a class="nav-link" href="{{ route('evaluasiPermintaanAdmin') }}">Permintaan</a></li>
-              <li class="nav-item"> <a class="nav-link" href="{{ route('konsultasiAdmin') }}">Konsultasi</a></li>
+              <li class="nav-item"> <a class="nav-link" href="">Konsultasi</a></li>
+              <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/typography.html">CTGA</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="nav-item {{ Request::is('admin/survey/*') ? 'active' : '' }}">
+          <a class="nav-link" data-toggle="collapse" href="#ui-basic2" aria-expanded="false" aria-controls="ui-basic1">
+            <span class="icon-bg"><i class="mdi mdi-book-open-outline"></i></span>
+            <span class="menu-title">Survey Kepuasan</span>
+            <i class="menu-arrow"></i>
+          </a>
+          <div class="collapse" id="ui-basic2">
+            <ul class="nav flex-column sub-menu">
+              <li class="nav-item"> <a class="nav-link" href="{{ route('surveyRegulerAdmin') }}">Reguler</a></li>
+              <li class="nav-item"> <a class="nav-link" href="">Permintaan</a></li>
+              <li class="nav-item"> <a class="nav-link" href="">Konsultasi</a></li>
               <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/typography.html">CTGA</a></li>
             </ul>
           </div>
@@ -46,18 +61,33 @@
             <span class="menu-title">Evaluasi Pelatihan</span>
           </a>
         </li> --}}
-        <li class="nav-item">
-          <a class="nav-link" href="{{ route('surveyAdmin') }}">
+        {{-- <li class="nav-item">
+          <a class="nav-link" href="{{ route('surveyRegulerAdmin') }}">
             <span class="icon-bg"><i class="mdi mdi-comment-account"></i></span>
             <span class="menu-title">Survey Kepuasan</span>
           </a>
-        </li>
+        </li> --}}
         <li class="nav-item {{ Request::is('admin/studidampak/*') ? 'active' : '' }}">
+          <a class="nav-link" data-toggle="collapse" href="#ui-basic3" aria-expanded="false" aria-controls="ui-basic1">
+            <span class="icon-bg"><i class="mdi mdi-book-open-outline"></i></span>
+            <span class="menu-title">Studi Dampak</span>
+            <i class="menu-arrow"></i>
+          </a>
+          <div class="collapse" id="ui-basic3">
+            <ul class="nav flex-column sub-menu">
+              <li class="nav-item"> <a class="nav-link" href="{{ route('studiRegulerAdmin') }}">Reguler</a></li>
+              <li class="nav-item"> <a class="nav-link" href="">Permintaan</a></li>
+              <li class="nav-item"> <a class="nav-link" href="">Konsultasi</a></li>
+              <li class="nav-item"> <a class="nav-link" href="../../pages/ui-features/typography.html">CTGA</a></li>
+            </ul>
+          </div>
+        </li>
+        {{-- <li class="nav-item {{ Request::is('admin/studidampak/*') ? 'active' : '' }}">
           <a class="nav-link" href="{{ route('studiAdmin') }}">
             <span class="icon-bg"><i class="mdi mdi-file-search"></i></span>
             <span class="menu-title">Studi Dampak</span>
           </a>
-        </li>
+        </li> --}}
         <li class="nav-item {{ Request::is('admin/fasilitator/*') ? 'active' : '' }}">
           <a class="nav-link" href="{{ route('fasilitatorAdmin') }}">
             <span class="icon-bg"><i class="mdi mdi-account"></i></span>

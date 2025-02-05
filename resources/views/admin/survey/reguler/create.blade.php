@@ -2,24 +2,25 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h2>Buat Form Studi Dampak</h2>
+        <h2>Buat Form Survey Kepuasan</h2>
     </div>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-success">Form Studi Dampak</h6>
+            <h6 class="m-0 font-weight-bold text-success">Form Survey Kepuasan</h6>
         </div>
 
 
         <div class="card-body">
             <select name="formTemplates" id="formTemplates" class="form-control mb-2">
                 <option value="">Pilih template</option>
-                <option value="studidampak">Form Studi Dampak</option>
+                <option value="survey">Form Survey</option>
             </select>
             {{-- Hidden form for storing form data --}}
-            <form id="hidden-form" action="" method="post" style="display: none;">
+            <form id="hidden-form" action="{{ route('surveyStoreRegulerAdmin') }}" method="post"
+                style="display: none;">
                 @csrf
                 <input type="hidden" id="form" name="form">
-                {{-- <input type="hidden" id="id_pelatihan" name="id_pelatihan" value="{{ $id_pelatihan }}"> --}}
+                <input type="hidden" id="id_reguler" name="id_reguler" value="{{ $reguler->id_reguler }}">
             </form>
 
             {{-- Form builder container --}}
@@ -31,7 +32,7 @@
             <button id="save-button" class="btn btn-success mt-3">Simpan</button>
         </div>
     </div>
-    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     <script src="{{ asset('form-builder/form-builder.min.js') }}"></script>
@@ -71,77 +72,98 @@
 
             // Templates data
             const templates = {
-                studidampak: [{
+                survey: [{
                     "type": "radio-group",
-                    "required": false,
-                    "label": "Setelah pelatihan yang anda ikuti, apakah anda mengalami perubahan posisi dalam pekerjaan anda?",
-                    "inline": false,
-                    "name": "radio-group-1712923959383-0",
+                    "required": true,
+                    "label": "Seberapa puas anda dengan pelatihan di SATUNAMA?",
+                    "inline": true,
+                    "name": "tingkat_kepuasan",
                     "other": false,
                     "values": [{
-                        "label": "Ya",
-                        "value": "Ya",
+                        "label": "Sangat tidak puas",
+                        "value": "1",
                         "selected": false
                     }, {
-                        "label": "Tidak",
-                        "value": "Tidak",
+                        "label": "Cukup puas",
+                        "value": "2",
+                        "selected": false
+                    }, {
+                        "label": "Puas",
+                        "value": "3",
+                        "selected": false
+                    }, {
+                        "label": "Sangat puas",
+                        "value": "4",
+                        "selected": false
+                    }]
+                }, {
+                    "type": "radio-group",
+                    "required": true,
+                    "label": "Seberapa cocok dan membantu topik pelatihan yang Anda ikuti dengan pekerjaan Anda?",
+                    "inline": true,
+                    "name": "kemampuan_merespon_peserta",
+                    "other": false,
+                    "values": [{
+                        "label": "Sangat tidak cocok",
+                        "value": "1",
+                        "selected": false
+                    }, {
+                        "label": "Kurang cocok",
+                        "value": "2",
+                        "selected": false
+                    }, {
+                        "label": "Cocok",
+                        "value": "3",
+                        "selected": false
+                    }, {
+                        "label": "Sangat cocok",
+                        "value": "4",
+                        "selected": false
+                    }]
+                }, {
+                    "type": "radio-group",
+                    "required": true,
+                    "label": "Seberapa relevan fasilitas dengan harga yang Anda bayar untuk pelatihan di SATUNAMA?",
+                    "inline": true,
+                    "name": "pengembangan_proses",
+                    "other": false,
+                    "values": [{
+                        "label": "Sangat tidak relevan ",
+                        "value": "1",
+                        "selected": false
+                    }, {
+                        "label": "Kurang relevan",
+                        "value": "2",
+                        "selected": false
+                    }, {
+                        "label": "Relevan",
+                        "value": "3",
+                        "selected": false
+                    }, {
+                        "label": "Sangat relevan",
+                        "value": "4",
                         "selected": false
                     }]
                 }, {
                     "type": "text",
-                    "required": false,
-                    "label": "Jika ya, sebutkan posisi pekerjaan anda sebelum mengikuti pelatihan",
+                    "required": true,
+                    "label": "Hal penting apa yang Anda ambil dari mengikuti pelatihan di SATUNAMA?",
                     "className": "form-control",
                     "name": "text-1712755105419-0",
                     "subtype": "text"
                 }, {
                     "type": "text",
-                    "required": false,
-                    "label": "Jika ya, sebutkan posisi pekerjaan anda setelah mengikuti pelatihan",
-                    "className": "form-control",
-                    "name": "text-1712930169882",
-                    "subtype": "text"
-                }, {
-                    "type": "text",
-                    "required": false,
-                    "label": "Dari materi yang diberikan, topik-topik mana yang langsung dapat digunakan dalam pekerjaan anda?",
+                    "required": true,
+                    "label": "Berapa kali Anda mengikuti Pelatihan di SATUNAMA?",
                     "className": "form-control",
                     "name": "text-1712755107411",
                     "subtype": "text"
                 }, {
                     "type": "text",
-                    "required": false,
-                    "label": "Dari materi yang diberikan, topik-topik mana yang dapat dimanfaatkan untuk meningkatkan kinerja Unit/ divisi/ departemen/ lembaga anda?",
+                    "required": true,
+                    "label": "Selain di SATUNAMA, apakah Anda pernah mengikuti pelatihan lainnya? Sebutkan lembaga/ instansinya.",
                     "className": "form-control",
                     "name": "text-1712755106955",
-                    "subtype": "text"
-                }, {
-                    "type": "text",
-                    "required": false,
-                    "label": "<div>Dari materi yang diberikan, topik-topik mana yang masih merupakan kesulitan dan perlu diperdalam pemahamannya?</div>",
-                    "className": "form-control",
-                    "name": "text-1712930405787",
-                    "subtype": "text"
-                }, {
-                    "type": "text",
-                    "required": false,
-                    "label": "<div>Dari materi yang diberikan, topik-topik mana yang dianggap tidak relevan?</div>",
-                    "className": "form-control",
-                    "name": "text-1712930416026",
-                    "subtype": "text"
-                }, {
-                    "type": "text",
-                    "required": false,
-                    "label": "<div>Kalau pelatihan yang sama ditawarkan lagi, apakah anda merekomendasikan teman sejawat anda untuk mengikuti atau lembaga anda untuk mengirimkan stafnya?</div>",
-                    "className": "form-control",
-                    "name": "text-1712930431010",
-                    "subtype": "text"
-                }, {
-                    "type": "text",
-                    "required": false,
-                    "label": "<div>Untuk semakin meningkatkan kapasitas anda dan lembaga anda, pelatihan-pelatihan apa yang sangat diperlukan?</div>",
-                    "className": "form-control",
-                    "name": "text-1712930448250",
                     "subtype": "text"
                 }]
             };

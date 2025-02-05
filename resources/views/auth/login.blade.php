@@ -1,13 +1,13 @@
-@extends('layouts.main')
+@extends('layouts.user')
 
 @section('content')
     <div class="bg-light">
         <div class="container bg-light">
             <div class="hero-content d-flex flex-column flex-md-row align-items-center p-5">
-                <div class="hero-image px-3 py-3">
+                {{-- <div class="hero-image px-3 py-3">
                     <img src="{{ asset('images/login.png') }}" alt="Hero Image" class="img-fluid">
-                </div>
-                <div class="hero-text flex-grow-1">
+                </div> --}}
+                <div class="container card flex-grow-1">
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ session('success') }}

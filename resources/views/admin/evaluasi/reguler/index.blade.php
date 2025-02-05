@@ -37,7 +37,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($data as $item)
+                            @foreach ($reguler as $item)
                                 <tr>
                                     <td>{{ $item['nama_pelatihan'] }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->locale('id')->isoFormat('D MMMM') }}
@@ -45,25 +45,13 @@
                                         {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}
                                     </td>
                                     <td>
-                                        <a href="{{ route('dashboard.evaluasi.show', $item->id_pelatihan) }}"
+                                        <a href="{{ route('evaluasiShowRegulerAdmin', $item->id_reguler) }}"
                                             class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
-                                        <a href="{{ url('/dashboard/evaluasi/edit-reguler/' . $item->id_pelatihan) }}"
+                                        <a href="{{ url('/admin/evaluasi/edit-form-evaluasi-reguler/' . $item->id_reguler) }}"
                                             class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
                                     </td>
                                 </tr>
-                            @endforeach --}}
-                            <tr>
-                                <td>test</td>
-                                <td>test
-                                </td>
-                                <td>
-
-                                    <a href="{{ route('evaluasiShowRegulerAdmin') }}" class="btn btn-primary px-2"><i
-                                            class="mdi mdi-eye-circle-outline" style="width:117px"></i></a>
-                                    <a href="" class="btn btn-warning px-2"><span
-                                            class="mdi mdi-pencil-outline"></span></i></a>
-                                </td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

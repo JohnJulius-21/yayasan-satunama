@@ -9,9 +9,9 @@
                         style="width:17px" data-feather="plus"></i>
                     Buat Form Evaluasi</a>
             @endif --}}
-            <a href="{{ route('evaluasiCreateRegulerAdmin', $reguler->id_reguler) }}" class="btn btn-success "><i
+            <a href="{{ route('surveyCreateRegulerAdmin', $reguler->id_reguler) }}" class="btn btn-success "><i
                 style="width:17px" data-feather="plus"></i>
-            Buat Form Evaluasi</a>
+            Buat Form Survey Kepuasan</a>
         </div>
     </div>
 

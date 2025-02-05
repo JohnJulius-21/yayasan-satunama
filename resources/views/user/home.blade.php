@@ -1,6 +1,141 @@
 @extends('layouts.user')
 
 @section('content')
+    <style>
+        .pelatihan .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            min-height: 400px;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .pelatihan .card-has-bg {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            position: relative;
+        }
+
+        .pelatihan .card-img-overlay {
+            background: rgba(191, 231, 171, 0.6);
+            /* Semi-transparent white overlay */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .pelatihan .card-title {
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 10px;
+        }
+
+        .pelatihan .card-footer {
+            background-color: transparent;
+            border-top: none;
+        }
+
+        .pelatihan .media img {
+            border-radius: 50%;
+        }
+
+        .pelatihan .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .pelatihan a {
+            text-decoration: none;
+        }
+
+        .pelatihan a:hover {
+            color: #438848;
+        }
+
+        .btn-outline-success {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .pelatihan .btn-outline-success:hover {
+            background-color: #28a745;
+            /* Background color on hover */
+            color: white;
+            /* Text color on hover */
+            border-color: #28a745;
+            /* Ensure border stays green */
+        }
+
+        .pelatihan .btn-outline-success:focus {
+            box-shadow: none;
+            /* Remove focus outline */
+        }
+
+        @media (max-width: 768px) {
+            .pelatihan .card {
+                min-height: 350px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .pelatihan .card {
+                min-height: 300px;
+            }
+        }
+
+        /* Animation on Hover */
+        .animate-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .animate-card:hover {
+            transform: translateY(-15px);
+            /* Card moves up by 15px */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            /* Enhanced shadow for lifted effect */
+        }
+
+        /* Image Hover Animation */
+        .icon-image {
+            transition: transform 0.3s ease;
+        }
+
+        .icon-image:hover {
+            transform: scale(1.1);
+            /* Scale image slightly when hovered */
+        }
+
+        /* Card Styling */
+        .card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Card Title */
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #000000;
+        }
+
+        /* Hover effect on card title */
+        .card-title:hover {
+            color: #438848;
+        }
+
+        @media (max-width: 768px) {
+            .col-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
     <!-- Hero Section -->
     {{-- <div class="hero">
         <div class="hero-content">
@@ -267,7 +402,8 @@
             <div class="row gy-4">
                 <div class="col-lg-6 order-2 order-lg-1 d-flex flex-column justify-content-center" data-aos="fade-up">
                     <h1>Apakah Anda Membutuhkan Pengembangan Kapasitas?</h1>
-                    <p>Kami siap membantu Anda dalam meningkatkan kemampuan dan kapasitas melalui berbagai program pelatihan dan pendampingan.</p>
+                    <p>Kami siap membantu Anda dalam meningkatkan kemampuan dan kapasitas melalui berbagai program pelatihan
+                        dan pendampingan.</p>
                     <div class="d-flex">
                         <a href="#about" class="btn-get-started">Get Started</a>
                         <a href="https://youtu.be/6IJRKUNlnxM?si=b27BlsoK5eelsJBd"
@@ -282,7 +418,7 @@
         </div>
 
     </section><!-- /Hero Section -->
-{{-- 
+    {{-- 
     <!-- Featured Services Section -->
     <section id="featured-services" class="featured-services section">
 
@@ -367,7 +503,7 @@
 
     </section><!-- /About Section -->
 
-    <!-- Stats Section -->
+    {{-- <!-- Stats Section -->
     <section id="stats" class="stats section">
 
         <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -410,10 +546,10 @@
 
         </div>
 
-    </section><!-- /Stats Section -->
+    </section><!-- /Stats Section --> --}}
 
     <!-- Services Section -->
-    <section id="services" class="services section light-background">
+    {{-- <section id="services" class="services section light-background">
 
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
@@ -510,20 +646,22 @@
             </div>
 
         </div>
+        
+    </div>
 
-    </section><!-- /Services Section -->
+    </section><!-- /Services Section --> --}}
 
     <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio section">
 
         <!-- Section Title -->
         <div class="container section-title" data-aos="fade-up">
-            <span>Portfolio</span>
-            <h2>Portfolio</h2>
+            <span>Produk dan Layanan</span>
+            <h2>Produk dan Layanan</h2>
             <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
         </div><!-- End Section Title -->
 
-        <div class="container">
+        {{-- <div class="container">
 
             <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
 
@@ -694,6 +832,84 @@
 
             </div>
 
+        </div> --}}
+
+        <div class="container px-4">
+            <div class="row gx-5">
+                <!-- Section Header Column -->
+                <div class="col" style="margin-top: 150px;">
+                    <div class="py-5">
+                        <!-- Adding more margin to push the header section down -->
+                        <div class="container text-left mt-5" style="margin-top: 180px;">
+                            {{-- <h5>Produk dan Layanan</h5> --}}
+                            <h2 style="color: #438848;">SATUNAMA <span style="color: #000000;">Training Center</span></h2>
+                            <hr>
+                            <p class="text-muted">Telusuri produk - produk pelatihan kami untuk menunjang pekerjaan dan
+                                usaha Anda</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Column -->
+                <div class="col">
+                    <div class="container py-5">
+                        <div class="row gy-5 text-center">
+                            <!-- Reguler -->
+                            <div class="col-6 mb-4">
+                                <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
+                                    <div class="card-body">
+                                        <a href="{{ route('reguler.index') }}">
+                                            <img src="{{ asset('images/reguler1.png') }}" alt="Materi Pembelajaran"
+                                                class="img-fluid mb-3 icon-image">
+                                            <h4 class="card-title">Reguler</h4>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Permintaan -->
+                            <div class="col-6 mb-4">
+                                <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
+                                    <div class="card-body">
+                                        <a href="{{ route('permintaan.create') }}">
+                                            <img src="{{ asset('images/permintaan1.png') }}" alt="Permintaan"
+                                                class="img-fluid mb-3 icon-image">
+                                            <h4 class="card-title">Permintaan</h4>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Konsultasi -->
+                            <div class="col-6 mb-4">
+                                <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
+                                    <div class="card-body">
+                                        <a href="{{ route('konsultasi.create') }}">
+                                            <img src="{{ asset('images/konsultasi1.png') }}" alt="Konsultasi"
+                                                class="img-fluid mb-3 icon-image">
+                                            <h4 class="card-title">Konsultasi</h4>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Innovation Lab -->
+                            <div class="col-6 mb-4">
+                                <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
+                                    <div class="card-body">
+                                        <a href="{{ route('ctga') }}">
+                                            <img src="{{ asset('images/ctga.png') }}" alt="Innovation Lab"
+                                                class="img-fluid mb-3 icon-image">
+                                            <h4 class="card-title">CTGA</h4>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </section><!-- /Portfolio Section -->
@@ -741,246 +957,309 @@
 
                     <div class="swiper-slide">
                         <div class="testimonial-item" "="">
-            <p>
-              <i class=" bi bi-quote quote-icon-left"></i>
-                <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
-                <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-                <img src="assetss/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
-                <h3>Saul Goodman</h3>
-                <h4>Ceo &amp; Founder</h4>
-              </div>
-            </div><!-- End testimonial item -->
+                        <p>
+                          <i class=" bi bi-quote quote-icon-left"></i>
+                            <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.</span>
+                            <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                            <img src="assetss/img/testimonials/testimonials-1.jpg" class="testimonial-img" alt="">
+                            <h3>Saul Goodman</h3>
+                            <h4>Ceo &amp; Founder</h4>
+                          </div>
+                        </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-                <img src="assetss/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
-                <h3>Sara Wilsson</h3>
-                <h4>Designer</h4>
-              </div>
-            </div><!-- End testimonial item -->
+                        <div class="swiper-slide">
+                          <div class="testimonial-item">
+                            <p>
+                              <i class="bi bi-quote quote-icon-left"></i>
+                              <span>Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.</span>
+                              <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                            <img src="assetss/img/testimonials/testimonials-2.jpg" class="testimonial-img" alt="">
+                            <h3>Sara Wilsson</h3>
+                            <h4>Designer</h4>
+                          </div>
+                        </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-                <img src="assetss/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
-                <h3>Jena Karlis</h3>
-                <h4>Store Owner</h4>
-              </div>
-            </div><!-- End testimonial item -->
+                        <div class="swiper-slide">
+                          <div class="testimonial-item">
+                            <p>
+                              <i class="bi bi-quote quote-icon-left"></i>
+                              <span>Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.</span>
+                              <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                            <img src="assetss/img/testimonials/testimonials-3.jpg" class="testimonial-img" alt="">
+                            <h3>Jena Karlis</h3>
+                            <h4>Store Owner</h4>
+                          </div>
+                        </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-                <img src="assetss/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
-                <h3>Matt Brandon</h3>
-                <h4>Freelancer</h4>
-              </div>
-            </div><!-- End testimonial item -->
+                        <div class="swiper-slide">
+                          <div class="testimonial-item">
+                            <p>
+                              <i class="bi bi-quote quote-icon-left"></i>
+                              <span>Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.</span>
+                              <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                            <img src="assetss/img/testimonials/testimonials-4.jpg" class="testimonial-img" alt="">
+                            <h3>Matt Brandon</h3>
+                            <h4>Freelancer</h4>
+                          </div>
+                        </div><!-- End testimonial item -->
 
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <p>
-                  <i class="bi bi-quote quote-icon-left"></i>
-                  <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
-                  <i class="bi bi-quote quote-icon-right"></i>
-                </p>
-                <img src="assetss/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
-                <h3>John Larson</h3>
-                <h4>Entrepreneur</h4>
+                        <div class="swiper-slide">
+                          <div class="testimonial-item">
+                            <p>
+                              <i class="bi bi-quote quote-icon-left"></i>
+                              <span>Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.</span>
+                              <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                            <img src="assetss/img/testimonials/testimonials-5.jpg" class="testimonial-img" alt="">
+                            <h3>John Larson</h3>
+                            <h4>Entrepreneur</h4>
+                          </div>
+                        </div><!-- End testimonial item -->
+
+                      </div>
+                      <div class="swiper-pagination"></div>
+                    </div>
+
+                  </div>
+
+                </section><!-- /Testimonials Section -->
+
+                <!-- Call To Action Section -->
+                <section id="call-to-action" class="call-to-action section accent-background">
+
+                  <div class="container">
+                    <div class="row justify-content-center" data-aos="zoom-in" data-aos-delay="100">
+                      <div class="col-xl-10">
+                        <div class="text-center">
+                          <h3>Call To Action</h3>
+                          <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                          <a class="cta-btn" href="#">Call To Action</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </section><!-- /Call To Action Section -->
+
+                <!-- Team Section -->
+                <section id="team" class="team section">
+
+                  <!-- Section Title -->
+                  <div class="container section-title" data-aos="fade-up">
+                    <span>Section Title</span>
+                    <h2>Team</h2>
+                    <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+                  </div><!-- End Section Title -->
+
+                  <div class="container">
+
+                    <div class="row gy-5">
+
+                      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                        <div class="member">
+                          <div class="pic"><img src="assetss/img/team/team-1.jpg" class="img-fluid" alt=""></div>
+                          <div class="member-info">
+                            <h4>Walter White</h4>
+                            <span>Chief Executive Officer</span>
+                            <div class="social">
+                              <a href=""><i class="bi bi-twitter-x"></i></a>
+                              <a href=""><i class="bi bi-facebook"></i></a>
+                              <a href=""><i class="bi bi-instagram"></i></a>
+                              <a href=""><i class="bi bi-linkedin"></i></a>
+                            </div>
+                          </div>
+                        </div>
+                      </div><!-- End Team Member -->
+
+                      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                        <div class="member">
+                          <div class="pic"><img src="assetss/img/team/team-2.jpg" class="img-fluid" alt=""></div>
+                          <div class="member-info">
+                            <h4>Sarah Jhonson</h4>
+                            <span>Product Manager</span>
+                            <div class="social">
+                              <a href=""><i class="bi bi-twitter-x"></i></a>
+                              <a href=""><i class="bi bi-facebook"></i></a>
+                              <a href=""><i class="bi bi-instagram"></i></a>
+                              <a href=""><i class="bi bi-linkedin"></i></a>
+                            </div>
+                          </div>
+                        </div>
+                      </div><!-- End Team Member -->
+
+                      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                        <div class="member">
+                          <div class="pic"><img src="assetss/img/team/team-3.jpg" class="img-fluid" alt=""></div>
+                          <div class="member-info">
+                            <h4>William Anderson</h4>
+                            <span>CTO</span>
+                            <div class="social">
+                              <a href=""><i class="bi bi-twitter-x"></i></a>
+                              <a href=""><i class="bi bi-facebook"></i></a>
+                              <a href=""><i class="bi bi-instagram"></i></a>
+                              <a href=""><i class="bi bi-linkedin"></i></a>
+                            </div>
+                          </div>
+                        </div>
+                      </div><!-- End Team Member -->
+
+                    </div>
+
+                  </div>
+
+                </section><!-- /Team Section -->
+
+                {{-- <!-- Contact Section -->
+        <section id="contact" class="contact section">
+
+          <!-- Section Title -->
+          <div class="container section-title" data-aos="fade-up">
+            <span>Section Title</span>
+            <h2>Contact</h2>
+            <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
+          </div><!-- End Section Title -->
+
+          <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row gy-4">
+
+              <div class="col-lg-5">
+
+                <div class="info-wrap">
+                  <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+                    <i class="bi bi-geo-alt flex-shrink-0"></i>
+                    <div>
+                      <h3>Address</h3>
+                      <p>A108 Adam Street, New York, NY 535022</p>
+                    </div>
+                  </div><!-- End Info Item -->
+
+                  <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                    <i class="bi bi-telephone flex-shrink-0"></i>
+                    <div>
+                      <h3>Call Us</h3>
+                      <p>+1 5589 55488 55</p>
+                    </div>
+                  </div><!-- End Info Item -->
+
+                  <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+                    <i class="bi bi-envelope flex-shrink-0"></i>
+                    <div>
+                      <h3>Email Us</h3>
+                      <p>info@example.com</p>
+                    </div>
+                  </div><!-- End Info Item -->
+
+                  <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
               </div>
-            </div><!-- End testimonial item -->
+
+              <div class="col-lg-7">
+                <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                  <div class="row gy-4">
+
+                    <div class="col-md-6">
+                      <label for="name-field" class="pb-2">Your Name</label>
+                      <input type="text" name="name" id="name-field" class="form-control" required="">
+                    </div>
+
+                    <div class="col-md-6">
+                      <label for="email-field" class="pb-2">Your Email</label>
+                      <input type="email" class="form-control" name="email" id="email-field" required="">
+                    </div>
+
+                    <div class="col-md-12">
+                      <label for="subject-field" class="pb-2">Subject</label>
+                      <input type="text" class="form-control" name="subject" id="subject-field" required="">
+                    </div>
+
+                    <div class="col-md-12">
+                      <label for="message-field" class="pb-2">Message</label>
+                      <textarea class="form-control" name="message" rows="10" id="message-field" required=""></textarea>
+                    </div>
+
+                    <div class="col-md-12 text-center">
+                      <div class="loading">Loading</div>
+                      <div class="error-message"></div>
+                      <div class="sent-message">Your message has been sent. Thank you!</div>
+
+                      <button type="submit">Send Message</button>
+                    </div>
+
+                  </div>
+                </form>
+              </div><!-- End Contact Form -->
+
+            </div>
 
           </div>
-          <div class="swiper-pagination"></div>
-        </div>
+          
 
-      </div>
-
-    </section><!-- /Testimonials Section -->
-
-    <!-- Call To Action Section -->
-    <section id="call-to-action" class="call-to-action section accent-background">
-
-      <div class="container">
-        <div class="row justify-content-center" data-aos="zoom-in" data-aos-delay="100">
-          <div class="col-xl-10">
-            <div class="text-center">
-              <h3>Call To Action</h3>
-              <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-              <a class="cta-btn" href="#">Call To Action</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </section><!-- /Call To Action Section -->
-
-    <!-- Team Section -->
-    <section id="team" class="team section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <span>Section Title</span>
-        <h2>Team</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
-
-      <div class="container">
-
-        <div class="row gy-5">
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-            <div class="member">
-              <div class="pic"><img src="assetss/img/team/team-1.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Chief Executive Officer</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
+        </section><!-- /Contact Section -->
+         --}}
+                <style>
+                    .parallax {
+                        /* The image used */
+                        background-image: url('/images/contact.png');
+                
+                        /* Set a specific height */
+                        min-height: 500px;
+                
+                        /* Create the parallax scrolling effect */
+                        background-attachment: fixed;
+                        background-position: center;
+                        background-repeat: no-repeat;
+                        background-size: cover;
+                        position: relative;
+                    }
+                
+                    /* Dark overlay */
+                    .parallax::before {
+                        content: '';
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0, 0, 0, 0.5); /* Adjust opacity as needed */
+                        z-index: 1; /* Make sure the overlay is above the background */
+                    }
+                
+                    /* Text inside parallax */
+                    .parallax-text {
+                        position: absolute;
+                        top: 50%; /* Center vertically */
+                        left: 50%; /* Center horizontally */
+                        transform: translate(-50%, -50%);
+                        color: #fff;
+                        text-align: center;
+                        z-index: 2; /* Ensure text is above the overlay */
+                    }
+                
+                    /* Responsive adjustment for devices */
+                    /* @media only screen and (max-device-width: 1366px) {
+                        .parallax {
+                            background-attachment: scroll;
+                        }
+                
+                        .parallax-text {
+                            position: static;
+                            transform: none;
+                            text-align: center;
+                            margin-top: 20px;
+                        }
+                    } */
+                </style>
+                <!-- Parallax Section -->
+                <div class="parallax">
+                    <div class="parallax-text">
+                        <h2 style="color: #fff">Apakah Anda Membutuhkan Pengembangan Kapasitas?</h2>
+                        <p style="color: #fff">Kami siap membantu Anda dalam meningkatkan kemampuan dan kapasitas melalui berbagai program pelatihan dan pendampingan.</p>
+                        <a href="#" class="btn btn-success">Hubungi Kami</a>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="member">
-              <div class="pic"><img src="assetss/img/team/team-2.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Product Manager</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="member">
-              <div class="pic"><img src="assetss/img/team/team-3.jpg" class="img-fluid" alt=""></div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>CTO</span>
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter-x"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-          </div><!-- End Team Member -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Team Section -->
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact section">
-
-      <!-- Section Title -->
-      <div class="container section-title" data-aos="fade-up">
-        <span>Section Title</span>
-        <h2>Contact</h2>
-        <p>Necessitatibus eius consequatur ex aliquid fuga eum quidem sint consectetur velit</p>
-      </div><!-- End Section Title -->
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="row gy-4">
-
-          <div class="col-lg-5">
-
-            <div class="info-wrap">
-              <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
-                <i class="bi bi-geo-alt flex-shrink-0"></i>
-                <div>
-                  <h3>Address</h3>
-                  <p>A108 Adam Street, New York, NY 535022</p>
-                </div>
-              </div><!-- End Info Item -->
-
-              <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
-                <i class="bi bi-telephone flex-shrink-0"></i>
-                <div>
-                  <h3>Call Us</h3>
-                  <p>+1 5589 55488 55</p>
-                </div>
-              </div><!-- End Info Item -->
-
-              <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
-                <i class="bi bi-envelope flex-shrink-0"></i>
-                <div>
-                  <h3>Email Us</h3>
-                  <p>info@example.com</p>
-                </div>
-              </div><!-- End Info Item -->
-
-              <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus" frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            </div>
-          </div>
-
-          <div class="col-lg-7">
-            <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
-              <div class="row gy-4">
-
-                <div class="col-md-6">
-                  <label for="name-field" class="pb-2">Your Name</label>
-                  <input type="text" name="name" id="name-field" class="form-control" required="">
-                </div>
-
-                <div class="col-md-6">
-                  <label for="email-field" class="pb-2">Your Email</label>
-                  <input type="email" class="form-control" name="email" id="email-field" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <label for="subject-field" class="pb-2">Subject</label>
-                  <input type="text" class="form-control" name="subject" id="subject-field" required="">
-                </div>
-
-                <div class="col-md-12">
-                  <label for="message-field" class="pb-2">Message</label>
-                  <textarea class="form-control" name="message" rows="10" id="message-field" required=""></textarea>
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
-                </div>
-
-              </div>
-            </form>
-          </div><!-- End Contact Form -->
-
-        </div>
-
-      </div>
-
-    </section><!-- /Contact Section -->
 @endsection

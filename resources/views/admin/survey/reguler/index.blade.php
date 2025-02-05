@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Studi Dampak Pelatihan</h1>
+        <h1 class="h2">Survey Kepuasan Pelatihan</h1>
     </div>
     @if (Session::has('success'))
         <div class="pt-3">
@@ -36,26 +36,27 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($data as $item)
+                            @foreach ($reguler as $item)
                                 <tr>
 
                                     <td>{{ $item['nama_pelatihan'] }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }} -
+                                        {{ \Carbon\Carbon::parse($item->tanggal_selesai)->format('d M Y') }}</td>
                                     <td>
-                                        <a href="{{ route('dashboard.studidampak.show', $item->id_pelatihan) }}"
+                                        <a href="{{ route('surveyShowRegulerAdmin', $item->id_reguler) }}"
                                             class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
-                                        <a href="{{ url('/dashboard/studidampak/edit-reguler/' . $item->id_pelatihan) }}" class="btn btn-warning px-2"><i style="width:17px"
-                                                data-feather="edit"></i></a>
+                                        <a href="{{ url('/admin/survey/edit-form-survey-reguler/' . $item->id_reguler) }}"
+                                            class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
                                     </td>
 
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="card shadow mb-4">
+        {{-- <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <div class="d-flex justify-content-start">
                     <h6 class="m-0 font-weight-bold text-success">Permintaan</h6>
@@ -72,19 +73,19 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($data2 as $item)
-                            <tr>
-                                <td>{{ $item->nama_pelatihan }}</td> 
-                                <td>{{ \Carbon\Carbon::parse($item->waktu_pelaksanaan)->format('d M Y') }} -
-                                    {{ \Carbon\Carbon::parse($item->waktu_selesai)->format('d M Y') }}</td>
-                                <td>
-                                    <a href="{{ route('dashboard.studidampak.showpermintaan', $item->id) }}" class="btn btn-primary px-2"><i style="width:17px"
-                                            data-feather="eye"></i></a>
-                                    <a href="{{ url('/dashboard/studidampak/edit-permintaan/' . $item->id) }}" class="btn btn-warning px-2"><i style="width:17px"
-                                            data-feather="edit"></i></a>
-                                </td>
-                            </tr>
-                        @endforeach --}}
+                            @foreach ($data2 as $item)
+                                <tr>
+                                    <td>{{ $item->nama_pelatihan }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item->waktu_pelaksanaan)->format('d M Y') }} -
+                                        {{ \Carbon\Carbon::parse($item->waktu_selesai)->format('d M Y') }}</td>
+                                    <td>
+                                        <a href="{{ route('dashboard.surveykepuasan.showpermintaan', $item->id) }}"
+                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
+                                        <a href="{{ url('/dashboard/surveykepuasan/edit-permintaan/' . $item->id) }}"
+                                            class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -107,23 +108,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($data3 as $item)
+                            @foreach ($data3 as $item)
                                 <tr>
                                     <td>{{ $item['nama_pelatihan'] }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }} </td>
                                     <td>
-                                        <a href="{{ route('dashboard.studidampak.showkonsultasi', $item->id_konsultasi) }}"
+                                        <a href="{{ route('dashboard.surveykepuasan.showkonsultasi', $item->id_konsultasi) }}"
                                             class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
-                                        <a href="{{ url('/dashboard/studidampak/edit-konsultasi/' . $item->id_konsultasi) }}"
+                                        <a href="{{ url('/dashboard/surveykepuasan/edit-konsultasi/' . $item->id_konsultasi) }}"
                                             class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
                                     </td>
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
     <!-- Sertakan jQuery dan DataTables JS -->
     {{-- <link

@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title>Index - eNno Bootstrap Template</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/stc.png') }}">
+    <title>{{ $title }} - STC</title>
     <meta name="description" content="">
     <meta name="keywords" content="">
 
@@ -55,7 +56,7 @@
 
   <footer id="footer" class="footer">
 
-    <div class="footer-newsletter">
+    {{-- <div class="footer-newsletter">
       <div class="container">
         <div class="row justify-content-center text-center">
           <div class="col-lg-6">
@@ -70,17 +71,17 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> --}}
 
     <div class="container footer-top">
       <div class="row gy-4">
         <div class="col-lg-4 col-md-6 footer-about">
           <a href="index.html" class="d-flex align-items-center">
-            <span class="sitename">eNno</span>
+            <img class="w-25" src="{{ asset('images/stc.png') }}" alt="Logo" />
           </a>
           <div class="footer-contact pt-3">
-            <p>A108 Adam Street</p>
-            <p>New York, NY 535022</p>
+            <p>Jl. Sambisari Jl. Duwet No.99</p>
+            <p>Sleman, Daerah Istimewa Yogyakarta 55285</p>
             <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
             <p><strong>Email:</strong> <span>info@example.com</span></p>
           </div>
@@ -108,12 +109,12 @@
 
         <div class="col-lg-4 col-md-12">
           <h4>Follow Us</h4>
-          <p>Cras fermentum odio eu feugiat lide par naso tierra videa magna derita valies</p>
+          <p>Ikuti Sosial Media Kami</p>
           <div class="social-links d-flex">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
-            <a href=""><i class="bi bi-facebook"></i></a>
-            <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
+            {{-- <a href=""><i class="bi bi-twitter-x"></i></a> --}}
+            <a href="https://www.facebook.com/SATUNAMATrainingCenter"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.instagram.com/yayasansatunama/?hl=en"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.linkedin.com/company/yayasan-satunama-yogyakarta/posts/?feedView=all"><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
 
@@ -121,13 +122,13 @@
     </div>
 
     <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">eNno</strong> <span>All Rights Reserved</span></p>
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">SATUNAMA Training Center</strong> <span>All Rights Reserved</span></p>
       <div class="credits">
         <!-- All the links in the footer should remain intact. -->
         <!-- You can delete the links only if you've purchased the pro version. -->
         <!-- Licensing information: https://bootstrapmade.com/license/ -->
         <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+        {{-- Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> --}}
       </div>
     </div>
 

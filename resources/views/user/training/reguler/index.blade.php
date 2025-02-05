@@ -1,23 +1,35 @@
-@extends('layouts.main')
+@extends('layouts.user')
 
 @section('content')
     <!-- Pelatihan Section -->
-    <div class="section py-5"
+    {{-- <div class="section py-5"
         style="position: relative; background-image: url('../images/contact.png'); background-size: cover; background-position: center; color: #ffffff;">
         <div
             style="content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(40, 66, 41, 0.6); z-index: 1;">
         </div>
-        <div class="container text-left" style="position: relative; z-index: 2;">
-            <h5>Pelatihan Reguler</h5>
-            <h2>SATUNAMA <span>Training Center </span></h2>
+        <div class="container text-left" style="position: relative; z-index: 2; ">
+            <h5 style="color: #ffffff;">Pelatihan Reguler</h5>
+            <h2 style="color: #ffffff;">SATUNAMA <span>Training Center </span></h2>
+        </div>
+    </div> --}}
+
+    <div class="page-title">
+        <div class="container d-lg-flex justify-content-between align-items-center">
+            <h1 class="mb-2 mb-lg-0">Reguler</h1>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="{{ route('beranda') }}">Beranda</a></li>
+                    <li><a href="{{ route('pelatihan') }}">Pelatihan</a></li>
+                    <li class="current">Reguler</li>
+                </ol>
+            </nav>
         </div>
     </div>
 
 
-
-    <section class="pelatihan mt-4" id="pelatihan">
+    <section class="pelatihan mt-2" id="pelatihan">
         <div class="container">
-            <div class="d-flex justify-content-end mb-2 p-4">
+            <div class="d-flex justify-content-end p-4">
                 <!-- Search Form -->
                 <form action="{{ route('reguler.index') }}" method="GET" class="d-flex">
                     <div class="input-group" style="width: 270px;">
@@ -71,7 +83,7 @@
                                         {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
                                     </p>
 
-                                    <a href="{{ route('reguler.show', ['id' => $item->id_pelatihan]) }}"
+                                    <a href="{{ route('reguler.show', ['id' => $item->id_reguler]) }}"
                                         class="btn btn-outline-success btn-sm">Lihat Detail</a>
 
                                 </div>
@@ -114,11 +126,11 @@
         </div>
     </div>
 
-    <hr class="container" style="height: 3px; background-color: #000000; border: none;">
+    {{-- <hr class="container" style="height: 3px; background-color: #000000; border: none;"> --}}
 
     <!-- Custom CSS for Hover Animations -->
     <style>
-        .section #pelatihan{
+        .section #pelatihan {
             position: relative;
             background-image: url('images/dekorasi1.png'), url('images/image2.png'), url('images/image3.png');
             background-size: cover, cover, cover;

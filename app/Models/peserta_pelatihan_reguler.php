@@ -10,17 +10,18 @@ class peserta_pelatihan_reguler extends Model
     use HasFactory;
 
     use HasFactory;
-    protected $table = 'peserta_pelatihan_tests';
+    protected $table = 'peserta_pelatihan_reguler';
+    protected $primaryKey = 'id_peserta_reguler';
     protected $fillable = [
         'gender',
         'id_user',
-        'id_pelatihan',
-        'id_rentang_usia',
+        'id_reguler',
+        'rentang_usia',
         'id_kabupaten',
         'id_provinsi',
         'id_negara',
-        'id_organisasi',
-        'id_informasi',
+        'organisasi',
+        'informasi',
         'nama_peserta',
         'email_peserta',
         'no_hp',
@@ -29,7 +30,6 @@ class peserta_pelatihan_reguler extends Model
         'jabatan_peserta',
         'pelatihan_relevan',
         'harapan_pelatihan',
-        'bukti_bayar',
     ];
     public function user(){
         return $this->belongsTo(User::class);
@@ -63,8 +63,8 @@ class peserta_pelatihan_reguler extends Model
     public function negara(){
         return $this->belongsTo(negara::class, 'id_negara');
     }
-    public function pelatihan(){
-        return $this->belongsTo(pelatihan::class, 'id_pelatihan');
+    public function reguler(){
+        return $this->belongsTo(reguler::class, 'id_reguler');
     }
 
     public function getIsFilledAttribute()

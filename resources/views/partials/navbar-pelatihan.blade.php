@@ -8,7 +8,7 @@
     <a class="nav-link {{ request()->routeIs('konsultasi.pelatihan.show') ? 'active' : '' }}" href="{{ route('konsultasi.pelatihan.show') }}">
         Konsultasi
     </a>
-    <a class="nav-link {{ request()->routeIs('konsultasi.pelatihan.show') ? 'active' : '' }}" href="{{ route('konsultasi.pelatihan.show') }}">Innovation Lab</a>
+    <a class="nav-link {{ request()->routeIs('konsultasi.pelatihan.show') ? 'active' : '' }}" href="{{ route('konsultasi.pelatihan.show') }}">CTGA</a>
 </nav>
 
 <style>

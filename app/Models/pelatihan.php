@@ -51,7 +51,7 @@ class pelatihan extends Model
     // }
     public function fasilitator_pelatihan()
     {
-        return $this->belongsToMany(fasilitator_pelatihan_reguler::class, 'pelatihan_fasilitators', 'id_pelatihan', 'id_fasilitator');
+        return $this->belongsToMany(fasilitator::class, 'reguler_fasilitators', 'id_pelatihan', 'id_fasilitator');
     }
     // public function pelatihan_fasilitator()
     // {
