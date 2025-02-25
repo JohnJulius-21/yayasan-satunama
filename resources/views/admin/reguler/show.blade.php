@@ -11,7 +11,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table id="peserta" class="display table dataTable" style="width: 800px; margin: 0 auto;">
+                <table id="pesertaReguler" class="display table dataTable" style="width: 800px; margin: 0 auto;">
                     <thead>
                         <tr>
                             <th>Nama Peserta</th>
@@ -31,32 +31,25 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($reguler as $item)
+                        @foreach ($peserta as $item)
                             <!-- Tampilkan data hanya jika nama peserta mengandung kata kunci pencarian -->
                             <tr>
                                 <td class="editable">{{ $item['nama_peserta'] }}</td>
                                 <td class="editable">{{ $item['email_peserta'] }}</td>
                                 <td class="editable">{{ $item['no_hp'] }}</td>
-                                <td class="editable">{{ $item->rentang_usia->usia }}</td>
+                                <td class="editable">{{ $item->rentang_usia }}</td>
                                 <td class="editable">{{ $item->gender }}</td>
                                 <td class="editable">{{ $item->kabupaten_kota->nama_kabupaten_kota }}</td>
                                 <td class="editable">{{ $item->provinsi->nama_provinsi }}</td>
                                 <td class="editable">{{ $item->negara->nama_negara }}</td>
                                 <td class="editable">{{ $item['nama_organisasi'] }}</td>
-                                <td class="editable">{{ $item->jenis_organisasi->organisasi }}</td>
+                                <td class="editable">{{ $item->organisasi }}</td>
                                 <td class="editable">{{ $item['jabatan_peserta'] }}</td>
-                                <td class="editable">{{ $item->informasi_pelatihan->keterangan }}</td>
+                                <td class="editable">{{ $item->informasi }}</td>
                                 <td class="editable">{{ $item['pelatihan_relevan'] }}</td>
                                 <td class="editable">{{ $item['harapan_pelatihan'] }}</td>
-                                <td class="editable">
-                                    <a href="{{ asset('storage/' . $item->bukti_bayar) }}" download>
-                                        <img src="{{ asset('storage/' . $item->bukti_bayar) }}" alt="Bukti Bayar"
-                                            style="max-width: 100px; max-height: 100px;">
-                                        {{ basename($item['bukti_bayar']) }}
-                                    </a>
-                                </td>
                             </tr>
-                        @endforeach --}}
+                        @endforeach
                     </tbody>
                 </table>
 
@@ -64,6 +57,30 @@
         </div>
     </div>
 
+    {{-- <table id="daftar_hadir">
+        <thead>
+            <tr>
+                <th class="col-md-2">Nama Peserta</th>
+                <th class="col-md-2">Email Peserta</th>
+                <th class="col-md-2">Tanggal Presensi</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+            </tr>
+        </tbody>
+    </table> --}}
+    {{-- <td class="editable">
+                                    <a href="{{ asset('storage/' . $item->bukti_bayar) }}" download>
+                                        <img src="{{ asset('storage/' . $item->bukti_bayar) }}" alt="Bukti Bayar"
+                                            style="max-width: 100px; max-height: 100px;">
+                                        {{ basename($item['bukti_bayar']) }}
+                                    </a>
+                                </td> --}}
 
 
 
@@ -124,40 +141,55 @@
     {{-- </div> --}}
     {{-- </div> --}}
     <!-- Sertakan jQuery dan DataTables JS -->
-    <link
-        href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.css"
-        rel="stylesheet">
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" rel="stylesheet"
+        integrity="sha384-ZVBvXH2IGOw6fHIntvmU2wOUGWutDViMwSQwdGEvaJkHVvm1S8N/HE/zBK91NXSV" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/buttons/3.2.2/css/buttons.dataTables.css" rel="stylesheet"
+        integrity="sha384-WnU9UKIFykmC5nUngG4IGkdl3+/E5Rx7JmiggfjyAY804EuDkGcxL4aJMdN5iuTJ" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.dataTables.css" rel="stylesheet"
+        integrity="sha384-inDoREwjvy5La3vgUWcIczhlGcfXAt1V1DsIU/yHRTbfL3W/HfMnReyF4xwS7S+x" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/scroller/2.4.3/css/scroller.dataTables.css" rel="stylesheet"
+        integrity="sha384-fvFMooh85/CFhRcmgNLO/DEXj4/h8h4Fz2s0Wtq2hPU/s7z0rLzrk77ID2JS+YUg" crossorigin="anonymous">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
-    <script
-        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.js">
+    <script src="https://code.jquery.com/jquery-3.7.0.js"
+        integrity="sha384-ogycHROOTGA//2Q8YUfjz1Sr7xMOJTUmY2ucsPVuXAg4CtpgQJQzGZsX768KqetU" crossorigin="anonymous">
     </script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.js"
+        integrity="sha384-w52cgKJL63XVo8/Wwyl+z8ly0lI51gzCtqADl8pHQTXUXkF08iRa7D+sjSmCyHp+" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.js"
+        integrity="sha384-P2rohseTZr3+/y/u+6xaOAE3CIkcmmC0e7ZjhdkTilUMHfNHCerfVR9KICPeFMOP" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"
+        integrity="sha384-/RlQG9uf0M2vcTw3CX7fbqgbj/h8wKxw7C3zu9/GxcBPRKOEcESxaxufwRXqzq6n" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"
+        integrity="sha384-gGekiWQ/bm8p71RTsvhPShoIBxcf8BsVjRTi0WY8FvxuQa2nKS0PKHiSXV9nfW/A" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.datatables.net/buttons/3.2.2/js/dataTables.buttons.js"
+        integrity="sha384-wCLG3FbyFPnMZM65D+pam9KW+2joK88dh4jfSMK0OuMQ2cBQHV0t55OqmQduaQ1S" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.datatables.net/buttons/3.2.2/js/buttons.html5.js"
+        integrity="sha384-r5RumiuQhALaYWd8i8v0DxCjEXRayyj6nl1wP379+GexLAvE4yuLNoyPEvE6hzDu" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.js"
+        integrity="sha384-zAVoatBLtEAzOhdX4Xkli8AOOsRiPj+iFEsCh/BBYnKNHJCM/G8PNGupst4xx3Ft" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.datatables.net/scroller/2.4.3/js/dataTables.scroller.js"
+        integrity="sha384-cCDhK6VsxVGKfl0shwjJr2UXaCzEpxhSnd7C8Uan8yABW71pdY3iaz8aVBklw8uz" crossorigin="anonymous">
+    </script>
 
 
     <script>
         $(document).ready(function() {
             var nama_pelatihan = '{{ $nama_pelatihan }}';
             // Inisialisasi DataTable
-            $('#peserta').DataTable({
-                // dom: 'Bfrtip',
+            $('#pesertaReguler').DataTable({
                 layout: {
                     topStart: {
-                        buttons: [{
-                                extend: 'pdfHtml5',
-                                orientation: 'landscape',
-                                pageSize: 'LEGAL',
-                                title: 'Data Peserta Pelatihan ' + nama_pelatihan,
-                            },
-                            'spacer',
-                            {
-                                extend: 'excel',
-                                title: 'Data Peserta Pelatihan ' + nama_pelatihan,
-                            }
+                        buttons: [
+                            'excel', 'pdf'
                         ]
-
                     }
                 },
                 // layout: {

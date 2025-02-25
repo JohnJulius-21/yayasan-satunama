@@ -105,33 +105,33 @@
         <!-- Adjust the image size and add border radius -->
         <!-- Container for the image gallery -->
         <div class="container">
-            <!-- Full-width images with number text -->
-            @foreach($imageUrls as $index => $url)
+            @foreach ($imageNames as $index => $filename)
                 <div class="mySlides">
-                    <div class="numbertext">{{ $index + 1 }} / {{ count($imageUrls) }}</div>
-                    <img src="{{ $url }}" style="width:100%">
+                    <div class="numbertext">{{ $index + 1 }} / {{ count($imageNames) }}</div>
+                    <img src="{{ route('file.show', ['filename' => $filename]) }}" style="width:100%">
                 </div>
             @endforeach
-        
+
             <!-- Next and previous buttons -->
             <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
             <a class="next" onclick="plusSlides(1)">&#10095;</a>
-        
+
             <!-- Image text -->
             <div class="caption-container">
                 <p id="caption"></p>
             </div>
-        
+
             <!-- Thumbnail images -->
             <div class="row">
-                @foreach($imageUrls as $index => $url)
+                @foreach ($imageNames as $index => $filename)
                     <div class="column">
-                        <img class="demo cursor" src="{{ $url }}" style="width:100%" onclick="currentSlide({{ $index + 1 }})" alt="Image {{ $index + 1 }}">
+                        <img class="demo cursor" src="{{ route('file.show', ['filename' => $filename]) }}"
+                            style="width:100%" onclick="currentSlide({{ $index + 1 }})" alt="Image {{ $index + 1 }}">
                     </div>
                 @endforeach
             </div>
         </div>
-        
+
         <hr class="container mt-5" style="height: 3px; background-color: #000000; border: none;">
 
         <div class="row gx-6">
@@ -171,12 +171,13 @@
                     </small>
                     <hr>
                     <h5>Informasi Pelatihan</h5>
-                    <span>Fasilitator : 
+                    <span>Fasilitator :
                         @foreach ($fasilitators as $fasilitator)
                             {{ $fasilitator->nama_fasilitator }}@if (!$loop->last)
                                 ,
                             @endif
-                        @endforeach </span>
+                        @endforeach
+                    </span>
                     <span>Kuota Peserta : {{ $pelatihan->kuota_peserta }} Orang</span>
                     <span>Metode Pelatihan : {{ $pelatihan->metode_pelatihan }} </span>
                     <span>Lokasi Pelatihan : {{ $pelatihan->lokasi_pelatihan }} </span>

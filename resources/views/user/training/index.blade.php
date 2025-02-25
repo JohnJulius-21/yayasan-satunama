@@ -24,15 +24,15 @@
     </div> --}}
     <div class="page-title">
         <div class="container d-lg-flex justify-content-between align-items-center">
-          <h1 class="mb-2 mb-lg-0">Pelatihan</h1>
-          <nav class="breadcrumbs">
-            <ol>
-              <li><a href="{{ route('beranda') }}">Beranda</a></li>
-              <li class="current">Pelatihan</li>
-            </ol>
-          </nav>
+            <h1 class="mb-2 mb-lg-0">Pelatihan</h1>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li><a href="{{ route('beranda') }}">Beranda</a></li>
+                    <li class="current">Pelatihan</li>
+                </ol>
+            </nav>
         </div>
-      </div><!-- End Page Title -->
+    </div><!-- End Page Title -->
 
 
     {{-- <div class="container px-4">
@@ -114,7 +114,8 @@
                 @foreach ($reguler as $item)
                     <div class="col-lg-4 mb-4">
                         <div class="card">
-                            <img src="{{ asset('images/pelatihan4.png') }}" alt="" class="card-img-top">
+                            <img src="{{ route('file.show', ['filename' => $item->image]) }}"
+                                alt="{{ $item->nama_pelatihan }}" class="card-img-top">
                             <div class="card-body">
                                 <h5 class="card-title">{{ $item->nama_pelatihan }}</h5>
                                 <small><i class="far fa-calendar-days"></i> Tanggal Pendaftaran :
@@ -148,19 +149,29 @@
 
         <div class="container">
             <div class="row d-flex justify-content-center">
-                <div class="col-md-4 text-center"><img src="{{ asset('images/permintaan1.png') }}" alt="Permintaan" class="img-fluid icon-image" style="width: 70%"></div>
-                <div class="col-md-6"><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, voluptates, non adipisci nesciunt dolore nisi
-                    corrupti commodi expedita quod omnis iste soluta mollitia veniam ut corporis suscipit debitis distinctio,
-                    quisquam nulla tenetur et. Iusto, ex, hic eaque officiis, earum molestiae necessitatibus esse quis fuga
-                    repellendus quas perferendis asperiores eius magnam quos labore explicabo distinctio maxime sunt modi. A
-                    quae
-                    rerum voluptatibus esse necessitatibus ab est neque mollitia cum. Iusto porro sint quos laborum optio
-                    consequatur in quaerat nisi molestiae dolor asperiores deserunt eveniet quisquam debitis error earum amet
-                    nulla
-                    dolores aliquid similique, impedit molestias? Voluptatem sint voluptate voluptas consequuntur ab!</p></div>
+                <div class="col-md-4 text-center"><img src="{{ asset('images/permintaan1.png') }}" alt="Permintaan"
+                        class="img-fluid icon-image" style="width: 70%"></div>
+                <div class="col-md-6">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, voluptates, non adipisci nesciunt
+                        dolore nisi
+                        corrupti commodi expedita quod omnis iste soluta mollitia veniam ut corporis suscipit debitis
+                        distinctio,
+                        quisquam nulla tenetur et. Iusto, ex, hic eaque officiis, earum molestiae necessitatibus esse quis
+                        fuga
+                        repellendus quas perferendis asperiores eius magnam quos labore explicabo distinctio maxime sunt
+                        modi. A
+                        quae
+                        rerum voluptatibus esse necessitatibus ab est neque mollitia cum. Iusto porro sint quos laborum
+                        optio
+                        consequatur in quaerat nisi molestiae dolor asperiores deserunt eveniet quisquam debitis error earum
+                        amet
+                        nulla
+                        dolores aliquid similique, impedit molestias? Voluptatem sint voluptate voluptas consequuntur ab!
+                    </p>
+                </div>
             </div>
-            
-            
+
+
             <div class="row">
 
                 <div class="d-flex justify-content-center">
@@ -206,16 +217,26 @@
         <div class="container">
             <div class="row">
                 <div class="row d-flex justify-content-center">
-                    <div class="col-md-4 text-center"><img src="{{ asset('images/konsultasi1.png') }}" alt="Permintaan" class="img-fluid icon-image" style="width: 70%"></div>
-                    <div class="col-md-6"><p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, voluptates, non adipisci nesciunt dolore nisi
-                        corrupti commodi expedita quod omnis iste soluta mollitia veniam ut corporis suscipit debitis distinctio,
-                        quisquam nulla tenetur et. Iusto, ex, hic eaque officiis, earum molestiae necessitatibus esse quis fuga
-                        repellendus quas perferendis asperiores eius magnam quos labore explicabo distinctio maxime sunt modi. A
-                        quae
-                        rerum voluptatibus esse necessitatibus ab est neque mollitia cum. Iusto porro sint quos laborum optio
-                        consequatur in quaerat nisi molestiae dolor asperiores deserunt eveniet quisquam debitis error earum amet
-                        nulla
-                        dolores aliquid similique, impedit molestias? Voluptatem sint voluptate voluptas consequuntur ab!</p></div>
+                    <div class="col-md-4 text-center"><img src="{{ asset('images/konsultasi1.png') }}" alt="Permintaan"
+                            class="img-fluid icon-image" style="width: 70%"></div>
+                    <div class="col-md-6">
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, voluptates, non adipisci nesciunt
+                            dolore nisi
+                            corrupti commodi expedita quod omnis iste soluta mollitia veniam ut corporis suscipit debitis
+                            distinctio,
+                            quisquam nulla tenetur et. Iusto, ex, hic eaque officiis, earum molestiae necessitatibus esse
+                            quis fuga
+                            repellendus quas perferendis asperiores eius magnam quos labore explicabo distinctio maxime sunt
+                            modi. A
+                            quae
+                            rerum voluptatibus esse necessitatibus ab est neque mollitia cum. Iusto porro sint quos laborum
+                            optio
+                            consequatur in quaerat nisi molestiae dolor asperiores deserunt eveniet quisquam debitis error
+                            earum amet
+                            nulla
+                            dolores aliquid similique, impedit molestias? Voluptatem sint voluptate voluptas consequuntur
+                            ab!</p>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center">
                     <a href="{{ route('konsultasi.create') }}" class="btn btn-outline-success my-5">Daftar Pelatihan

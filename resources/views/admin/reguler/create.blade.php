@@ -118,8 +118,9 @@
                             <label for="deskripsi_pelatihan" class="form-label">Deskripsi Pelatihan</label>
                             <input id="deskripsi_pelatihan" type="hidden" name="deskripsi_pelatihan"
                                 value="{{ old('deskripsi_pelatihan') }}">
-                            <trix-editor class="{{ $errors->has('deskripsi_pelatihan') ? 'is-invalid' : '' }}"
-                                input="deskripsi_pelatihan" upload-url="/dashboard/reguler/upload/image"></trix-editor>
+                            {{-- <trix-editor class="{{ $errors->has('deskripsi_pelatihan') ? 'is-invalid' : '' }}"
+                                input="deskripsi_pelatihan" upload-url="/dashboard/reguler/upload/image"></trix-editor> --}}
+                                <textarea class="ckeditor form-control" name="deskripsi_pelatihan" id="deskripsi_pelatihan"></textarea>
                             @error('deskripsi_pelatihan')
                                 <div class="invalid-feedback">
                                     <p class="text-danger">{{ $message }}</p>

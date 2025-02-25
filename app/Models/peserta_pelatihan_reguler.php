@@ -35,18 +35,10 @@ class peserta_pelatihan_reguler extends Model
         return $this->belongsTo(User::class);
     }
     
-    public function rentang_usia()
-    {
-        return $this->belongsTo(rentang_usia::class,'id_rentang_usia');
-    }
-    public function informasi_pelatihan(){
-        return $this->belongsTo(informasi_pelatihan::class, 'id_informasi');
-    }
+    // public function informasi_pelatihan(){
+    //     return $this->belongsTo(informasi_pelatihan::class, 'id_informasi');
+    // }
     
-    public function gender(): BelongsTo
-    {
-        return $this->belongsTo(gender::class, 'id_gender');
-    }
     public function tema()
     {
         return $this->belongsTo(tema::class, 'id_tema');

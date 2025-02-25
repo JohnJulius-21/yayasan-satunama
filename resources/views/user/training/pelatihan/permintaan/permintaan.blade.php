@@ -1,14 +1,14 @@
-@extends('layouts.main')
+@extends('layouts.user')
 
 @section('content')
-    <div class="section py-5"
-        style="position: relative; background-image: url('../images/pelatihan2.jpg'); background-size: cover; background-position: center; color: #ffffff;">
-        <div
-            style="content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(40, 66, 41, 0.6); z-index: 1;">
-        </div>
-        <div class="container text-left" style="position: relative; z-index: 2;">
-            <h5>Pelatihan Saya</h5>
-            <h2>SATUNAMA <span>Training Center </span></h2>
+    <div class="page-title">
+        <div class="container d-lg-flex justify-content-between align-items-center">
+            <h1 class="mb-2 mb-lg-0">Pelatihan Saya</h1>
+            <nav class="breadcrumbs">
+                <ol>
+                    <li class="current">Pelatihan Saya</li>
+                </ol>
+            </nav>
         </div>
     </div>
     <div class="container my-3" id="scrollspy-container">
@@ -18,7 +18,7 @@
         @if (isset($permintaans) && $permintaans->isEmpty())
             <div class="text-center">
                 <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image" class="img-small">
-                <h5>Sayangnya, belum ada pelatihan yang anda telah daftarkan.</h5>
+                <h5>Sayangnya, belum ada pelatihan permintaan yang anda telah daftarkan.</h5>
             </div>
         @else
             @foreach ($permintaans as $item)

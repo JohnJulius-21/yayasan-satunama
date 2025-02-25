@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\permintaan;
 use Illuminate\Http\Request;
 
 class PermintaanController extends Controller
 {
     public function index()
     {
-        // $reguler = reguler::paginate(3);
+        $permintaan =permintaan::with('mitra')->get();
 
-        return view('admin.permintaan.index');
+        return view('admin.permintaan.index', compact('permintaan'));
     }
 
     public function create()

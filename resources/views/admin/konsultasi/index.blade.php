@@ -33,17 +33,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($konsultasi as $item)
+                            @foreach ($konsultasi as $item)
                                 <tr>
                                     <td>{{ $item['nama_organisasi'] }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}</td>
                                     <td class="d-flex justify-content-center">
-                                        <a href="{{ route('dashboard.konsultasi.show', $item->id) }}"
+                                        <a href="{{ route('konsultasiShowAdmin', $item->id_konsultasi) }}"
                                             class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i> Lihat
                                             Detail</a>
                                     </td>
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

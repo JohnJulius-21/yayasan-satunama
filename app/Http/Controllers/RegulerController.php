@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\peserta_pelatihan_reguler;
 use App\Models\tema;
 use App\Models\reguler;
 use App\Models\fasilitator;
@@ -13,7 +14,7 @@ class RegulerController extends Controller
 {
     public function index()
     {
-        $reguler = reguler::paginate(3);
+        $reguler = reguler::all();
 
         return view('admin.reguler.index', compact('reguler'));
     }
@@ -63,28 +64,30 @@ class RegulerController extends Controller
         // Upload images ke Google Drive dan simpan ke database
         if ($request->hasFile('image')) {
             foreach ($request->file('image') as $image) {
-                $path = Storage::disk('google')->putFile('', $image);
-                $imageUrl = Storage::disk('google')->url($path);
+                $filename = $image->getClientOriginalName(); // Ambil nama file asli
+                $path = Storage::disk('google')->putFileAs('', $image, $filename); // Simpan di Drive
 
                 DB::table('reguler_images')->insert([
                     'id_reguler' => $reguler->id_reguler,
-                    'image_url' => $imageUrl,
+                    'image_url' => $filename, // Simpan hanya nama file di database
                 ]);
             }
         }
+
 
         // Upload files ke Google Drive dan simpan ke database
         if ($request->hasFile('file')) {
             foreach ($request->file('file') as $file) {
-                $path = Storage::disk('google')->putFile('', $file);
-                $fileUrl = Storage::disk('google')->url($path);
+                $filename = $file->getClientOriginalName(); // Ambil nama file asli
+                $path = Storage::disk('google')->putFileAs('', $file, $filename); // Simpan di Drive
 
                 DB::table('reguler_files')->insert([
                     'id_reguler' => $reguler->id_reguler,
-                    'file_url' => $fileUrl,
+                    'file_url' => $filename, // Simpan hanya nama file di database
                 ]);
             }
         }
+
 
         // Simpan ID fasilitator ke tabel pivot
         foreach ($request->id_fasilitator as $id_fasilitator) {
@@ -94,7 +97,7 @@ class RegulerController extends Controller
             ]);
         }
 
-        return redirect()->route('regulerAdmin')->with('success', 'Data berhasil disimpan');
+        return redirect()->route('regulerAdmin')->with('success', 'Pelatihan berhasil disimpan');
     }
 
     // public function show($id_reguler)
@@ -130,8 +133,11 @@ class RegulerController extends Controller
 
     public function show($id)
     {
-        $reguler = Reguler::with(['fasilitators'])->findOrFail($id);
+
+        $reguler = Reguler::findOrFail($id);
         $nama_pelatihan = $reguler->nama_pelatihan;
+        $peserta = peserta_pelatihan_reguler::with('reguler', 'negara', 'provinsi', 'kabupaten_kota')->where('id_reguler', $id)->get();
+        // dd($peserta);
         // Ambil data images langsung dari tabel reguler_images
         $images = DB::table('reguler_images')->where('id_reguler', $id)->get();
 
@@ -145,7 +151,7 @@ class RegulerController extends Controller
         //     ->select('fasilitator.*')
         //     ->get();
 
-        return view('admin.reguler.show', compact('reguler', 'images', 'files', 'nama_pelatihan'));
+        return view('admin.reguler.show', compact('reguler', 'images', 'files', 'nama_pelatihan', 'peserta'));
     }
 
     // public function edit($id)
@@ -163,7 +169,7 @@ class RegulerController extends Controller
     public function edit($id)
     {
         $reguler = Reguler::with(['fasilitators'])->findOrFail($id);
-         
+
         // Ambil data images langsung dari tabel reguler_images
         $images = DB::table('reguler_images')->where('id_reguler', $id)->get();
 
@@ -172,7 +178,7 @@ class RegulerController extends Controller
         $tema = Tema::all();
         $fasilitators = Fasilitator::all();
         $oldIdFasilitator = $reguler->fasilitators->pluck('id_fasilitator')->toArray();
-        return view('admin.reguler.edit', compact('reguler', 'tema', 'fasilitators', 'images', 'files','oldIdFasilitator'));
+        return view('admin.reguler.edit', compact('reguler', 'tema', 'fasilitators', 'images', 'files', 'oldIdFasilitator'));
     }
 
     public function update(Request $request, $id)

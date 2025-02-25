@@ -30,23 +30,23 @@
                                 <th class="col-md-2" scope="col">Mitra</th>
                                 <th class="col-md-2" scope="col">Judul Pelatihan</th>
                                 <th class="col-md-1" scope="col">Tanggal Permintaan</th>
-                                <th class="col-md-1 text-center" scope="col">Tindakan</th>
+                                {{-- <th class="col-md-1 text-center" scope="col">Tindakan</th> --}}
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($data as $item)
+                            @foreach ($permintaan as $item)
                                 <tr>
                                     <td>{{ $item->mitra->nama_mitra }}</td>
                                     <td>{{ $item['judul_pelatihan'] }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->created_at)->locale('id')->isoFormat('D MMMM Y') }}
                                     </td>
-                                    <td class="d-flex justify-content-center">
+                                    {{-- <td class="d-flex justify-content-center">
                                         <a href="{{ route('dashboard.permintaan.show', $item->id) }}"
                                             class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i> Lihat
                                             Detail</a>
-                                    </td>
+                                    </td> --}}
                                 </tr>
-                            @endforeach --}}
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

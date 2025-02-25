@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class peserta_pelatihan_konsultasi extends Model
 {
     use HasFactory;
-    protected $table = 'peserta_konsultasis';
-    protected $primaryKey = 'id';
+    protected $table = 'peserta_pelatihan_konsultasi';
+    protected $primaryKey = 'id_peserta';
     protected $fillable = [ 
         'id_konsultasi', 
         'id_user', 
@@ -22,7 +22,7 @@ class peserta_pelatihan_konsultasi extends Model
     }
 
     public function pelatihan_konsultasi(){
-        return $this->belongsTo(pelatihan_konsultasi::class, 'id_konsultasi', 'id_konsultasi');
+        return $this->belongsTo(konsultasi_pelatihan::class, 'id_konsultasi', 'id_konsultasi');
     }
 
     public function user(){

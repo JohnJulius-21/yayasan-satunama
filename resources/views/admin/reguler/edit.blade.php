@@ -139,6 +139,8 @@
                                 value="{{ old('deskripsi_pelatihan', $reguler->deskripsi_pelatihan) }}">
                             <trix-editor class="@error('deskripsi_pelatihan') is-invalid @enderror"
                                 input="x"></trix-editor>
+                            <textarea class="ckeditor form-control" name="deskripsi_pelatihan" id="deskripsi_pelatihan"
+                                value="{{ old('deskripsi_pelatihan', $reguler->deskripsi_pelatihan) }}"></textarea>
                             @error('deskripsi_pelatihan')
                                 <div class="invalid-feedback">
                                     <p class="text-danger">{{ $message }}</p>

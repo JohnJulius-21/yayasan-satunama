@@ -2,13 +2,34 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Daftar Pelatihan Reguler</h1>
+        <h1 class="h5">Daftar Pelatihan Reguler</h1>
         <div class="d-flex justify-content-end">
             <a href="{{ route('regulerCreateAdmin') }}" class="btn btn-success "><i style="width:17px" data-feather="plus"></i>
                 Tambah Pelatihan</a>
         </div>
     </div>
-    @if (Session::has('success'))
+    @if (session('success'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-thumbs-up',
+                    title: 'Berhasil',
+                    message: "{{ session('success') }}"
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 3000
+                });
+            });
+
+           
+        </script>
+    @endif
+
+    {{-- @if (Session::has('success'))
         <div class="pt-3">
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ Session::get('success') }}
@@ -17,7 +38,7 @@
                 </button>
             </div>
         </div>
-    @endif
+    @endif --}}
     <div class="col-lg-18 mb-4 ">
         {{-- <div class="container"> --}}
 
@@ -43,15 +64,17 @@
                             @foreach ($reguler as $item)
                                 <tr>
                                     <td>{{ $item['nama_pelatihan'] }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->locale('id')->isoFormat('D MMMM') }} - 
-                                        {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->locale('id')->isoFormat('D MMMM') }}
+                                        -
+                                        {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}
+                                    </td>
                                     <td>
                                         <a href="{{ route('regulerShowAdmin', $item->id_reguler) }}"
                                             class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
                                         <a href="{{ route('regulerEditAdmin', $item->id_reguler) }}"
                                             class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
-                                        <form class="d-inline m-0" action="{{ route('regulerDestroyAdmin', $item->id_reguler) }}"
-                                            method="post">
+                                        <form class="d-inline m-0"
+                                            action="{{ route('regulerDestroyAdmin', $item->id_reguler) }}" method="post">
                                             @method('DELETE')
                                             @csrf
                                             <button class="btn btn-danger px-2" type="submit"

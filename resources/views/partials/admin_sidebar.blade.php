@@ -55,18 +55,6 @@
             </ul>
           </div>
         </li>
-        {{-- <li class="nav-item">
-          <a class="nav-link" href="{{ route('evaluasiAdmin') }}">
-            <span class="icon-bg"><i class="mdi mdi-contacts menu-icon"></i></span>
-            <span class="menu-title">Evaluasi Pelatihan</span>
-          </a>
-        </li> --}}
-        {{-- <li class="nav-item">
-          <a class="nav-link" href="{{ route('surveyRegulerAdmin') }}">
-            <span class="icon-bg"><i class="mdi mdi-comment-account"></i></span>
-            <span class="menu-title">Survey Kepuasan</span>
-          </a>
-        </li> --}}
         <li class="nav-item {{ Request::is('admin/studidampak/*') ? 'active' : '' }}">
           <a class="nav-link" data-toggle="collapse" href="#ui-basic3" aria-expanded="false" aria-controls="ui-basic1">
             <span class="icon-bg"><i class="mdi mdi-book-open-outline"></i></span>
@@ -82,18 +70,19 @@
             </ul>
           </div>
         </li>
-        {{-- <li class="nav-item {{ Request::is('admin/studidampak/*') ? 'active' : '' }}">
-          <a class="nav-link" href="{{ route('studiAdmin') }}">
-            <span class="icon-bg"><i class="mdi mdi-file-search"></i></span>
-            <span class="menu-title">Studi Dampak</span>
-          </a>
-        </li> --}}
         <li class="nav-item {{ Request::is('admin/fasilitator/*') ? 'active' : '' }}">
           <a class="nav-link" href="{{ route('fasilitatorAdmin') }}">
             <span class="icon-bg"><i class="mdi mdi-account"></i></span>
             <span class="menu-title">Fasilitator</span>
           </a>
         </li>
+        <li class="nav-item {{ Request::is('admin/discussion/*') ? 'active' : '' }}">
+          <a class="nav-link" href="{{ route('adminDiskusi') }}">
+            <span class="icon-bg"><i class="mdi mdi-account"></i></span>
+            <span class="menu-title">Ruang Diskusi</span>
+          </a>
+        </li>
+
         {{-- <li class="nav-item">
           <a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
             <span class="icon-bg"><i class="mdi mdi-lock menu-icon"></i></span>

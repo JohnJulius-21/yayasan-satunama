@@ -26,6 +26,7 @@
                     </ul>
                 </li>
                 <li><a href="#about">Tentang Kami</a></li>
+                <li><a href="{{ route('userDiskusi') }}">Ruang Diskusi</a></li>
                 {{-- <li><a href="#services">Pelatihan</a></li> --}}
                 {{-- <li><a href="#portfolio">Portfolio</a></li> --}}
                 {{-- <li><a href="#team">Team</a></li> --}}

@@ -8,6 +8,8 @@ use App\Models\negara;
 use App\Models\reguler;
 use App\Models\provinsi;
 use App\Models\pelatihan;
+use App\Models\konsultasi;
+use App\Models\permintaan;
 use App\Models\rentang_usia;
 use Illuminate\Http\Request;
 use App\Models\kabupaten_kota;
@@ -20,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\form_studidampak_reguler;
 use App\Models\peserta_pelatihan_reguler;
 use App\Models\form_surveykepuasan_reguler;
+use App\Models\assesment_peserta_permintaan;
 use App\Models\peserta_pelatihan_konsultasi;
 use App\Models\peserta_pelatihan_permintaan;
 
@@ -27,12 +30,21 @@ class TrainingController extends Controller
 {
     public function index()
     {
-        $reguler = reguler::paginate(3);
+        // Ambil data pelatihan
+        $reguler = Reguler::paginate(3);
+
+        // Untuk setiap pelatihan, ambil gambar terkait
+        foreach ($reguler as $item) {
+            $item->image = DB::table('reguler_images')
+                ->where('id_reguler', $item->id_reguler)
+                ->value('image_url'); // Ambil satu gambar (misal gambar pertama)
+        }
 
         return view('user.training.index', compact('reguler'), [
             'title' => 'Pelatihan',
         ]);
     }
+
 
     public function showReguler($id)
     {
@@ -41,13 +53,9 @@ class TrainingController extends Controller
         // dd($pelatihan);
 
         // Ambil data images langsung dari tabel reguler_images
-        $imageUrls = DB::table('reguler_images')
+        $imageNames = DB::table('reguler_images')
             ->where('id_reguler', $id)
-            ->pluck('image_url')
-            ->map(function ($url) {
-                return 'https://drive.google.com/uc?export=view&id=' . $url;
-            });
-
+            ->pluck('image_url'); // Ambil hanya nama file
 
         // Ambil data fasilitator yang sudah terhubung dengan reguler ini dari tabel pivot reguler_fasilitators
         $fasilitators = DB::table('reguler_fasilitators')
@@ -61,7 +69,7 @@ class TrainingController extends Controller
         }
 
         // Return the view with the pelatihan details
-        return view('user.training.reguler.show', compact('pelatihan', 'fasilitators', 'imageUrls'), [
+        return view('user.training.reguler.show', compact('pelatihan', 'fasilitators', 'imageNames'), [
             'title' => 'Detail Pelatihan',
         ]);
     }
@@ -185,6 +193,7 @@ class TrainingController extends Controller
     }
 
 
+    // Pelatihan Permintaan
 
     public function createPermintaan()
     {
@@ -249,7 +258,7 @@ class TrainingController extends Controller
 
         $id_user = Auth::user()->id;
         // Simpan data formulir ke dalam database
-        $permintaan = new permintaan_pelatihan();
+        $permintaan = new permintaan();
         $permintaan->id_user = $id_user; // Simpan ID pengguna
         $nama_mitra = $request->input('nama_mitra');
         $id_mitra = $request->input('id_mitra');
@@ -281,8 +290,8 @@ class TrainingController extends Controller
         $permintaan->masalah = $request->input('masalah');
         $permintaan->kebutuhan = $request->input('kebutuhan');
         $permintaan->materi = $request->input('materi');
-        $permintaan->tanggal_waktu_mulai = $request->input('tanggal_waktu_mulai');
-        $permintaan->tanggal_waktu_selesai = $request->input('tanggal_waktu_selesai');
+        $permintaan->tanggal_mulai = $request->input('tanggal_waktu_mulai');
+        $permintaan->tanggal_selesai = $request->input('tanggal_waktu_selesai');
         $permintaan->request_khusus = $request->input('request_khusus');
         // dd($permintaan);
         $permintaan->save();
@@ -315,14 +324,14 @@ class TrainingController extends Controller
 
         // Proses penyimpanan data asesment peserta dinamis
         foreach ($request->nama_peserta as $key => $value) {
-            $assessmentPeserta = new AsessmentPeserta();
+            $assessmentPeserta = new assesment_peserta_permintaan();
             $assessmentPeserta->nama_peserta = $value;
             $assessmentPeserta->email_peserta = $request->email_peserta[$key];
             ;
             $assessmentPeserta->jenis_kelamin = $request->jenis_kelamin[$key];
             $assessmentPeserta->jabatan = $request->jabatan[$key];
             $assessmentPeserta->tanggung_jawab = $request->tanggung_jawab[$key];
-            $assessmentPeserta->id_permintaan = $permintaan->id;
+            $assessmentPeserta->id_permintaan = $permintaan->id_permintaan;
             // dd($assessmentPeserta);
             $assessmentPeserta->save();
         }
@@ -359,7 +368,7 @@ class TrainingController extends Controller
         //     ]);
         // }
 
-        return redirect()->to('peserta/permintaan/create')->with('success', 'Terima Kasih Telah Mendaftar Pelatihan Permintaan. Pelatihan Anda Segera Diproses');
+        return redirect()->route('reguler.pelatihan')->with('success', 'Terima Kasih Telah Mendaftar Pelatihan Permintaan. Pelatihan Anda Segera Diproses');
     }
 
     public function createKonsultasi()
@@ -372,6 +381,72 @@ class TrainingController extends Controller
         ), [
             'title' => 'Pelatihan Konsultasi',
         ]);
+    }
+
+    public function storeKonsultasi(Request $request)
+    {
+        // dd($request->all());
+        // Validasi formulir
+        $request->validate([
+            'nama_organisasi' => 'required|string|max:255',
+            'jenis_organisasi' => 'required',
+            'email' => 'required|email:dns',
+            'no_hp' => 'required|numeric',
+            'id_kabupaten' => 'required',
+            'id_provinsi' => 'required',
+            'id_negara' => 'required',
+            'deskripsi_kebutuhan' => 'required|string',
+        ],
+        [
+            'nama_organisasi.required' => 'Nama Organisasi harus diisi.', 
+            'jenis_organisasi.required' => 'Jenis Organisasi harus dipilih.',
+            'email.required' => 'Email harus diisi.',
+            'email.email' => 'Email harus diisi dengan email yang  valid.',
+            'no_hp.numeric' => 'Nomor Telepon harus diisi dengan angka.',
+            'deskripsi_kebutuhan.required' => 'Deskripsi Pelatihan harus diisi.',
+        ]);
+        $id_user = Auth::user()->id;
+        // Simpan data formulir ke dalam database
+        $konsultasi = new konsultasi();
+        $konsultasi->id_user = $id_user; // Simpan ID pengguna
+        $konsultasi->nama_organisasi = $request->input('nama_organisasi');
+        $konsultasi->jenis_organisasi = $request->input('jenis_organisasi');
+        $konsultasi->email = $request->input('email');
+        $konsultasi->no_hp = $request->input('no_hp');
+        $konsultasi->deskripsi_kebutuhan = $request->input('deskripsi_kebutuhan');
+        $konsultasi->id_negara = $request->input('id_negara');
+        $konsultasi->id_provinsi = $request->input('id_provinsi');
+        $konsultasi->id_kabupaten = $request->input('id_kabupaten');
+        $konsultasi->save();
+
+
+        // // Simpan data ke dalam database
+        // Konsultasi::create($request->all());
+
+        // $request->validate([
+        //     'nama_organisasi' => 'required|string|max:255',
+        //     'jenis_organisasi' => 'required|integer',
+        //     'email' => 'required|email|max:255',
+        //     'no_hp' => 'required|string|max:15',
+        //     'kabupaten_kota' => 'required|integer',
+        //     'id_provinsi' => 'required|integer',
+        //     'id_negara' => 'required|integer',
+        //     'deskripsi_kebutuhan' => 'required|string',
+        // ], [
+        //     'nama_organisasi.required' => 'Field nama wajib diisi',
+        //     'email.required' => 'Field email wajib diisi',
+        //     'no_hp.required' => 'Field nomor hp wajib diisi',
+        //     'deskripsi_kebutuhan.required' => 'Field deskripsi kebutuhan wajib diisi',
+        // ]);
+
+        // $data = [
+        //     'nama_organisasi' => $request->nama_organisasi,
+        //     'email' => $request->email,
+        //     'telepon' => $request->telepon,
+        // ];
+
+        // Redirect atau berikan respons sesuai kebutuhan Anda
+        return redirect()->route('reguler.pelatihan')->with('success', 'Terima Kasih Telah Mendaftar Pelatihan Konsultasi. Pelatihan Anda Segera Diproses');
     }
 
     public function indexPelatihan()
@@ -410,24 +485,47 @@ class TrainingController extends Controller
         ]);
     }
 
+    //cek user sudah pernah mengisi form
+    // $user_id = Auth::id();
+    // $hasFilledForm = evaluasi_pelatihan_reguler::where('id_reguler', $id_reguler)
+    // ->where('id_user', $user_id)
+    // ->exists();
+
     public function regulerListShowEvaluasi($id)
     {
 
         $reguler = reguler::findOrFail($id);
         $formEvaluasiReguler = form_evaluasi_reguler::with('reguler')->where('id_reguler', $id)->first();
         $formData = $formEvaluasiReguler->content;
-        // dd($formEvaluasi);
+        // dd($formData);
 
-        //cek user sudah pernah mengisi form
-        // $user_id = Auth::id();
-        // $hasFilledForm = evaluasi_pelatihan_reguler::where('id_reguler', $id_reguler)
-        // ->where('id_user', $user_id)
-        // ->exists();
+
 
         return view('user.training.pelatihan.reguler.evaluasi', compact('reguler', 'formEvaluasiReguler'), [
             'title' => 'Evaluasi ' . $reguler->nama_pelatihan,
             'formData' => $formData
         ]);
+    }
+
+    public function regulerListStoreEvaluasi(Request $request)
+    {
+
+        // Validasi input
+        $request->validate([
+            'id_reguler' => 'required|integer',
+            'id_user' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $evaluasi = new Evaluasi(); // Sesuaikan dengan model Anda
+        $evaluasi->id_reguler = $request->id_reguler;
+        $evaluasi->id_user = $request->id_user;
+        $evaluasi->data_respons = $request->data_respons;
+        $evaluasi->save();
+
+        // Redirect dengan pesan sukses
+        return redirect()->route('regulerListShow')->with('success', 'Evaluasi berhasil disimpan!');
     }
     public function regulerListShowSurvey($id)
     {
@@ -474,7 +572,7 @@ class TrainingController extends Controller
     {
         // $user = auth()->user();
         $permintaans = peserta_pelatihan_permintaan::with(['permintaan_pelatihan'])->where('id_user', auth()->user()->id)->get();
-        return view('user.training.pelatihan.permintaan', compact('permintaans'), [
+        return view('user.training.pelatihan.permintaan.permintaan', compact('permintaans'), [
             'title' => 'Pelatihan Saya',
             // 'pelatihans' => $permintaans
         ]);
@@ -483,8 +581,8 @@ class TrainingController extends Controller
     public function konsultasiShow()
     {
         // $user = auth()->user();
-        $konsultasis = peserta_pelatihan_konsultasi::with(['pelatihan_konsultasis'])->where('id_user', auth()->user()->id)->get();
-        return view('user.training.pelatihan.konsultasi', compact('konsultasis'), [
+        $konsultasi = peserta_pelatihan_konsultasi::with(['pelatihan_konsultasi'])->where('id_user', auth()->user()->id)->get();
+        return view('user.training.pelatihan.konsultasi.konsultasi', compact('konsultasi'), [
             'title' => 'Pelatihan Saya',
             // 'pelatihans' => $konsultasis
         ]);

@@ -68,9 +68,9 @@
                             <!-- Jenis Kelamin & Rentang Usia -->
                             <div class="row mt-3">
                                 <div class="col-md-6 form-group">
-                                    <h6>Jenis Kelamin</h6>
+                                    <h6>Gender</h6>
                                     <select class="form-select @error('gender') is-invalid @enderror" name="gender">
-                                        <option value="">Pilih Jenis Kelamin</option>
+                                        <option value="">Pilih Gender</option>
                                         <option value="Laki-Laki" {{ old('gender') == 'Laki-Laki' ? 'selected' : '' }}>
                                             Laki-Laki
                                         </option>

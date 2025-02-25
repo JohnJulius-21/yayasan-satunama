@@ -61,6 +61,24 @@
         </div>
     </div>
 
+    {{-- <table id="daftar_hadir">
+        <thead>
+            <tr>
+                <th class="col-md-2">Nama Peserta</th>
+                <th class="col-md-2">Email Peserta</th>
+                <th class="col-md-2">Tanggal Presensi</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>test</td>
+                <td>test</td>
+                <td>test</td>
+            </tr>
+        </tbody>
+    </table> --}}
+
     <style>
         .pelatihan .card {
             border: none;
@@ -196,4 +214,62 @@
             }
         }
     </style>
+
+
+    {{-- <link
+        href="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.2.2/b-3.2.2/b-colvis-3.2.2/b-html5-3.2.2/b-print-3.2.2/datatables.min.css"
+        rel="stylesheet" integrity="sha384-19ZfNOFz6NlhYRDbeYR926RFiQKtXvFbgRmJ7onGmiJ34S62oecC9MXQNKT8SIii"
+        crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"
+        integrity="sha384-VFQrHzqBh5qiJIU0uGU5CIW3+OWpdGGJM9LBnGbuIH2mkICcFZ7lPd/AAtI7SNf7" crossorigin="anonymous">
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"
+        integrity="sha384-/RlQG9uf0M2vcTw3CX7fbqgbj/h8wKxw7C3zu9/GxcBPRKOEcESxaxufwRXqzq6n" crossorigin="anonymous">
+    </script>
+    <script
+        src="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.2.2/b-3.2.2/b-colvis-3.2.2/b-html5-3.2.2/b-print-3.2.2/datatables.min.js"
+        integrity="sha384-2jaUx9/8WZtfI6TBlVhbqS5EhBWUgAgtdMjJGNyo1Dt3FYlU/91IWcMYTIps18gP" crossorigin="anonymous">
+    </script>
+
+    <script>
+        $(document).ready(function() {
+
+
+            $('#daftar_hadir').DataTable({
+                dom: 'Bfrtip',
+                layout: {
+                    topStart: {
+                        buttons: [{
+                                extend: 'pdfHtml5',
+                                orientation: 'potrait',
+                                pageSize: 'LEGAL',
+                            },
+                            'spacer',
+                            {
+                                extend: 'excel',
+                            }
+                        ]
+
+                    }
+                },
+                // layout: {
+                //     top1: 'searchBuilder'
+                // },
+                lengthChange: false,
+                responsive: true,
+                // fixedColumns: {
+                //     start: 1
+                // },
+                paging: true,
+                select: true,
+                // scrollX: true,
+                // scrollY: 200,
+                lengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, 'All']
+                ]
+            });
+        });
+    </script> --}}
 @endsection

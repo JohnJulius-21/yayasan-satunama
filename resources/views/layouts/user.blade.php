@@ -26,9 +26,13 @@
     <link href="{{ asset('assetss/vendor/aos/aos.css') }}" rel="stylesheet">
     <link href="{{ asset('assetss/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
     <link href="{{ asset('assetss/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Main CSS File -->
     <link href="{{ asset('assetss/css/main.css') }}" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/css/trix.css">
+    
 
     <!-- =======================================================
   * Template Name: eNno
@@ -152,6 +156,8 @@
 
   <!-- Main JS File -->
   <script src="{{ asset('assetss/js/main.js') }}"></script>
+  <script src="{{ asset('/ckeditor/ckeditor.js') }}"></script>
+  <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
 
 </body>
 
