@@ -1,8 +1,19 @@
 @extends('layouts.admin')
 
 @section('content')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('evaluasiPermintaanAdmin') }}" style="color: green !important;">Evaluasi</a>
+            </li>
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('evaluasiShowPermintaanAdmin', $permintaan->id_pelatihan_permintaan) }}" style="color: green !important;">Detail Evaluasi</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Form Evaluasi Pelatihan Reguler</li>
+        </ol>
+    </nav>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h2>Buat Form Evaluasi</h2>
+        <h6 class="h4">Buat Form Evaluasi Pelatihan Permintaan</h6>
     </div>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -16,10 +27,12 @@
                 <option value="eval">Evaluasi Form</option>
             </select>
             {{-- Hidden form for storing form data --}}
-            <form id="hidden-form" action="" method="post" style="display: none;">
+            <form id="hidden-form" action="{{ route('evaluasiStorePermintaanAdmin') }}" method="post"
+                style="display: none;">
                 @csrf
                 <input type="hidden" id="form" name="form">
-                {{-- <input type="hidden" id="id_pelatihan" name="id_pelatihan" value="{{ $id_pelatihan }}"> --}}
+                <input type="hidden" id="id_pelatihan_permintaan" name="id_pelatihan_permintaan"
+                    value="{{ $permintaan->id_pelatihan_permintaan }}">
             </form>
 
             {{-- Form builder container --}}
@@ -56,8 +69,11 @@
                 ],
                 disableFields: [
                     'autocomplete',
-                    // 'button',
+                    'button',
                     'hidden',
+                    'number',
+                    'file',
+                    'paragraph',
                 ]
             };
 

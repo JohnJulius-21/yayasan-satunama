@@ -2,26 +2,6 @@
 
 @section('content')
     <!-- Pelatihan Section -->
-    {{-- <div class="section py-5"
-        style="position: relative; background-image: url('../images/contact.png'); background-size: cover; background-position: center; color: #ffffff;">
-        <div
-            style="content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(68, 117, 71, 0.6); z-index: 1;">
-        </div>
-        <div class="container text-left" style="position: relative; z-index: 2;">
-            <h3 style="color: #ffffff;">Pelatihan</h3>
-            <!-- <h2 style="color: #438848;">SATUNAMA <span style="color: #000000;">Training Center </span></h2> -->
-
-            <!-- Descriptive Text -->
-            <p class="about-description" style="text-align: justify; text-lg">
-                Pelatihan dan Konsultasi yang dijalankan oleh <strong>SATUNAMA</strong> sudah
-                berjalan selama 2 (dua) dekade dengan
-                perkembangan dan dinamikanya sendiri. Pada awalnya layanan <strong>SATUNAMA</strong>
-                berada dalam kerangka pembangunan yang
-                langsung berkaitan dengan pengentasan dari kemiskinan. Pelatihan-pelatihan yang diberikan banyak menyangkut
-                hal-hal praktis, seperti akupuntur, ekonomi rumah tangga, dan sebagainya.
-            </p>
-        </div>
-    </div> --}}
     <div class="page-title">
         <div class="container d-lg-flex justify-content-between align-items-center">
             <h1 class="mb-2 mb-lg-0">Pelatihan</h1>
@@ -34,79 +14,6 @@
         </div>
     </div><!-- End Page Title -->
 
-
-    {{-- <div class="container px-4">
-        <div class="row gx-5">
-            <!-- Section Header Column -->
-            <div class="col" style="margin-top: 150px;">
-                <div class="py-5">
-                    <!-- Adding more margin to push the header section down -->
-                    <div class="container text-left mt-5" style="margin-top: 180px;">
-                        <h5>Produk dan Layanan</h5>
-                        <h2 style="color: #438848;">SATUNAMA <span style="color: #000000;">Training Center</span></h2>
-                        <hr>
-                        <p class="text-muted">Telusuri produk - produk untuk menunjang bisnis dan usaha sosial Anda</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Content Column -->
-            <div class="col">
-                <div class="container py-5">
-                    <div class="row gy-5 text-center">
-                        <!-- Reguler -->
-                        <div class="col-6 mb-4">
-                            <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/hero.png') }}" alt="Materi Pembelajaran"
-                                        class="img-fluid mb-3 icon-image">
-                                    <h4 class="card-title">Reguler</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Permintaan -->
-                        <div class="col-6 mb-4">
-                            <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/hero.png') }}" alt="Permintaan"
-                                        class="img-fluid mb-3 icon-image">
-                                    <h4 class="card-title">Permintaan</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Konsultasi -->
-                        <div class="col-6 mb-4">
-                            <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/hero.png') }}" alt="Konsultasi"
-                                        class="img-fluid mb-3 icon-image">
-                                    <h4 class="card-title">Konsultasi</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Innovation Lab -->
-                        <div class="col-6 mb-4">
-                            <div class="card h-100 shadow-sm animate-card" style="border-radius: 15px;">
-                                <div class="card-body">
-                                    <img src="{{ asset('images/hero.png') }}" alt="Innovation Lab"
-                                        class="img-fluid mb-3 icon-image">
-                                    <h4 class="card-title">CTGA</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
-    {{-- <hr class="container" style="height: 3px; background-color: #000000; border: none;"> --}}
-
-
     <section class="pelatihan" id="pelatihan">
         <h4 class="text-center my-5">Pelatihan Reguler</h4>
         <div class="container">
@@ -114,29 +21,46 @@
                 @foreach ($reguler as $item)
                     <div class="col-lg-4 mb-4">
                         <div class="card">
-                            <img src="{{ route('file.show', ['filename' => $item->image]) }}"
-                                alt="{{ $item->nama_pelatihan }}" class="card-img-top">
+                            <div class="skeleton-wrapper">
+                                <div class="skeleton skeleton-img"></div> <!-- Skeleton sementara -->
+                                <img src="{{ route('file.show', ['filename' => $item->image]) }}"
+                                    alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
+                                    onload="removeSkeleton(this)" onerror="handleImageError(this)">
+                            </div>
+
                             <div class="card-body">
-                                <h5 class="card-title">{{ $item->nama_pelatihan }}</h5>
+                                <h5 class="card-title d-flex justify-content-between align-items-center">
+                                    {{ $item->nama_pelatihan }}
+                                    @php
+                                        $now = \Carbon\Carbon::now();
+                                        $batasPendaftaran = \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran);
+                                    @endphp
+                                    @if ($now->lessThanOrEqualTo($batasPendaftaran))
+                                        <span class="badge bg-success">Buka</span>
+                                    @else
+                                        <span class="badge bg-danger">Tutup</span>
+                                    @endif
+                                </h5>
+
                                 <small><i class="far fa-calendar-days"></i> Tanggal Pendaftaran :
                                     {{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->translatedFormat('d F Y') }}
                                     -
                                     {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->translatedFormat('d F Y') }}
                                 </small>
+
                                 <p class="card-text mt-2">
                                     {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
                                 </p>
 
                                 <a href="{{ route('reguler.show', ['id' => $item->id_reguler]) }}"
                                     class="btn btn-outline-success btn-sm">Lihat Detail</a>
-
                             </div>
+
                         </div>
                     </div>
                 @endforeach
                 <div class="d-flex justify-content-center">
-                    <a href="{{ route('reguler.index') }}" class="btn btn-outline-success my-5">Lihat Pelatihan Reguler</a>
-                    {{-- <button class="btn btn-outline-success my-5">Lebih banyak</button> --}}
+                    <a href="{{ route('reguler.index') }}" class="btn btn-outline-success my-5">Lihat Semua Pelatihan Reguler</a>
                 </div>
             </div>
         </div>
@@ -179,33 +103,6 @@
                         Permintaan</a>
                     {{-- <button class="btn btn-outline-success my-5">Lebih banyak</button> --}}
                 </div>
-
-                {{-- @foreach ($reguler as $item)
-                    <div class="col-lg-4 mb-4">
-                        <div class="card">
-                            <img src="{{ asset('images/pelatihan4.png') }}" alt="" class="card-img-top">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $item->nama_pelatihan }}</h5>
-                                <small><i class="far fa-clock"></i> Tanggal Pendaftaran :
-                                    {{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->translatedFormat('d F Y') }}
-                                    -
-                                    {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->translatedFormat('d F Y') }}
-                                </small>
-                                <p class="card-text mt-2">
-                                    {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
-                                </p>
-
-                                <a href="{{ route('pelatihan.show', ['id' => $item->id_pelatihan]) }}"
-                                    class="btn btn-outline-success btn-sm">Lihat Detail</a>
-
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-                <div class="d-flex justify-content-center">
-                    <a href="#" class="btn btn-outline-success my-5">Lihat Pelatihan Reguler</a>
-                   
-                </div> --}}
             </div>
         </div>
     </section>
@@ -243,39 +140,54 @@
                         Konsultasi</a>
                     {{-- <button class="btn btn-outline-success my-5">Lebih banyak</button> --}}
                 </div>
-
-                {{-- @foreach ($reguler as $item)
-                    <div class="col-lg-4 mb-4">
-                        <div class="card">
-                            <img src="{{ asset('images/pelatihan4.png') }}" alt="" class="card-img-top">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $item->nama_pelatihan }}</h5>
-                                <small><i class="far fa-clock"></i> Tanggal Pendaftaran :
-                                    {{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->translatedFormat('d F Y') }}
-                                    -
-                                    {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->translatedFormat('d F Y') }}
-                                </small>
-                                <p class="card-text mt-2">
-                                    {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
-                                </p>
-
-                                <a href="{{ route('pelatihan.show', ['id' => $item->id_pelatihan]) }}"
-                                    class="btn btn-outline-success btn-sm">Lihat Detail</a>
-
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-                <div class="d-flex justify-content-center">
-                    <a href="#" class="btn btn-outline-success my-5">Lihat Pelatihan Reguler</a>
-                   
-                </div> --}}
             </div>
         </div>
     </section>
 
     <!-- Custom CSS for Hover Animations -->
     <style>
+        @keyframes loading {
+            0% {
+                background-color: #e0e0e0;
+            }
+
+            50% {
+                background-color: #f0f0f0;
+            }
+
+            100% {
+                background-color: #e0e0e0;
+            }
+        }
+
+        .skeleton {
+            animation: loading 1.5s infinite ease-in-out;
+            border-radius: 10px;
+        }
+
+        .skeleton-wrapper {
+            overflow: hidden;
+            border-radius: 10px;
+            width: 100%;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .skeleton-img {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            /* Sesuaikan dengan ukuran gambar */
+        }
+
+        .real-img {
+            display: none;
+            /* Sembunyikan gambar asli sampai dimuat */
+        }
+
+
         .pelatihan .card {
             border: none;
             border-radius: 15px;
@@ -410,4 +322,17 @@
             }
         }
     </style>
+    <script>
+        function removeSkeleton(img) {
+            let skeleton = img.previousElementSibling; // Skeleton ada sebelum gambar
+            if (skeleton) {
+                skeleton.style.display = 'none'; // Hilangkan skeleton
+            }
+            img.style.display = 'block'; // Tampilkan gambar asli
+        }
+
+        function handleImageError(img) {
+            img.style.display = 'none'; // Sembunyikan gambar jika gagal dimuat
+        }
+    </script>
 @endsection

@@ -1,8 +1,19 @@
 @extends('layouts.admin')
 
 @section('content')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('evaluasiRegulerAdmin') }}" style="color: green !important;">Evaluasi</a>
+            </li>
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('evaluasiShowRegulerAdmin', $reguler->id_reguler) }}" style="color: green !important;">Detail Evaluasi</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Buat Evaluasi Pelatihan Reguler</li>
+        </ol>
+    </nav>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h2>Buat Form Evaluasi</h2>
+        <h6 class="h4">Buat Evaluasi Pelatihan Reguler</h6>
     </div>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -28,7 +39,8 @@
             </div>
 
             {{-- Save button --}}
-            <button id="save-button" class="btn btn-success mt-3">Simpan</button>
+            <a class="btn btn-secondary" href="{{ route('evaluasiShowRegulerAdmin', $reguler->id_reguler) }}">Kembali</a>
+            <button id="save-button" class="btn btn-success">Simpan</button>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -56,8 +68,11 @@
                 ],
                 disableFields: [
                     'autocomplete',
-                    // 'button',
+                    'button',
                     'hidden',
+                    'number',
+                    'file',
+                    'paragraph',
                 ]
             };
 

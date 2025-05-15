@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Daftar Fasilitator</h1>
+        <h6 class="h4">Daftar Fasilitator</h6>
         <div class="d-flex justify-content-end">
             <a href="{{ route('fasilitatorCreateAdmin') }}" class="btn btn-success"><i style="width:17px"
                     data-feather="plus"></i>
@@ -10,15 +10,23 @@
                 Fasilitator</a>
         </div>
     </div>
-    @if (Session::has('success'))
-        <div class="pt-3">
-            <div class="alert alert-success">
-                {{ Session::get('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
+    @if (session('success'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-thumbs-up',
+                    title: 'Berhasil',
+                    message: "{{ session('success') }}"
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 3000
+                });
+            });
+        </script>
     @endif
     <div class="col-lg-18 mb-4 ">
         {{-- <div class="container"> --}}
@@ -51,17 +59,18 @@
                                     @endif
                                     <td>
                                         <a href="{{ route('fasilitatorShowAdmin', $item->id_fasilitator) }}"
-                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
+                                            class="btn btn-primary px-2"><i style="width:17px" class="la la-eye"></i></a>
                                         <a href="{{ route('fasilitatorEditAdmin', $item->id_fasilitator) }}"
-                                            class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
+                                            class="btn btn-warning px-2"><i style="width:17px" class="la la-edit"></i></a>
                                         {{-- <button class="btn btn-danger btn-delete px-2"
                                             data-action="{{ route('fasilitatorDestroyAdmin', $item->id_fasilitator) }}">
                                             <i style="width:17px" data-feather="trash"></i>
                                         </button> --}}
-                                        <button class="btn btn-danger btn-delete" data-action="{{ route('fasilitatorDestroyAdmin', $item->id_fasilitator) }}">
-                                            <span class="icon-bg"><i class="mdi mdi-trash-can-outline"></i></span>
+                                        <button class="btn btn-danger btn-delete"
+                                            data-action="{{ route('fasilitatorDestroyAdmin', $item->id_fasilitator) }}">
+                                            <i style="width:17px" class="la la-trash"></i>
                                         </button>
-                                        
+
                                     </td>
                                 </tr>
                             @endforeach

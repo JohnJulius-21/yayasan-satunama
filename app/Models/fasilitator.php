@@ -41,8 +41,8 @@ class fasilitator extends Model
     public function reguler(){
         return $this->belongsToMany(reguler::class, 'fasilitator_reguler','id_pelatihan');
     }
-    public function pelatihan_fasilitator(){
-        return $this->hasMany(pelatihan_fasilitator::class,'id_fasilitator','id_fasilitator');
+    public function foto(){
+        return $this->belongsTo(fasilitator_foto::class,'id_fasilitator','id_fasilitator');
     }
     
 }

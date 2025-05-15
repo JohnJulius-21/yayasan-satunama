@@ -15,7 +15,7 @@
 
         @include('partials.navbar-pelatihan')
 
-        @if (isset($konsultasi) && $konsultasi->isEmpty())
+        @if ($konsultasi->isEmpty())
             <div class="text-center">
                 <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image" class="img-small">
                 <h5>Sayangnya, belum ada pelatihan konsultasi yang anda telah daftarkan.</h5>
@@ -23,15 +23,32 @@
         @else
             @foreach ($konsultasi as $item)
                 <div class="card px-3 my-4 py-3">
-                    <strong>{{ $item['id_pelatihan'] }}</strong> -
-                    Tanggal Mulai: {{ $item->tanggal_mulai }} |
-                    Tanggal Selesai: {{ $item->tanggal_selesai }} |
-                    <a href="{{ route('reguler.pelatihan.show', $item->id_pelatihan) }}" class="btn btn-info">Lihat
-                        Detail</a>
+                    <strong>{{ $item->pelatihan_konsultasi->nama_pelatihan }}</strong>
+                    <p>Tanggal Pelatihan:
+                        {{ \Carbon\Carbon::parse($item->pelatihan_konsultasi->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
+                        -
+                        {{ \Carbon\Carbon::parse($item->pelatihan_konsultasi->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}
+                    </p>
+                    <div class="text-start">
+                        @if ($item->pelatihan_konsultasi)
+                            <a href="{{ route('konsultasi.pelatihan.list', urlencode($item->pelatihan_konsultasi->nama_pelatihan)) }}"
+                                class="btn btn-outline-success">Lihat Detail
+                            </a>
+                        @endif
+                    </div>
+                    {{-- <a href="{{ route('reguler.pelatihan.show', $item->id_pelatihan) }}" class="btn btn-info">Lihat
+            Detail</a> --}}
                 </div>
             @endforeach
         @endif
+
+        <div class="pagination">
+            {{ $konsultasi->links('pagination::bootstrap-4') }}
+        </div>
     </div>
+
+    
+
     <style>
         .img-small {
             max-width: 400px;

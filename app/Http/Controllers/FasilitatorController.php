@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\fasilitator;
-use App\Models\internal_eksternal;
 use Illuminate\Http\Request;
+use App\Models\internal_eksternal;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class FasilitatorController extends Controller
 {
@@ -39,6 +41,7 @@ class FasilitatorController extends Controller
             'email_fasilitator' => 'required|email:dns',
             'nomor_telepon' => 'required|numeric|digits:12',
             'alamat' => 'required',
+            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
             'gender' => 'required',
             'asal_lembaga' => 'required',
             'id_internal_eksternal' => 'required',
@@ -46,6 +49,9 @@ class FasilitatorController extends Controller
         ], [
             'nama_fasilitator.required' => 'Field nama fasilitator wajib diisi',
             'nik.required' => 'Field nik wajib diisi',
+            'foto.required' => 'Field foto wajib diisi',
+            'foto.image' => 'Field foto harus berformat gambar',
+            'foto.max' => 'Field foto tidak boleh lebih dari 2mb',
             'nik.numeric' => 'Field nik harus berupa angka',
             'nik.digits' => 'Field nik harus 16 angka',
             'email_fasilitator.required' => 'Field email wajib diisi',
@@ -68,34 +74,34 @@ class FasilitatorController extends Controller
             'id_internal_eksternal' => $request->id_internal_eksternal,
             'asal_lembaga' => $request->asal_lembaga,
             'body' => $request->body,
+            'instagram' => $request->instagram,
+            'facebook' => $request->facebook,
+            'twitter' => $request->twitter,
+            'linkedin' => $request->linkedin,
         ];
 
-        // $trix = new fasilitator_pelatihan_test();
-        // $trix->body = $request->input('body');
+        $fasilitator = fasilitator::create($data);
 
-        // // Cek apakah ada file yang diupload
-        // if ($request->hasFile('body')) {
-        //     $attachment = $request->file('body');
-
-        //     // Simpan file ke dalam storage
-        //     $path = Storage::putFile('public/attachments', $attachment);
-
-        //     // Simpan path file ke dalam database
-        //     $trix->attachment = $path;
-        // }
+        // Upload images ke Google Drive dan simpan ke database
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            $filename = $foto->getClientOriginalName();
+            $path = Storage::disk('google')->putFileAs('', $foto, $filename);
 
 
-
-        // dd($data);
-        fasilitator::create($data);
-        return redirect('fasilitatorAdmin')->with('success', 'Berhasil menambahkan fasilitator');
+            DB::table('fasilitator_foto')->insert([
+                'id_fasilitator' => $fasilitator->id_fasilitator,
+                'photo_url' => $filename, // Simpan hanya nama file di database
+            ]);
+        }
+        return redirect()->route('fasilitatorAdmin')->with('success', 'Berhasil menambahkan fasilitator');
     }
 
     public function edit($id)
     {
         $fasilitator = fasilitator::with('internal_eksternal')->find($id);
         // dd($data);
-        return view('admin.fasilitator.edit', compact('fasilitator'),[
+        return view('admin.fasilitator.edit', compact('fasilitator'), [
             'internal_eksternal' => internal_eksternal::all()
         ]);
     }
@@ -103,22 +109,72 @@ class FasilitatorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id_fasilitator)
+    public function update(Request $request, $id)
     {
-        // dd($request->all());
-        $data = fasilitator::findOrFail($id_fasilitator);
-        $data->nama_fasilitator = $request->nama_fasilitator;
-        // $data->tempat_tgl_lahir = $request->tempat_tgl_lahir;
-        $data->email_fasilitator = $request->email_fasilitator;
-        $data->nomor_telepon = $request->nomor_telepon;
-        $data->jenis_kelamin = $request->gender;
-        // $data->id_internal_eksternal = $request->id_internal_eksternal;
-        $data->asal_lembaga = $request->asal_lembaga;
-        $data->body = $request->body;
-        $data->save();
+        $request->validate([
+            'nama_fasilitator' => 'required',
+            'nik' => 'required|numeric|digits:16',
+            'email_fasilitator' => 'required|email:dns',
+            'nomor_telepon' => 'required|numeric|digits:12',
+            'alamat' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'gender' => 'required',
+            'asal_lembaga' => 'required',
+            'id_internal_eksternal' => 'required',
+            'body' => 'required',
+        ], [
+            'nama_fasilitator.required' => 'Field nama fasilitator wajib diisi',
+            'nik.required' => 'Field nik wajib diisi',
+            'foto.image' => 'Field foto harus berformat gambar',
+            'foto.max' => 'Field foto tidak boleh lebih dari 2mb',
+            'nik.numeric' => 'Field nik harus berupa angka',
+            'nik.digits' => 'Field nik harus 16 angka',
+            'email_fasilitator.required' => 'Field email wajib diisi',
+            'email_fasilitator.email' => 'Field email harus email yang valid',
+            'nomor_telepon.required' => 'Field nomor telepon wajib diisi',
+            'nomor_telepon.digits' => 'Field nomor telepon harus 12 angka',
+            'id_internal_eksternal.required' => 'Field fasilitator internal atau eksternal wajib diisi',
+            'alamat.required' => 'Field alamat wajib diisi',
+            'gender.required' => 'Field jenis kelamin wajib diisi',
+            'body.required' => 'Field tambahkan keahlian wajib diisi',
+            'asal_lembaga.required' => 'Field asal lembaga wajib diisi',
+        ]);
 
-        return redirect('/admin/fasilitator')->with('success', 'Berhasil mengupdate data');
+        $fasilitator = fasilitator::findOrFail($id);
+
+        $data = [
+            'nama_fasilitator' => $request->nama_fasilitator,
+            'nik' => $request->nik,
+            'email_fasilitator' => $request->email_fasilitator,
+            'nomor_telepon' => $request->nomor_telepon,
+            'alamat' => $request->alamat,
+            'jenis_kelamin' => $request->gender,
+            'id_internal_eksternal' => $request->id_internal_eksternal,
+            'asal_lembaga' => $request->asal_lembaga,
+            'body' => $request->body,
+            'instagram' => $request->instagram,
+            'facebook' => $request->facebook,
+            'twitter' => $request->twitter,
+            'linkedin' => $request->linkedin,
+        ];
+
+        $fasilitator->update($data);
+
+        if ($request->hasFile('foto')) {
+            $foto = $request->file('foto');
+            $filename = $foto->getClientOriginalName();
+            $path = Storage::disk('google')->putFileAs('', $foto, $filename);
+
+            // Update or insert ke tabel fasilitator_foto
+            DB::table('fasilitator_foto')->updateOrInsert(
+                ['id_fasilitator' => $fasilitator->id_fasilitator],
+                ['photo_url' => $filename]
+            );
+        }
+
+        return redirect()->route('fasilitatorAdmin')->with('success', 'Berhasil mengupdate fasilitator');
     }
+
 
 
     /**
@@ -129,7 +185,7 @@ class FasilitatorController extends Controller
         $fasilitator = fasilitator::find($id);
         $fasilitator->delete();
 
-        return redirect('/admin/fasilitator')->with('success', 'Berhasil menghapus data');
+        return redirect()->route('fasilitatorAdmin')->with('success', 'Berhasil menghapus data');
     }
 
 }

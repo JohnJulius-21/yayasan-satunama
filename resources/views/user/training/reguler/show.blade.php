@@ -1,94 +1,6 @@
 @extends('layouts.user')
 
 @section('content')
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        /* Position the image container (needed to position the left and right arrows) */
-        .container {
-            position: relative;
-        }
-
-        /* Hide the images by default */
-        .mySlides {
-            display: none;
-        }
-
-        /* Add a pointer when hovering over the thumbnail images */
-        .cursor {
-            cursor: pointer;
-        }
-
-        /* Next & previous buttons */
-        .prev,
-        .next {
-            cursor: pointer;
-            position: absolute;
-            top: 40%;
-            width: auto;
-            padding: 16px;
-            margin-top: -50px;
-            color: white;
-            font-weight: bold;
-            font-size: 20px;
-            border-radius: 0 3px 3px 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        /* Position the "next button" to the right */
-        .next {
-            right: 0;
-            border-radius: 3px 0 0 3px;
-        }
-
-        /* On hover, add a black background color with a little bit see-through */
-        .prev:hover,
-        .next:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        /* Number text (1/3 etc) */
-        .numbertext {
-            color: #f2f2f2;
-            font-size: 12px;
-            padding: 8px 12px;
-            position: absolute;
-            top: 0;
-        }
-
-        /* Container for image text */
-        .caption-container {
-            text-align: center;
-            background-color: #222;
-            padding: 2px 16px;
-            color: white;
-        }
-
-        .row:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* Six columns side by side */
-        .column {
-            float: left;
-            width: 16.66%;
-        }
-
-        /* Add a transparency effect for thumnbail images */
-        .demo {
-            opacity: 0.6;
-        }
-
-        .active,
-        .demo:hover {
-            opacity: 1;
-        }
-    </style>
     <div class="page-title">
         <div class="container d-lg-flex justify-content-between align-items-center">
             <h1 class="mb-2 mb-lg-0">Detail Pelatihan</h1>
@@ -104,33 +16,38 @@
     <div class="container overflow-hidden">
         <!-- Adjust the image size and add border radius -->
         <!-- Container for the image gallery -->
-        <div class="container">
-            @foreach ($imageNames as $index => $filename)
+        <div class="container-image">
+            @foreach ($imageUrls as $index => $imageUrl)
                 <div class="mySlides">
-                    <div class="numbertext">{{ $index + 1 }} / {{ count($imageNames) }}</div>
-                    <img src="{{ route('file.show', ['filename' => $filename]) }}" style="width:100%">
+                    <div class="numbertext">{{ $index + 1 }} / {{ count($imageUrls) }}</div>
+                    <div class="skeleton skeleton-img"></div>
+                    <img src="{{ $imageUrl }}" style="width:100%; display: none;" onload="removeSkeleton(this)">
                 </div>
             @endforeach
 
             <!-- Next and previous buttons -->
-            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-            <a class="next" onclick="plusSlides(1)">&#10095;</a>
-
-            <!-- Image text -->
+            <div class="container-buttons">
+                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="plusSlides(1)">&#10095;</a>
+            </div>
+            {{-- <!-- Image text -->
             <div class="caption-container">
                 <p id="caption"></p>
-            </div>
+            </div> --}}
 
             <!-- Thumbnail images -->
             <div class="row">
-                @foreach ($imageNames as $index => $filename)
+                @foreach ($imageUrls as $index => $imageUrl)
                     <div class="column">
-                        <img class="demo cursor" src="{{ route('file.show', ['filename' => $filename]) }}"
-                            style="width:100%" onclick="currentSlide({{ $index + 1 }})" alt="Image {{ $index + 1 }}">
+                        <div class="skeleton skeleton-thumbnail"></div>
+                        <img class="demo cursor" src="{{ $imageUrl }}"
+                            style="width:100%; display: none;" onclick="currentSlide({{ $index + 1 }})"
+                            onload="removeSkeleton(this)">
                     </div>
                 @endforeach
             </div>
         </div>
+
 
         <hr class="container mt-5" style="height: 3px; background-color: #000000; border: none;">
 
@@ -138,9 +55,10 @@
             <div class="col-sm-6 col-md-8">
                 <div class="p-3">
                     <h4>{{ $pelatihan->nama_pelatihan }}</h4>
-                    <p>Tanggal Pelatihan : <small><i class="far fa-clock"></i>
-                            {{ \Carbon\Carbon::parse($pelatihan->tanggal_mulai)->translatedFormat('d F Y') }} -
-                            {{ \Carbon\Carbon::parse($pelatihan->tanggal_selesai)->translatedFormat('d F Y') }}
+                    <p>Tanggal Pelaksanaan Pelatihan : <small><i class="far fa-calendar-days"></i>
+                            {{ \Carbon\Carbon::parse($pelatihan->tanggal_mulai)->locale('id')->translatedFormat('d F Y') }}
+                            -
+                            {{ \Carbon\Carbon::parse($pelatihan->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}
                         </small>
                     </p>
                     <span>Tentang Pelatihan ini : </span>
@@ -166,8 +84,9 @@
                     <h5>Daftar Pelatihan</h5>
                     <span>Tanggal Pendaftaran : </span>
                     <small><i class="far fa-calendar-days"></i>
-                        {{ \Carbon\Carbon::parse($pelatihan->tanggal_pendaftaran)->translatedFormat('d F Y') }} -
-                        {{ \Carbon\Carbon::parse($pelatihan->tanggal_batas_pendaftaran)->translatedFormat('d F Y') }}
+                        {{ \Carbon\Carbon::parse($pelatihan->tanggal_pendaftaran)->locale('id')->translatedFormat('d F Y') }}
+                        -
+                        {{ \Carbon\Carbon::parse($pelatihan->tanggal_batas_pendaftaran)->locale('id')->translatedFormat('d F Y') }}
                     </small>
                     <hr>
                     <h5>Informasi Pelatihan</h5>
@@ -186,31 +105,55 @@
 
                     <div class="card-footer text-center mt-2">
                         @php
-                            // Check if the registration period is closed
                             $registrationDeadline = \Carbon\Carbon::parse($pelatihan->tanggal_batas_pendaftaran);
                             $isRegistrationClosed = \Carbon\Carbon::now()->gt($registrationDeadline);
                         @endphp
 
                         @guest
-                            <!-- If user is not logged in, send them to login page -->
-                            <a href="{{ !$isRegistrationClosed && isset($pelatihan->id_reguler) ? route('masuk') : '#' }}"
-                                class="btn btn-success daftar-button {{ $isRegistrationClosed ? 'disabled-link' : '' }}"
-                                {{ $isRegistrationClosed ? 'aria-disabled=true tabindex=-1' : '' }}>
+                            <!-- Belum login -->
+                            <button type="button" class="btn btn-success w-100 {{ $isRegistrationClosed ? 'disabled' : '' }}"
+                                {{ $isRegistrationClosed ? 'aria-disabled=true tabindex=-1' : '' }} data-bs-toggle="modal"
+                                data-bs-target="#loginModal">
                                 Daftar Pelatihan
-                            </a>
+                            </button>
                         @else
-                            <!-- If user is logged in, send them directly to the registration page -->
-                            <a href="{{ !$isRegistrationClosed && isset($pelatihan->id_reguler) ? route('reguler.create', ['id' => $pelatihan->id_reguler]) : '#' }}"
-                                class="btn btn-success daftar-button {{ $isRegistrationClosed ? 'disabled-link' : '' }}"
-                                {{ $isRegistrationClosed ? 'aria-disabled=true tabindex=-1' : '' }}>
+                            <!-- Sudah login -->
+                            <button type="button" class="btn btn-success w-100 {{ $isRegistrationClosed ? 'disabled' : '' }}"
+                                {{ $isRegistrationClosed ? 'aria-disabled=true tabindex=-1' : '' }} data-bs-toggle="modal"
+                                data-bs-target="#pilihPesertaModal">
                                 Daftar Pelatihan
-                            </a>
+                            </button>
                         @endguest
+
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal Pilih Jumlah Peserta -->
+    <div class="modal fade" id="pilihPesertaModal" tabindex="-1" aria-labelledby="pilihPesertaModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pilihPesertaModalLabel">Pilih Jumlah Peserta</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="jumlah_peserta">Berapa orang yang ingin mendaftar?</label>
+                    <input type="number" id="jumlah_peserta" class="form-control" min="1" max="10"
+                        value="1">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-success" id="btnLanjutDaftar">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <style>
         /* Styling for pelatihan image */
@@ -327,9 +270,111 @@
         #toggleBtn:hover {
             color: #005f5f;
         }
+
+        @keyframes loading {
+            0% {
+                background-color: #e0e0e0;
+            }
+
+            50% {
+                background-color: #f0f0f0;
+            }
+
+            100% {
+                background-color: #e0e0e0;
+            }
+        }
+
+        .skeleton {
+            animation: loading 1.5s infinite ease-in-out;
+            border-radius: 8px;
+        }
+
+        .skeleton-img {
+            width: 100%;
+            height: 400px;
+            /* Sesuaikan tinggi gambar utama */
+        }
+
+        .skeleton-thumbnail {
+            width: 100%;
+            height: 80px;
+            /* Sesuaikan tinggi thumbnail */
+        }
+
+        img {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .container-image {
+            position: relative;
+            text-align: center;
+        }
+
+        .container-image img {
+            width: 80%;
+            max-height: 700px;
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .container-buttons {
+            position: absolute;
+            top: 50%;
+            width: 80%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .prev,
+        .next {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .prev:hover,
+        .next:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .column {
+            flex: 0 1 80px;
+            margin: 5px;
+        }
+
+        .column img {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+            border-radius: 5px;
+        }
     </style>
 
     <script>
+        document.getElementById('btnLanjutDaftar').addEventListener('click', function() {
+            let jumlahPeserta = document.getElementById('jumlah_peserta').value;
+            let idPelatihan = "{{ $pelatihan->id_reguler }}"; // Ambil ID pelatihan dari Blade
+
+            // Redirect ke halaman pendaftaran dengan jumlah peserta
+            window.location.href = `/pelatihan/reguler/daftar/${idPelatihan}?jumlah=${jumlahPeserta}`;
+        });
+
         function toggleDescription() {
             const moreText = document.getElementById("more");
             const shortText = document.getElementById("short-text");
@@ -380,6 +425,14 @@
             slides[slideIndex - 1].style.display = "block";
             dots[slideIndex - 1].className += " active";
             captionText.innerHTML = dots[slideIndex - 1].alt;
+        }
+
+        function removeSkeleton(img) {
+            let skeleton = img.previousElementSibling; // Skeleton ada sebelum gambar
+            if (skeleton) {
+                skeleton.style.display = 'none'; // Hilangkan skeleton
+            }
+            img.style.display = 'block'; // Tampilkan gambar
         }
     </script>
 @endsection

@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'roles',
     ];
 
     /**
@@ -47,7 +48,9 @@ class User extends Authenticatable
     }
     public function pelatihan_reguler()
     {
-        return $this->belongsTo(pelatihan_reguler::class, 'id_user');
+        return $this->belongsTo(reguler::class, 'id_user');
     }
+
+    
 
 }

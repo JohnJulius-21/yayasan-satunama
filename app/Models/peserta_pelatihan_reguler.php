@@ -58,11 +58,31 @@ class peserta_pelatihan_reguler extends Model
     public function reguler(){
         return $this->belongsTo(reguler::class, 'id_reguler');
     }
+    public function status()
+{
+    return $this->hasOne(status::class, 'id_peserta', 'id_peserta_reguler');
+}
+
+
+    public function hasilEvaluasiReguler(){
+        return $this->belongsTo(hasil_evaluasi_reguler::class, 'id_peserta_reguler', 'id_peserta');
+    }
+
+    public function hasilSurveyReguler()
+    {
+        return $this->belongsTo(hasil_surveykepuasan_reguler::class, 'id_peserta_reguler','id_peserta');
+    }
+
+    public function hasilStudiReguler()
+    {
+        return $this->belongsTo(hasil_studidampak_reguler::class, 'id_peserta_reguler','id_peserta');
+    }
+
 
     public function getIsFilledAttribute()
     {
-        return evaluasi_pelatihan_reguler::where('id_pelatihan', $this->id_pelatihan)
-            ->where('id_user', $this->id_user)
+        return hasil_evaluasi_reguler::where('id_reguler', $this->id_reguler)
+            ->where('id_peserta', $this->id_peserta)
             ->exists();
     }
 
@@ -71,12 +91,12 @@ class peserta_pelatihan_reguler extends Model
         return $this->hasMany(evaluasi_pelatihan_reguler::class, 'id_user', 'id_user');
     }
 
-    public function getIsFilledAttributes()
-    {
-        return survey_pelatihan_reguler::where('id_pelatihan', $this->id_pelatihan)
-            ->where('id_user', $this->id_user)
-            ->exists();
-    }
+    // public function getIsFilledAttributes()
+    // {
+    //     return hasil_evaluasi_reguler::where('id_reguler', $this->id_reguler)
+    //         ->where('id_user', $this->id_user)
+    //         ->exists();
+    // }
 
     public function surveyPelatihan()
     {
@@ -94,4 +114,6 @@ class peserta_pelatihan_reguler extends Model
     {
         return $this->hasMany(studidampak_pelatihan_reguler::class, 'id_user', 'id_user');
     }
+
+    
 }

@@ -27,5 +27,10 @@ class Discussion extends Model
         return $this->hasMany(komen::class, 'id_diskusi');
     }
 
+    public function files()
+    {
+        return $this->hasMany(discussion_file::class, 'id_diskusi');
+    }
+
     
 }

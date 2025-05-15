@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\peserta_pelatihan_reguler;
 use App\Models\tema;
+use App\Models\User;
+use App\Models\status;
 use App\Models\reguler;
 use App\Models\fasilitator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Google_Service_Drive_DriveFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Models\peserta_pelatihan_reguler;
 
 class RegulerController extends Controller
 {
@@ -26,6 +30,36 @@ class RegulerController extends Controller
         $oldIdFasilitator = old('id_fasilitator', []);
         return view('admin.reguler.create', compact('fasilitator', 'oldIdFasilitator', 'tema'));
     }
+
+    public function createTema()
+    {
+        $tema = tema::all();
+        return view('admin.reguler.tema', compact('tema'));
+    }
+
+    public function storeTema(Request $request)
+    {
+        $request->validate([
+            'judul_tema' => 'required'
+
+        ]);
+
+        // Simpan data pelatihan
+        $tema = new tema;
+        $tema->judul_tema = $request->judul_tema;
+        $tema->save();
+
+        return redirect()->back()->with('success', 'Tema berhasil disimpan');
+    }
+
+    public function destroyTema($id)
+    {
+        $tema = Tema::findOrFail($id);
+        $tema->delete();
+
+        return redirect()->back()->with('success', 'Tema berhasil dihapus.');
+    }
+
 
     public function store(Request $request)
     {
@@ -75,18 +109,42 @@ class RegulerController extends Controller
         }
 
 
-        // Upload files ke Google Drive dan simpan ke database
         if ($request->hasFile('file')) {
             foreach ($request->file('file') as $file) {
-                $filename = $file->getClientOriginalName(); // Ambil nama file asli
-                $path = Storage::disk('google')->putFileAs('', $file, $filename); // Simpan di Drive
+                $filename = $file->getClientOriginalName(); // Nama asli file
+                $filePath = Storage::disk('google')->putFileAs('', $file, $filename); // Upload ke Google Drive
 
-                DB::table('reguler_files')->insert([
-                    'id_reguler' => $reguler->id_reguler,
-                    'file_url' => $filename, // Simpan hanya nama file di database
+                // Ambil metadata file untuk mendapatkan ID
+                $service = Storage::disk('google')->getAdapter()->getService();
+
+                $fileList = $service->files->listFiles([
+                    'q' => "name='$filename' and trashed=false",
+                    'fields' => 'files(id, name)',
                 ]);
+
+                if (count($fileList->getFiles()) > 0) {
+                    $fileId = $fileList->getFiles()[0]->getId();
+
+                    // Buat file public agar bisa diakses siapa pun
+                    $permission = new \Google_Service_Drive_Permission();
+                    $permission->setType('anyone');
+                    $permission->setRole('reader');
+                    $service->permissions->create($fileId, $permission);
+
+                    // Buat URL tampilan
+                    $fileUrl = "https://drive.google.com/file/d/$fileId/view?usp=sharing";
+
+                    // Simpan ke database
+                    DB::table('reguler_files')->insert([
+                        'id_reguler' => $reguler->id_reguler,
+                        'file_url' => $fileUrl,
+                    ]);
+                }
             }
         }
+
+
+
 
 
         // Simpan ID fasilitator ke tabel pivot
@@ -99,44 +157,73 @@ class RegulerController extends Controller
 
         return redirect()->route('regulerAdmin')->with('success', 'Pelatihan berhasil disimpan');
     }
-
-    // public function show($id_reguler)
-    // {
-    //     // Pastikan $id_reguler adalah integer sebelum menggunakannya dalam query
-    //     $id_reguler = (int) $id_reguler;
-    //     $reguler = reguler::findOrFail($id_reguler); // Assuming you have a Pelatihan model
-
-    //     // Now you have the $pelatihan object, you can access its properties like nama_pelatihan
-    //     $nama_pelatihan = $reguler->nama_pelatihan;
-
-    //     // Continue with your existing code to fetch data related to the $id_pelatihan
-    //     // $data = peserta_pelatihan_test::with('pelatihan', 'gender', 'rentang_usia', 'negara', 'provinsi', 'kabupaten_kota', 'informasi_pelatihan')
-    //     //     ->where('id_pelatihan', $id_pelatihan)
-    //     //     ->get();
-
-    //     // Ambil data UserPresensi yang sudah melakukan presensi
-    //     // $dataHadir = UserPresensi::whereHas('presensi', function ($query) use ($id_pelatihan) {
-    //     //     $query->where('id_pelatihan', $id_pelatihan);
-    //     // })->with(['presensi', 'user'])->get();
-
-    //     // $presensiStatus = Hadir::where('id_pelatihan', $id_pelatihan)->value('status');
-
-    //     // Menyiapkan link unduhan file bukti bayar
-    //     // $downloadLinks = [];
-    //     // foreach ($data as $peserta) {
-    //     //     $buktiBayarPath = storage_path('app/' . $peserta->bukti_bayar);
-    //     //     $downloadLinks[$peserta->id] = file_exists($buktiBayarPath) ? route('download.bukti_bayar', ['id' => $peserta->id]) : null;
-    //     // }
-    //     // dd($data);
-    //     return view('admin.reguler.show', compact('data', 'dataHadir', 'presensiStatus', 'nama_pelatihan'));
-    // }
+    public function storePeserta(Request $request)
+    {
+        // return 'test';
+        $request->validate([
+            'nama_peserta' => 'required|string|max:255',
+            'email_peserta' => 'required|email',
+            'no_hp' => 'required|string|max:20',
+            'gender' => 'required|string',
+            'rentang_usia' => 'nullable|string',
+            'nama_organisasi' => 'nullable|string',
+            'organisasi' => 'nullable|string',
+            'jabatan_peserta' => 'nullable|string',
+            'harapan_pelatihan' => 'nullable|string',
+            'id_reguler' => 'required|exists:reguler,id_reguler',
+        ]);
+    
+        // Cek user berdasarkan email
+        $user = User::where('email', $request->email_peserta)->first();
+    
+        // Jika belum ada user, buat akun baru
+        if (!$user) {
+            $defaultPassword = 'pesertastc123';
+            $user = User::create([
+                'name' => $request->nama_peserta,
+                'email' => $request->email_peserta,
+                'password' => Hash::make($defaultPassword),
+                'roles' => 'peserta',
+            ]);
+    
+            // Optional: bisa simpan data akun baru yang dibuat ke log atau notifikasi
+        }
+    
+        // Simpan peserta pelatihan
+        $peserta = peserta_pelatihan_reguler::create([
+            'id_reguler' => $request->id_reguler,
+            'id_user' => $user->id,
+            'nama_peserta' => $request->nama_peserta,
+            'email_peserta' => $request->email_peserta,
+            'no_hp' => $request->no_hp,
+            'gender' => $request->gender,
+            'rentang_usia' => $request->rentang_usia,
+            'id_negara' => null, // Tambahkan jika input tersedia
+            'id_provinsi' => null,
+            'id_kabupaten' => null,
+            'nama_organisasi' => $request->nama_organisasi,
+            'organisasi' => $request->organisasi,
+            'informasi' => null,
+            'jabatan_peserta' => $request->jabatan_peserta,
+            'pelatihan_relevan' => null,
+            'harapan_pelatihan' => $request->harapan_pelatihan,
+        ]);
+    
+        // Simpan status peserta
+        status::create([
+            'id_reguler' => $request->id_reguler,
+            'id_peserta' => $peserta->id_peserta_reguler,
+        ]);
+    
+        return redirect()->back()->with('success', 'Peserta berhasil ditambahkan.');
+    }
 
     public function show($id)
     {
 
         $reguler = Reguler::findOrFail($id);
         $nama_pelatihan = $reguler->nama_pelatihan;
-        $peserta = peserta_pelatihan_reguler::with('reguler', 'negara', 'provinsi', 'kabupaten_kota')->where('id_reguler', $id)->get();
+        $peserta = peserta_pelatihan_reguler::with('reguler', 'negara', 'provinsi', 'kabupaten_kota', 'status')->where('id_reguler', $id)->get();
         // dd($peserta);
         // Ambil data images langsung dari tabel reguler_images
         $images = DB::table('reguler_images')->where('id_reguler', $id)->get();
@@ -144,37 +231,48 @@ class RegulerController extends Controller
         // Ambil data files langsung dari tabel reguler_files
         $files = DB::table('reguler_files')->where('id_reguler', $id)->get();
 
-        // // Ambil data fasilitator dari tabel pivot reguler_fasilitators
-        // $fasilitators = DB::table('reguler_fasilitators')
-        //     ->join('fasilitator_pelatihan', 'reguler_fasilitators.id_fasilitator', '=', 'fasilitator_pelatihan.id_fasilitator')
-        //     ->where('reguler_fasilitators.id_pelatihan', $id)
-        //     ->select('fasilitator.*')
-        //     ->get();
 
         return view('admin.reguler.show', compact('reguler', 'images', 'files', 'nama_pelatihan', 'peserta'));
     }
 
-    // public function edit($id)
-    // {
-    //     $data = reguler::find($id);
-    //     $oldIdFasilitator = $data->fasilitator_pelatihan->pluck('id_fasilitator')->toArray();
-    //     $oldImages = $data->gambarPelatihan()->pluck('path')->toArray();
-    //     $oldFiles = $data->filePelatihan()->pluck('path')->toArray();
-    //     return view('dashboard.reguler.edit', compact('data', 'oldIdFasilitator', 'oldImages', 'oldFiles'), [
-    //         'tema' => Tema::all(),
-    //         'fasilitator_pelatihan' => fasilitator_pelatihan_test::all(),
-    //     ]);
-    // }
+    public function updateStatus(Request $request, $id)
+    {
+        $status = \App\Models\Status::where('id_peserta', $id)->first();
+
+        if ($status) {
+            $status->status = $request->status;
+            $status->save();
+
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 404);
+    }
+
 
     public function edit($id)
     {
         $reguler = Reguler::with(['fasilitators'])->findOrFail($id);
+        $regulerId = Reguler::where('id_reguler', $id)->get();
 
-        // Ambil data images langsung dari tabel reguler_images
-        $images = DB::table('reguler_images')->where('id_reguler', $id)->get();
+        // Untuk setiap pelatihan, ambil gambar terkait
+        $images = [];
 
+        foreach ($regulerId as $item) {
+            $imageUrl = DB::table('reguler_images')
+                ->where('id_reguler', $item->id_reguler)
+                ->value('image_url');
+
+            $images[] = (object) ['image' => $imageUrl]; // Simpan sebagai objek
+        }
+        // dd($images);
         // Ambil data files langsung dari tabel reguler_files
-        $files = DB::table('reguler_files')->where('id_reguler', $id)->get();
+        // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
+        $files = DB::table('reguler_files')
+            ->where('id_reguler', $id)
+            ->get(['file_url']); // Ambil semua file_url
+        // dd($files);
+
         $tema = Tema::all();
         $fasilitators = Fasilitator::all();
         $oldIdFasilitator = $reguler->fasilitators->pluck('id_fasilitator')->toArray();
@@ -219,27 +317,60 @@ class RegulerController extends Controller
         if ($request->hasFile('image')) {
             DB::table('reguler_images')->where('id_reguler', $id)->delete();
             foreach ($request->file('image') as $image) {
-                $path = Storage::disk('google')->putFile('', $image);
-                $imageUrl = Storage::disk('google')->url($path);
+                $filename = $image->getClientOriginalName(); // Ambil nama file asli
+                $path = Storage::disk('google')->putFileAs('', $image, $filename); // Simpan di Drive
+
                 DB::table('reguler_images')->insert([
-                    'id_reguler' => $id,
-                    'image_url' => $imageUrl,
+                    'id_reguler' => $reguler->id_reguler,
+                    'image_url' => $filename, // Simpan hanya nama file di database
                 ]);
             }
         }
 
-        // Update Files
         if ($request->hasFile('file')) {
-            DB::table('reguler_files')->where('id_reguler', $id)->delete();
+            // Ambil file lama dari database
+            $oldFiles = DB::table('reguler_files')
+                ->where('id_reguler', $reguler->id_reguler)
+                ->pluck('file_url');
+
+            // Hapus file lama dari Google Drive
+            foreach ($oldFiles as $oldFile) {
+                preg_match('/id=([^&]+)/', $oldFile, $matches);
+                if (isset($matches[1])) {
+                    Storage::disk('google')->delete($matches[1]); // Hapus berdasarkan ID
+                }
+            }
+
+            // Hapus data file lama dari database
+            DB::table('reguler_files')->where('id_reguler', $reguler->id_reguler)->delete();
+
+            // Simpan file baru ke Google Drive
             foreach ($request->file('file') as $file) {
-                $path = Storage::disk('google')->putFile('', $file);
-                $fileUrl = Storage::disk('google')->url($path);
-                DB::table('reguler_files')->insert([
-                    'id_reguler' => $id,
-                    'file_url' => $fileUrl,
+                $filename = $file->getClientOriginalName(); // Ambil nama file asli
+                $filePath = Storage::disk('google')->putFileAs('', $file, $filename); // Simpan ke Drive
+
+                // Ambil metadata file untuk mendapatkan file ID
+                $service = Storage::disk('google')->getAdapter()->getService();
+                $fileMetadata = new Google_Service_Drive_DriveFile();
+                $fileList = $service->files->listFiles([
+                    'q' => "name='$filename' and trashed=false",
+                    'fields' => 'files(id, name)'
                 ]);
+
+                if (count($fileList->getFiles()) > 0) {
+                    $fileId = $fileList->getFiles()[0]->getId();
+
+                    // Simpan link berbentuk URL langsung ke database
+                    $fileUrl = "https://drive.google.com/file/d/$fileId/view?usp=sharing";
+
+                    DB::table('reguler_files')->insert([
+                        'id_reguler' => $reguler->id_reguler,
+                        'file_url' => $fileUrl, // Simpan URL langsung
+                    ]);
+                }
             }
         }
+
 
         // Update Fasilitators
         DB::table('reguler_fasilitators')->where('id_pelatihan', $id)->delete();

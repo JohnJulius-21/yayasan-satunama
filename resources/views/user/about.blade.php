@@ -1,195 +1,59 @@
-@extends('layouts.main')
+@extends('layouts.user')
 
 @section('content')
-    <!-- About Section -->
-    <div class="about-section py-5" style="background-color: #ffffff">
-        <div class="container text-center">
-            <h2>Tentang Kami</h2>
-            <p>
-                Kami menyediakan pelatihan untuk membantu organisasi masyarakat Anda menjadi lebih baik.
-            </p>
-            <div class="card-wrapper">
-                <div class="card">
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3953.5880153886765!2d110.35459690948655!3d-7.727272976542171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59b8fe4e6201%3A0x15b92587dba99384!2sYayasan%20SATUNAMA%20Yogyakarta!5e0!3m2!1sen!2sid!4v1728727068306!5m2!1sen!2sid"
-                        width="1294" height="450" style="border:1;" allowfullscreen="" loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css">
     <style>
-        /* Set a background color and font only for the timeline section */
-        section.timeline {
-            background-color: #ffffff;
-            position: relative;
-            max-width: 1200px;
+        .swiper-container {
+            width: 80%;
+            max-height: 800px;
+            border-radius: 10px;
+            overflow: hidden;
             margin: 0 auto;
-            height: 500px;
-            /* Menetapkan tinggi untuk scroll */
-            overflow-y: auto;
-            /* Menambahkan scroll vertikal */
-        }
-
-        /* Menambahkan indikator posisi scroll */
-        section.timeline::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 10px;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.1);
-        }
-
-        /* The actual timeline (the vertical ruler) */
-        section.timeline::after {
-            content: '';
-            position: absolute;
-            width: 6px;
-            background-color: rgb(204, 203, 203);
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            /* Tempatkan garis vertikal di tengah */
-            transform: translateX(-50%);
-            /* Menambahkan transform untuk memastikan di tengah */
-        }
-
-
-        /* Update height of indicator based on scroll */
-        section.timeline.scrolling::after {
-            height: 100%;
-        }
-
-        /* The actual timeline (the vertical ruler) */
-        section.timeline {
             position: relative;
-            max-width: 1200px;
-            margin: 0 auto;
+            display: block;
+
         }
 
-        /* The actual timeline (the vertical ruler) */
-        section.timeline::after {
-            content: '';
-            position: absolute;
-            width: 6px;
-            background-color: rgb(204, 203, 203);
-            top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -3px;
+        .swipper-container img {
+            width: 100%;
+            border-radius: 10px;
+            display: block;
         }
 
-        /* Container around content */
-        section.timeline .timeline-container {
-            padding: 10px 40px;
+
+        .swiper-slide {
             position: relative;
-            background-color: inherit;
-            width: 50%;
         }
 
-        /* The circles on the timeline */
-        section.timeline .timeline-container::after {
-            content: '';
+        .slide-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .overlay {
             position: absolute;
-            width: 25px;
-            height: 25px;
-            right: -17px;
-            background-color: rgb(255, 255, 255);
-            border: 4px solid #FF9F55;
-            top: 15px;
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        /* Place the container to the left */
-        section.timeline .left {
+            bottom: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(22, 86, 22, 0.6);
+            /* Hijau gelap transparan */
+            display: inline-flex;
+            align-items: end;
+            justify-content: start;
+            text-align: left;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            padding: 15px 20px;
         }
 
-        /* Place the container to the right */
-        section.timeline .right {
-            left: 50%;
+        /* Navigasi Swiper */
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: white;
         }
-
-        /* Add arrows to the left container (pointing right) */
-        section.timeline .left::before {
-            content: " ";
-            height: 0;
-            position: absolute;
-            top: 22px;
-            width: 0;
-            z-index: 1;
-            right: 30px;
-            border: medium solid rgb(223, 220, 220);
-            border-width: 10px 0 10px 10px;
-            border-color: transparent transparent transparent white;
-        }
-
-        /* Add arrows to the right container (pointing left) */
-        section.timeline .right::before {
-            content: " ";
-            height: 0;
-            position: absolute;
-            top: 22px;
-            width: 0;
-            z-index: 1;
-            left: 30px;
-            border: medium solid white;
-            border-width: 10px 10px 10px 0;
-            border-color: transparent white transparent transparent;
-        }
-
-        /* Fix the circle for containers on the right side */
-        section.timeline .right::after {
-            left: -16px;
-        }
-
-        /* The actual content */
-        section.timeline .timeline-content {
-            padding: 20px 30px;
-            background-color: rgb(200, 236, 189);
-            position: relative;
-            border-radius: 6px;
-        }
-
-        /* Media queries - Responsive timeline on screens less than 600px wide */
-        @media screen and (max-width: 600px) {
-
-            /* Adjust vertical position of timeline ruler */
-            section.timeline::after {
-                left: 31px;
-            }
-
-            /* Full-width containers */
-            section.timeline .timeline-container {
-                width: 100%;
-                padding-left: 70px;
-                padding-right: 25px;
-            }
-
-            /* Ensure arrows on left containers point left */
-            section.timeline .timeline-container::before {
-                left: 60px;
-                border: medium solid white;
-                border-width: 10px 10px 10px 0;
-                border-color: transparent white transparent transparent;
-            }
-
-            /* Fix positions of circles on both sides */
-            section.timeline .left::after,
-            section.timeline .right::after {
-                left: 15px;
-            }
-
-            /* Make right containers behave like the left ones */
-            section.timeline .right {
-                left: 0%;
-            }
-        }
-
 
         .faq-container {
             max-width: 1300px;
@@ -276,59 +140,90 @@
         }
     </style>
 
-    <div class="faq-title">Timeline</div>
-    <hr class="container">
-    <section class="timeline">
-        <div class="timeline-container left">
-            <div class="timeline-content">
-                <h2>2017</h2>
-                <p>Lorem ipsum..</p>
-            </div>
-        </div>
-        <div class="timeline-container right">
-            <div class="timeline-content">
-                <h2>2016</h2>
-                <p>Lorem ipsum..</p>
-            </div>
-        </div>
-        <div class="timeline-container left">
-            <div class="timeline-content">
-                <h2>2016</h2>
-                <p>Lorem ipsum..</p>
-            </div>
-        </div>
-        <div class="timeline-container right">
-            <div class="timeline-content">
-                <h2>2016</h2>
-                <p>Lorem ipsum..</p>
-            </div>
-        </div>
-    </section>
+    <!-- About Section -->
+    <section id="about" class="about section">
 
-    <div class="faq-container">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img class="slide-image" src="{{ asset('images/pelatihan1.jpg') }}" alt="Pelatihan 1">
+                    <div class="overlay">SATUNAMA TRAINING CENTER </div>
+                </div>
+                <div class="swiper-slide">
+                    <img class="slide-image" src="{{ asset('images/pelatihan2.jpg') }}" alt="Pelatihan 2">
+                    <div class="overlay">SATUNAMA TRAINING CENTER </div>
+                </div>
+                <div class="swiper-slide">
+                    <img class="slide-image" src="{{ asset('images/contact.png') }}" alt="Pelatihan 3">
+                    <div class="overlay">SATUNAMA TRAINING CENTER </div>
+                </div>
+            </div>
+            <!-- Tombol Navigasi -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+
+        <!-- Section Title -->
+        <div class="container section-title mt-3" data-aos="fade-up">
+            <span>Tentang Kami<br></span>
+            <h2>Tentang Kami</h2>
+            <p>SATUNAMA Training Center adalah ....</p>
+        </div><!-- End Section Title -->
+
+        <div class="container">
+
+            <div class="row gy-4">
+                <div class="col-lg-6 position-relative align-self-start" data-aos="fade-up" data-aos-delay="100">
+                    <img src="assetss/img/about.png" class="img-fluid" alt="">
+                    {{-- <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a> --}}
+                </div>
+                <div class="col-lg-6 content" data-aos="fade-up" data-aos-delay="200">
+                    <h3>SATUNAMA Training Center.</h3>
+                    <p class="fst-italic">
+                        SATUNAMA sebagai lembaga swadaya masyarakat mempunyai sejarah yang cukup panjang. Sejarah yang
+                        panjang itu bermuatan perkembagan lembaga sesuai dengan dinamika internal lembaga maupun dalam
+                        menanggapi perkembangan masyarakat yang dilayaninya. Maka wajar kalau SATUNAMA mempunyai modal yang
+                        memadai dalam bentuk pengetahuan dan praktek yang bisa di-share ke banyak pihak melalui pelatihan
+                        dan konsultasi.
+                    </p>
+                    <p>
+                        Pelatihan dan Konsultasi yang dijalankan oleh SATUNAMA sudah berjalan selama 2 (dua) dekade dengan
+                        perkembangan dan dinamikanya sendiri. Pada awalnya layanan SATUNAMA berada dalam kerangka
+                        pembangunan yang langsung berkaitan dengan pengentasan dari kemiskinan. Pelatihan-pelatihan yang
+                        diberikan banyak menyangkut hal-hal praktis, seperti akupuntur, ekonomi rumah tangga, dan
+                        sebagainya.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /About Section -->
+
+    <div class="faq-container" data-aos="fade-up">
         <div class="faq-title">FAQ</div>
         <hr class="container">
         <!-- FAQ Items -->
         <div class="faq-section">
-            <button class="faq-accordion">Apa itu program inkubasi bisnis Innovation Lab?</button>
+            <button class="faq-accordion">Apa itu program pelatihan reguler?</button>
             <div class="faq-panel">
                 <p>Program ini dirancang untuk membantu pengusaha dalam mengembangkan ide bisnis mereka melalui bimbingan
                     dan pelatihan intensif.</p>
             </div>
 
-            <button class="faq-accordion">Berapa lama durasi program Innovation Lab?</button>
+            <button class="faq-accordion">Apa saja yang perlu disiapkan dalam mendaftar pelatihan?</button>
             <div class="faq-panel">
                 <p>Durasi program ini berlangsung selama 3 bulan dengan sesi pelatihan mingguan.</p>
             </div>
         </div>
 
         <div class="faq-section">
-            <button class="faq-accordion">Dimana program ini akan dilaksanakan?</button>
+            <button class="faq-accordion">Dimana program pelatihan akan dilaksanakan?</button>
             <div class="faq-panel">
                 <p>Program akan dilaksanakan secara online melalui platform Zoom dan offline di lokasi mitra kami.</p>
             </div>
 
-            <button class="faq-accordion">Siapa saja yang bisa mendaftar Innovation Lab?</button>
+            <button class="faq-accordion">Siapa saja yang bisa mendaftar pelatihan di SATUANAMA?</button>
             <div class="faq-panel">
                 <p>Program ini terbuka untuk semua pengusaha yang memiliki ide bisnis atau usaha kecil yang ingin
                     dikembangkan.</p>
@@ -351,6 +246,62 @@
 
     </div>
 
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <span>Kontak Kami</span>
+            <h2>Kontak Kami</h2>
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-12">
+
+                    <div class="info-wrap">
+                        <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+                            <i class="bi bi-geo-alt flex-shrink-0"></i>
+                            <div>
+                                <h3>Address</h3>
+                                <p>Jl. Sambisari Jl. Duwet No.99
+                                    Sleman, Daerah Istimewa Yogyakarta 55285</p>
+                            </div>
+                        </div><!-- End Info Item -->
+
+                        <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                            <i class="bi bi-telephone flex-shrink-0"></i>
+                            <div>
+                                <h3>Phone</h3>
+                                <p>+62 822-2688-7110</p>
+                            </div>
+                        </div><!-- End Info Item -->
+
+                        <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+                            <i class="bi bi-envelope flex-shrink-0"></i>
+                            <div>
+                                <h3>Email</h3>
+                                <p>training@satunama.org</p>
+                            </div>
+                        </div><!-- End Info Item -->
+
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3953.5880153886765!2d110.35459690948655!3d-7.727272976542171!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59b8fe4e6201%3A0x15b92587dba99384!2sYayasan%20SATUNAMA%20Yogyakarta!5e0!3m2!1sen!2sid!4v1728727068306!5m2!1sen!2sid"
+                            frameborder="0" style="border:0; width: 100%; height: 270px;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section><!-- /Contact Section -->
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const accordions = document.querySelectorAll(".faq-accordion");
@@ -407,16 +358,18 @@
             showPage(currentPage);
         });
 
-        // Update the scroll indicator
-        document.querySelector('.timeline').addEventListener('scroll', function() {
-            var timeline = document.querySelector('.timeline');
-            var scrollHeight = timeline.scrollHeight - timeline.clientHeight;
-            var scrollPosition = timeline.scrollTop;
-
-            // Set the height of the indicator based on scroll position
-            var indicator = timeline.querySelector('::after');
-            var indicatorHeight = (scrollPosition / scrollHeight) * 100;
-            indicator.style.height = indicatorHeight + '%';
+        const swiper = new Swiper('.swiper-container', {
+            loop: true,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            effect: 'fade', // opsional: 'slide', 'fade', 'cube', etc
+            speed: 1000,
         });
     </script>
 @endsection

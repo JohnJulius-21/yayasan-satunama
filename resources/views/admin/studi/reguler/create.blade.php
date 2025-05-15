@@ -59,6 +59,9 @@
                     'autocomplete',
                     'button',
                     'hidden',
+                    'number',
+                    'file',
+                    'paragraph',
                 ]
             };
 

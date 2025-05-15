@@ -68,25 +68,44 @@
                         <p>Coba dengan kata kunci yang berbeda.</p>
                     </div>
                 @else
-                    @foreach ($reguler as $item)
+                    @foreach ($regulerPelatihan as $item)
                         <div class="col-lg-4 mb-4">
                             <div class="card">
-                                <img src="{{ asset('images/pelatihan4.png') }}" alt="" class="card-img-top">
+                                <div class="skeleton-wrapper">
+                                    <div class="skeleton skeleton-img"></div> <!-- Skeleton sementara -->
+                                    <img src="{{ route('file.show', ['filename' => $item->image]) }}"
+                                        alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
+                                        onload="removeSkeleton(this)" onerror="handleImageError(this)">
+                                </div>
+
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ $item->nama_pelatihan }}</h5>
+                                    <h5 class="card-title d-flex justify-content-between align-items-center">
+                                        {{ $item->nama_pelatihan }}
+                                        @php
+                                            $now = \Carbon\Carbon::now();
+                                            $batasPendaftaran = \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran);
+                                        @endphp
+                                        @if ($now->lessThanOrEqualTo($batasPendaftaran))
+                                            <span class="badge bg-success">Buka</span>
+                                        @else
+                                            <span class="badge bg-danger">Tutup</span>
+                                        @endif
+                                    </h5>
+
                                     <small><i class="far fa-calendar-days"></i> Tanggal Pendaftaran :
-                                        {{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->translatedFormat('d F Y') }}
+                                        {{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->locale('id')->translatedFormat('d F Y') }}
                                         -
-                                        {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->translatedFormat('d F Y') }}
+                                        {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->translatedFormat('d F Y') }}
                                     </small>
+
                                     <p class="card-text mt-2">
                                         {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
                                     </p>
 
                                     <a href="{{ route('reguler.show', ['id' => $item->id_reguler]) }}"
                                         class="btn btn-outline-success btn-sm">Lihat Detail</a>
-
                                 </div>
+
                             </div>
                         </div>
                     @endforeach
@@ -106,15 +125,14 @@
                 <div class="modal-body">
                     <form action="{{ route('reguler.index') }}" method="GET">
                         <div class="mb-3">
-                            <label for="startDate" class="form-label">Tanggal Mulai</label>
-                            <input type="date" class="form-control" id="startDate" name="start_date"
-                                value="{{ request('start_date') }}">
+                            <label class="form-label">Status Pendaftaran</label>
+                            <select name="status" class="form-select">
+                                <option value="">-- Semua --</option>
+                                <option value="buka" {{ request('status') == 'buka' ? 'selected' : '' }}>Buka</option>
+                                <option value="tutup" {{ request('status') == 'tutup' ? 'selected' : '' }}>Tutup</option>
+                            </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="endDate" class="form-label">Tanggal Selesai</label>
-                            <input type="date" class="form-control" id="endDate" name="end_date"
-                                value="{{ request('end_date') }}">
-                        </div>
+                        
                         <!-- Tambahkan filter lain jika diperlukan -->
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -130,6 +148,47 @@
 
     <!-- Custom CSS for Hover Animations -->
     <style>
+        @keyframes loading {
+            0% {
+                background-color: #e0e0e0;
+            }
+
+            50% {
+                background-color: #f0f0f0;
+            }
+
+            100% {
+                background-color: #e0e0e0;
+            }
+        }
+
+        .skeleton {
+            animation: loading 1.5s infinite ease-in-out;
+            border-radius: 10px;
+        }
+
+        .skeleton-wrapper {
+            overflow: hidden;
+            border-radius: 10px;
+            width: 100%;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .skeleton-img {
+            width: 100%;
+            height: 200px;
+            border-radius: 10px;
+            /* Sesuaikan dengan ukuran gambar */
+        }
+
+        .real-img {
+            display: none;
+            /* Sembunyikan gambar asli sampai dimuat */
+        }
+
         .section #pelatihan {
             position: relative;
             background-image: url('images/dekorasi1.png'), url('images/image2.png'), url('images/image3.png');
@@ -265,4 +324,17 @@
             color: #438848;
         }
     </style>
+    <script>
+        function removeSkeleton(img) {
+            let skeleton = img.previousElementSibling; // Skeleton ada sebelum gambar
+            if (skeleton) {
+                skeleton.style.display = 'none'; // Hilangkan skeleton
+            }
+            img.style.display = 'block'; // Tampilkan gambar asli
+        }
+
+        function handleImageError(img) {
+            img.style.display = 'none'; // Sembunyikan gambar jika gagal dimuat
+        }
+    </script>
 @endsection

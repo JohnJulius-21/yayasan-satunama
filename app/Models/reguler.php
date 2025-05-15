@@ -46,4 +46,15 @@ class reguler extends Model
         return $this->belongsToMany(Fasilitator::class, 'reguler_fasilitators', 'id_pelatihan', 'id_fasilitator');
     }
 
+    public function peserta()
+    {
+        return $this->hasMany(peserta_pelatihan_reguler::class, 'id_reguler', 'id_reguler');
+    }
+
+    public function status()
+    {
+        return $this->hasMany(status::class, 'id_reguler', 'id_reguler');
+    }
+
+
 }

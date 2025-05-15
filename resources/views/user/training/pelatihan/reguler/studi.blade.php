@@ -7,7 +7,9 @@
             <nav class="breadcrumbs">
                 <ol>
                     <li><a href="{{ route('reguler.pelatihan') }}">Pelatihan Saya</a></li>
-                    <li><a href="{{ route('reguler.pelatihan') }}">{{ $reguler->nama_pelatihan }}</a></li>
+                    <li><a
+                            href="{{ route('reguler.pelatihan.list', $reguler->nama_pelatihan) }}">{{ $reguler->nama_pelatihan }}</a>
+                    </li>
                     <li class="current">Evaluasi Pelatihan</li>
                 </ol>
             </nav>
@@ -20,28 +22,49 @@
         <!-- Section Title -->
         <div class="container" data-aos="fade-up" data-aos-delay="100">
             <div class="row gy-4">
-                <div class="col-lg-3">
-                    @include('partials.user-routes')
+                <div>
+                    <h4>Form Studi Dampak</h4>
                 </div>
-
-                <div class="col-lg-9">
+                <div class="col-lg-12">
                     <div class="php-email-form">
-                        <form id="form-eval" action="" method="POST">
-                            @csrf
-                            <!-- Tambahkan input hidden dengan nilai dari $formData -->
-                            {{-- <input type="hidden" name="formData" value="{{ $formData }}"> --}}
-                            <!-- Tambahkan input lainnya sesuai kebutuhan -->
-                            <input type="hidden" name="form_source" value="pelatihan">
-                            <input type="hidden" id="data_respons" name="data_respons">
-                            <input type="hidden" name="id_reguler" value="{{ $reguler->id_reguler }}">
-                            <input type="hidden" id="id_user" name="id_user" value="{{ Auth::id() }}">
-                            {{-- <input type="hidden" id="data_respons" name="data_respons"> --}}
-                            {{-- <input type="submit" value="Submit" class="btn btn-success"> --}}
-                            <div id="fb-render"></div>
-                            <div class="text-center">
-                                <button id="save-button" class="btn btn-success mt-3" type="submit">Simpan</button>
+                        @if ($sudahMengisi)
+                            <!-- Tampilkan pesan jika user sudah mengisi evaluasi -->
+                            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                                <img src="{{ asset('images/icon5.png') }}" alt="Hero Image"
+                                    style="max-width:400px; height:auto">
+                                <h5>Anda telah mengisi Form Studi Dampak.</h5>
                             </div>
-                        </form>
+                        @elseif (!empty($formData) && is_array($formData) && count($formData) > 0)
+                            <form id="form-eval" action="{{ route('reguler.pelatihan.studi.store') }}" method="POST">
+                                @csrf
+                                <!-- Tambahkan input hidden dengan nilai dari $formData -->
+                                {{-- <input type="hidden" name="formData" value="{{ $formData }}"> --}}
+                                <!-- Tambahkan input lainnya sesuai kebutuhan -->
+                                <input type="hidden" name="form_source" value="pelatihan">
+                                <input type="hidden" id="data_respons" name="data_respons">
+                                <input type="hidden" name="id_reguler" value="{{ $reguler->id_reguler }}">
+                                <input type="hidden" id="id_peserta" name="id_peserta"
+                                    value="{{ $peserta->id_peserta_reguler }}">
+                                {{-- <input type="hidden" id="data_respons" name="data_respons"> --}}
+                                {{-- <input type="submit" value="Submit" class="btn btn-success"> --}}
+                                <div id="stepContainer"></div>
+
+                                <div class="mt-4">
+                                    <button type="button" class="btn btn-secondary" id="prevBtn"
+                                        style="display: none;">Previous</button>
+                                    <button type="button" class="btn btn-primary" id="nextBtn">Next</button>
+                                    <button type="submit" class="btn btn-success" id="submitBtn"
+                                        style="display: none;">Submit</button>
+                                </div>
+                            </form>
+                        @else
+                            <!-- Tampilkan pesan jika form tidak tersedia -->
+                            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                                <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image"
+                                    style="max-width:400px; height:auto">
+                                <h5>Form Studi Dampak Belum ada.</h5>
+                            </div>
+                        @endif
                     </div>
                 </div><!-- End Contact Form -->
             </div>
@@ -53,220 +76,241 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
     <script src="{{ asset('form-builder/form-render.min.js') }}"></script>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     {{-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
     <script>
         jQuery(function($) {
-            var formData = {!! $formData !!}; // Menggunakan PHP Blade untuk menyisipkan data JSON
-            var fbRender = $('#fb-render');
-            var saveButton = $('#save-button');
+            var formData = {!! json_encode($formData) !!}; // Menggunakan PHP Blade untuk menyisipkan data JSON
+            var fbRender = $('#stepContainer');
+            var currentStep = 0;
+            var totalSteps = formData.length;
+            var userData = {}; // Menyimpan jawaban user
 
-            // Render setiap field ke dalam div masing-masing
-            formData.forEach(function(field) {
-                // Buat div untuk menyimpan field
-                var fieldDiv = $('<div class="form-eval"></div>');
+            // Mencegah form terkirim ketika menekan Enter dalam input
+            $(document).on("keydown", "input, textarea", function(event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Mencegah submit form
 
-                // Tambahkan header dan paragraph ke dalam satu div
-                if (field.type === 'header' || field.type === 'paragraph') {
-                    var element = $('<' + field.type + '></' + field.type + '>').addClass('form-text').html(
-                        field.label);
-                    fieldDiv.append(element);
-                    // Tambahkan margin antara label dan input
-                    fieldDiv.css('margin-bottom', '10px');
-                } else {
-                    // Tambahkan label jika ada
-                    if (field.label) {
-                        var label = $('<label></label>').html(field.label);
-                        // Tambahkan asterisk (*) jika field required
-                        if (field.required) {
-                            label.append($('<span>*</span>').css('color', 'red'));
-                        }
-                        fieldDiv.append(label);
+                    if ($("#nextBtn").is(":visible") && !$("#nextBtn").prop("disabled")) {
+                        $("#nextBtn").click(); // Jika tombol Next tersedia, lanjut ke step berikutnya
                     }
                 }
-
-
-
-                // Tambahkan input field
-                switch (field.type) {
-                    case 'text':
-                        var input = $('<input class="form-control"></input>').attr('type', field
-                            .type);
-                        // Tambahkan atribut lain jika diperlukan
-                        if (field.name) {
-                            input.attr('name', field.name);
-                        }
-                        if (field.required) {
-                            input.prop('required', true);
-                        }
-                        fieldDiv.append(input);
-                        break;
-                    case 'textarea':
-                        var textarea = $('<textarea class="form-control form-eval"></textarea>');
-                        // Tambahkan atribut lain jika diperlukan
-                        if (field.name) {
-                            textarea.attr('name', field.name);
-                        }
-                        if (field.required) {
-                            textarea.prop('required', true);
-                        }
-                        fieldDiv.append(textarea);
-                        break;
-                    case 'radio-group':
-                        // Buat div untuk menyimpan radio button
-                        var radioDiv;
-                        if (field.inline) {
-                            radioDiv = $('<div class="form-group"></div>');
-                        } else {
-                            radioDiv = $('<div></div>');
-                        }
-
-                        // Loop melalui nilai-nilai radio dan tambahkan ke radioDiv
-                        field.values.forEach(function(value) {
-                            var radio = $('<input class="form-check-input"></input>').attr('type',
-                                'radio').attr('name', field.name).val(value.value);
-                            if (field.required) {
-                                radio.prop('required', true);
-                            }
-                            var label = $('<label class="form-check-label"></label>').append(radio)
-                                .append(value.label);
-                            // Buat div baru dengan kelas 'form-check' untuk setiap pasangan radio button dan labelnya jika tidak dalam mode inline
-                            if (!field.inline) {
-                                var radioItemDiv = $('<div class="form-check"></div>');
-                                radioItemDiv.append(label);
-                                radioDiv.append(radioItemDiv);
-                            } else {
-                                if (field.inline) {
-                                    label.addClass('form-check-inline');
-                                }
-                                radioDiv.append(label);
-                            }
-                        });
-                        // Tambahkan radioDiv ke dalam fieldDiv
-                        fieldDiv.append(radioDiv);
-                        break;
-                    case 'check-group':
-                        var checkDiv;
-                        if (field.inline) {
-                            checkDiv = $('<div class="form-group"></div>');
-                        } else {
-                            checkDiv = $('<div></div>');
-                        }
-
-                        field.values.forEach(function(value) {
-                            var checkbox = $('<input class="form-check-input"></input>').attr(
-                                'type', 'checkbox').attr('name', field.name + '[]').val(value
-                                .value);
-                            if (field.required) {
-                                checkbox.prop('required', true);
-                            }
-                            var label = $('<label class="form-check-label"></label>').append(
-                                checkbox).append(value.label);
-
-                            if (!field.inline) {
-                                var checkItemDiv = $('<div class="form-check"></div>');
-                                checkItemDiv.append(label);
-                                checkDiv.append(checkItemDiv);
-                            } else {
-                                if (field.inline) {
-                                    label.addClass('form-check-inline');
-                                }
-                                checkDiv.append(label);
-                            }
-                        });
-                        fieldDiv.append(checkDiv);
-                        break;
-
-                        // Untuk date field
-                    case 'date':
-                        var dateInput = $('<input class="form-control"></input>').attr('type', 'date');
-                        // Tambahkan atribut lain jika diperlukan
-                        if (field.name) {
-                            dateInput.attr('name', field.name);
-                        }
-                        if (field.required) {
-                            dateInput.prop('required', true);
-                        }
-                        fieldDiv.append(dateInput);
-                        break;
-
-                        // Untuk select
-                    case 'select':
-                        var select = $('<select class="form-control"></select>').attr('name', field.name);
-                        // Tambahkan atribut lain jika diperlukan
-                        if (field.required) {
-                            select.prop('required', true);
-                        }
-                        // Tambahkan opsi select
-                        field.values.forEach(function(option) {
-                            var optionElement = $('<option></option>').attr('value', option.value)
-                                .text(option.label);
-                            select.append(optionElement);
-                        });
-                        fieldDiv.append(select);
-                        break;
-
-                        // Untuk file upload
-                    case 'file':
-                        var fileInput = $('<input class="form-control-file"></input>').attr('type', 'file');
-                        // Tambahkan atribut lain jika diperlukan
-                        if (field.name) {
-                            fileInput.attr('name', field.name);
-                        }
-                        if (field.required) {
-                            fileInput.prop('required', true);
-                        }
-                        fieldDiv.append(fileInput);
-                        break;
-
-                        // Untuk field input number
-                    case 'number':
-                        var numberInput = $('<input class="form-control"></input>').attr('type', 'number');
-                        // Tambahkan atribut lain jika diperlukan
-                        if (field.name) {
-                            numberInput.attr('name', field.name);
-                        }
-                        if (field.required) {
-                            numberInput.prop('required', true);
-                        }
-                        fieldDiv.append(numberInput);
-                        break;
-
-                        // Handle jenis field lainnya sesuai kebutuhan
-                }
-
-                // Tambahkan field ke dalam div render
-                fbRender.append(fieldDiv);
             });
 
-
-            // Lanjutkan pengiriman formulir
-            $('#myForm').on('submit', function() {
-                var userData = {}; // Data pengguna dari formulir
-
-                // Ambil nilai dari setiap input dan simpan dalam userData
-                $('#fb-render input, #fb-render textarea').each(function() {
+            function saveCurrentStepData() {
+                $('#stepContainer input, #stepContainer textarea, #stepContainer select').each(function() {
                     var name = $(this).attr('name');
-                    var value = $(this).val();
+                    if (!name) return;
 
-                    // Periksa apakah input adalah input radio dan apakah dipilih
-                    if ($(this).is(':radio') && !$(this).is(':checked')) {
-                        // Jika input radio tidak dipilih, jangan masukkan ke dalam userData
-                        return; // Lanjutkan ke input berikutnya dalam loop
+                    if ($(this).is(':radio')) {
+                        if ($(this).is(':checked')) {
+                            userData[name] = $(this).val();
+                        }
+                    } else if ($(this).is(':checkbox')) {
+                        if (!userData[name]) userData[name] = [];
+                        if ($(this).is(':checked')) {
+                            userData[name].push($(this).val());
+                        }
+                    } else {
+                        userData[name] = $(this).val();
                     }
-
-                    // Masukkan nilai input ke dalam userData
-                    userData[name] = value;
                 });
 
-                // Mengubah data respons menjadi string JSON
-                var jsonData = JSON.stringify(userData);
-                $('#data_respons').val(jsonData);
+                console.log("Data sementara:", userData); // Debugging
+            }
 
-                console.log(jsonData);
+            function validateStep() {
+                var isValid = true;
+                $('#stepContainer input, #stepContainer textarea, #stepContainer select').each(function() {
+                    var name = $(this).attr('name');
+                    if (!name) return;
 
-                // Lanjutkan pengiriman formulir
-                return true;
+                    if ($(this).is(':radio')) {
+                        if (!$('input[name="' + name + '"]:checked').length) {
+                            isValid = false;
+                        }
+                    } else if ($(this).is(':checkbox')) {
+                        if (!$('input[name="' + name + '"]:checked').length) {
+                            isValid = false;
+                        }
+                    } else {
+                        if (!$(this).val()) {
+                            isValid = false;
+                        }
+                    }
+                });
+
+                return isValid;
+            }
+
+            function renderStep(step) {
+                fbRender.fadeOut(300, function() {
+                    fbRender.empty();
+                    var field = formData[step];
+                    var fieldDiv = $('<div class="form-eval mb-3"></div>');
+
+                    if (field.label) {
+                        var label = $('<label></label>').html(field.label);
+                        if (field.required) label.append($('<span>*</span>').css('color', 'red'));
+                        fieldDiv.append(label);
+                    }
+
+                    var input;
+                    switch (field.type) {
+                        case 'text':
+                        case 'number':
+                        case 'date':
+                            input = $('<input class="form-control">')
+                                .attr('type', field.type)
+                                .attr('name', field.name);
+                            break;
+                        case 'textarea':
+                            input = $('<textarea class="form-control"></textarea>')
+                                .attr('name', field.name);
+                            break;
+                        case 'radio-group':
+                            var radioDiv = $('<div></div>');
+                            field.values.forEach(function(value) {
+                                var radio = $('<input class="form-check-input">')
+                                    .attr('type', 'radio')
+                                    .attr('name', field.name)
+                                    .val(value.value);
+                                if (userData[field.name] === value.value) {
+                                    radio.prop('checked', true);
+                                }
+                                var radioLabel = $('<label class="form-check-label"></label>')
+                                    .text(value.label);
+                                radioDiv.append($('<div class="form-check"></div>').append(radio)
+                                    .append(radioLabel));
+                            });
+                            fieldDiv.append(radioDiv);
+                            break;
+                        case 'checkbox-group':
+                            var checkboxDiv = $('<div></div>');
+                            field.values.forEach(function(value) {
+                                var checkbox = $('<input class="form-check-input">')
+                                    .attr('type', 'checkbox')
+                                    .attr('name', field.name)
+                                    .val(value.value);
+                                if (userData[field.name] && userData[field.name].includes(value
+                                        .value)) {
+                                    checkbox.prop('checked', true);
+                                }
+                                var checkboxLabel = $('<label class="form-check-label"></label>')
+                                    .text(value.label);
+                                checkboxDiv.append($('<div class="form-check"></div>').append(
+                                    checkbox).append(checkboxLabel));
+                            });
+                            fieldDiv.append(checkboxDiv);
+                            break;
+                        case 'select':
+                            var select = $('<select class="form-control"></select>').attr('name', field
+                                .name);
+                            field.values.forEach(function(option) {
+                                var optionElement = $('<option></option>')
+                                    .attr('value', option.value)
+                                    .text(option.label);
+                                if (userData[field.name] === option.value) {
+                                    optionElement.prop('selected', true);
+                                }
+                                select.append(optionElement);
+                            });
+                            fieldDiv.append(select);
+                            break;
+                    }
+
+                    if (input) {
+                        if (userData[field.name]) {
+                            input.val(userData[field.name]);
+                        }
+                        fieldDiv.append(input);
+                    }
+
+                    fbRender.append(fieldDiv).fadeIn(300);
+
+                    $('#prevBtn').toggle(step > 0);
+                    $('#nextBtn').toggle(step < totalSteps - 1);
+                    $('#submitBtn').toggle(step === totalSteps - 1);
+
+                    checkNextButton();
+                });
+            }
+
+            function checkNextButton() {
+                $('#nextBtn').prop('disabled', !validateStep());
+            }
+
+            $('#stepContainer').on('input change', 'input, textarea, select', function() {
+                checkNextButton();
+            });
+
+            renderStep(currentStep);
+
+            $('#nextBtn').click(function() {
+                if (!validateStep()) {
+                    alert("Harap isi semua pertanyaan sebelum melanjutkan.");
+                    return;
+                }
+
+                saveCurrentStepData();
+                if (currentStep < totalSteps - 1) {
+                    currentStep++;
+                    renderStep(currentStep);
+                }
+            });
+
+            $('#prevBtn').click(function() {
+                saveCurrentStepData();
+                if (currentStep > 0) {
+                    currentStep--;
+                    renderStep(currentStep);
+                }
+            });
+
+            $('#submitBtn').click(function(e) {
+                e.preventDefault();
+
+                saveCurrentStepData(); // Simpan data terakhir sebelum submit
+
+                $('#data_respons').val(JSON.stringify(userData)); // Simpan ke hidden input
+
+                console.log("Data yang akan dikirim:", userData); // Debugging
+
+                $.ajax({
+                    url: "{{ route('reguler.pelatihan.studi.store') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id_reguler: "{{ $reguler->id_reguler }}",
+                        id_peserta: "{{ $peserta->id_peserta_reguler }}",
+                        data_respons: JSON.stringify(userData)
+                    },
+                    success: function(response) {
+                        Swal.fire({
+                            title: "Berhasil!",
+                            text: "Form Studi Dampak berhasil disimpan!",
+                            icon: "success",
+                            confirmButtonText: "OK"
+                        }).then(() => {
+                            window.location.href =
+                                "{{ route('reguler.pelatihan.list', ['nama_pelatihan' => $reguler->nama_pelatihan]) }}";
+                        });
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: "Gagal!",
+                            text: "Terjadi kesalahan: " + xhr.responseText,
+                            icon: "error",
+                            confirmButtonText: "Tutup"
+                        });
+                    }
+                });
             });
         });
     </script>

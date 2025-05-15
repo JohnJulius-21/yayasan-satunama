@@ -23,14 +23,28 @@
         @else
             @foreach ($permintaans as $item)
                 <div class="card px-3 my-4 py-3">
-                    <strong>{{ $item['id_pelatihan'] }}</strong> -
-                    {{-- Tanggal Mulai: {{ $item->tanggal_mulai }} |
-                    Tanggal Selesai: {{ $item->tanggal_selesai }} |
-                    <a href="{{ route('reguler.pelatihan.show', $item->id_pelatihan) }}" class="btn btn-info">Lihat --}}
-                    {{-- Detail</a> --}}
+                    <strong>{{ $item->permintaan_pelatihan->nama_pelatihan }}</strong>
+                    <p>Tanggal Pelatihan:
+                        {{ \Carbon\Carbon::parse($item->permintaan_pelatihan->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
+                        -
+                        {{ \Carbon\Carbon::parse($item->permintaan_pelatihan->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}
+                    </p>
+                    <div class="text-start">
+                        @if ($item->permintaan_pelatihan)
+                            <a href="{{ route('permintaan.pelatihan.list', urlencode($item->permintaan_pelatihan->nama_pelatihan)) }}"
+                                class="btn btn-outline-success">Lihat Detail
+                            </a>
+                        @endif
+                    </div>
+                    {{-- <a href="{{ route('reguler.pelatihan.show', $item->id_pelatihan) }}" class="btn btn-info">Lihat
+                    Detail</a> --}}
                 </div>
             @endforeach
         @endif
+
+        <div class="pagination">
+            {{ $permintaans->links('pagination::bootstrap-4') }}
+        </div>
     </div>
     <style>
         .img-small {

@@ -11,11 +11,25 @@
             </nav>
         </div>
     </div>
+    @if (session('error'))
+        <script>
+            new Notyf().error('{{ session('error') }}');
+        </script>
+    @endif
+
     <div class="container mt-3">
         <div class="row">
             <div class="d-flex justify-content-end mb-3">
-                <a class="btn btn-success" href="{{ route('userForumCreate') }}">Buat Ruang Diskusi</a>
+                @if (Auth::check())
+                    <a class="btn btn-success" href="{{ route('userForumCreate') }}">Buat Ruang Diskusi</a>
+                @else
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Buat Ruang Diskusi
+                    </button>
+                @endif
             </div>
+
+
             <!-- Sidebar -->
             <div class="col-md-4">
                 <!-- Kategori -->
@@ -27,8 +41,8 @@
                             <div class="mb-4">
                                 <form action="" method="GET">
                                     <div class="input-group">
-                                        <input type="text" name="search" class="form-control"
-                                            placeholder="Cari Diskusi" value="{{ request('search') }}">
+                                        <input type="text" name="search" class="form-control" placeholder="Cari Diskusi"
+                                            value="{{ request('search') }}">
                                         <button type="submit" class="btn btn-success">Search</button>
                                     </div>
                                 </form>
@@ -59,7 +73,7 @@
 
                         </div>
                         <div class="card-footer">
-                             <!-- Jumlah Komentar -->
+                            <!-- Jumlah Komentar -->
                             <div>
                                 <i class="fas fa-comment"></i> {{ $discussion->comments->count() }} Komentar
                             </div>

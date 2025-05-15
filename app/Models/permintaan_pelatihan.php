@@ -28,8 +28,25 @@ class permintaan_pelatihan extends Model
         'deskripsi_pelatihan',
     ];
 
+    public function peserta_permintaan()
+    {
+        return $this->hasMany(peserta_pelatihan_permintaan::class, 'id_pelatihan_permintaan', 'id_pelatihan_permintaan');
+    }
+
+    public function permintaan()
+    {
+        return $this->belongsTo(permintaan::class, 'id_permintaan', 'id_permintaan');
+    }
+
+    public function tema()
+    {
+        return $this->belongsTo(tema::class, 'id_tema');
+    }
+
     public function fasilitators()
     {
         return $this->belongsToMany(Fasilitator::class, 'permintaan_fasilitators', 'id_pelatihan', 'id_fasilitator');
     }
+
+
 }

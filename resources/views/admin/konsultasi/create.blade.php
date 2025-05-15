@@ -17,7 +17,7 @@
         </ol>
     </nav>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-        <h1 class="h2">Form Tambah Pelatihan</h1>
+        <h1 class="h4">Form Tambah Pelatihan</h1>
     </div>
 
     <form method="post" action="{{ route('konsultasiStoreAdmin') }}" enctype="multipart/form-data">
@@ -113,30 +113,7 @@
                                 </div>
                             @enderror
                         </div> --}}
-
-                        <!-- Gambar, Materi, dan Deskripsi -->
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Upload Poster Pelatihan</label>
-                            <input value="{{ old('image') }}" class="form-control @error('image.*') is-invalid @enderror"
-                                type="file" id="image" name="image[]" multiple>
-                            @error('image.*')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="file" class="form-label">Upload Materi</label>
-                            <input value="{{ old('file') }}" class="form-control @error('file.*') is-invalid @enderror"
-                                type="file" id="file" name="file[]" multiple>
-                            @error('file.*')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
+                        
                         <div class="trix-content mb-3">
                             <label for="deskripsi_pelatihan" class="form-label">Deskripsi Pelatihan</label>
                             {{-- <textarea class="form-control" name="deskripsi_pelatihan" id="deskripsi_pelatihan" cols="70" rows="10"></textarea> --}}
@@ -189,6 +166,31 @@
                             <input type="date" id="tanggal_selesai" class="form-control" name="tanggal_selesai"
                                 value="{{ old('tanggal_selesai') }}">
                         </div>
+                    </div>
+                </div>
+
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <div class="d-flex justify-content-start">
+                            <h6 class="m-0 font-weight-bold text-success">Materi</h6>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <label for="file" class="form-label">Upload Materi</label>
+                        <input value="{{ old('file') }}" class="form-control @error('file.*') is-invalid @enderror"
+                            type="file" id="file" name="file[]" multiple>
+                        <div class="p-1">
+                            <li><small>File tidak boleh lebih dari 5mb</small></li>
+                            <li><small>Kosongkan kolom upload materi jika tidak ingin mengupload materi</small></li>
+                            
+                            
+                        </div>
+                        @error('file.*')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
                     </div>
                 </div>
 

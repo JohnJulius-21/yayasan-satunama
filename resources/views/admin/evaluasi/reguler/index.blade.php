@@ -1,18 +1,63 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Evaluasi Pelatihan</h1>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h6 class="h4">Evaluasi Pelatihan Reguler</h6>
     </div>
-    @if (Session::has('success'))
-        <div class="pt-3">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ Session::get('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
+    @if (session('success'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-thumbs-up',
+                    title: 'Berhasil',
+                    message: "{{ session('success') }}"
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 3000
+                });
+            });
+        </script>
+    @endif
+    @if (session('warning'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-exclamation-triangle',
+                    title: 'Peringatan',
+                    message: "{{ session('warning') }}"
+                }, {
+                    type: 'warning',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 4000
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('info'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-info-circle',
+                    title: 'Info',
+                    message: "{{ session('info') }}"
+                }, {
+                    type: 'info',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 4000
+                });
+            });
+        </script>
     @endif
     <div class="col-lg-18 mb-4 ">
         {{-- <div class="container"> --}}
@@ -46,9 +91,10 @@
                                     </td>
                                     <td>
                                         <a href="{{ route('evaluasiShowRegulerAdmin', $item->id_reguler) }}"
-                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
-                                        <a href="{{ url('/admin/evaluasi/edit-form-evaluasi-reguler/' . $item->id_reguler) }}"
-                                            class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
+                                            class="btn btn-primary px-2">Lihat Detail</a>
+                                        {{-- <button class="btn btn-danger btn-delete" data-action="">
+                                            <i style="width:17px" class="la la-trash"></i>
+                                        </button> --}}
                                     </td>
                                 </tr>
                             @endforeach
@@ -57,7 +103,7 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
     <!-- Sertakan jQuery dan DataTables JS -->
     {{-- <link

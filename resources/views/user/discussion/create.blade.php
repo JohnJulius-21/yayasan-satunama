@@ -20,29 +20,47 @@
             <div class="card-body">
                 <h5 class="card-title">
             </div>
-            <form action="{{ route('userForumStore') }}" method="POST">
+            <form action="{{ route('userForumStore') }}" method="POST" enctype="multipart/form-data">
                 <div class="card-body">
-                    {{-- {{ route('userForumStore') }} --}}
                     @csrf
                     <input type="hidden" name="id_user" value="{{ Auth::id() }}">
 
+                    {{-- Judul --}}
                     <div class="mb-3">
                         <label for="title" class="form-label">Judul</label>
-                        <input type="text" class="form-control" id="title" name="title"
-                            value="{{ old('title') }}">
+                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title"
+                            name="title" value="{{ old('title') }}">
+                        @error('title')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
+
+                    {{-- File --}}
                     <div class="mb-3">
-                        <label for="title" class="form-label">Isi Diskusi</label>
-                        {{-- <input type="text" class="form-control" id="title" name="title"
-                            value="{{ old('title') }}"> --}}
-                        <textarea class="ckeditor form-control" name="content" id="content"></textarea>
+                        <label for="file" class="form-label">File</label>
+                        <input type="file" class="form-control @error('file.*') is-invalid @enderror" id="file"
+                            name="file[]" multiple>
+                        @error('file.*')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
-                    
+
+                    {{-- Isi Diskusi --}}
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Isi Diskusi</label>
+                        <textarea class="ckeditor form-control @error('content') is-invalid @enderror" name="content" id="content">{{ old('content') }}</textarea>
+                        @error('content')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
                 </div>
+
                 <div class="card-footer d-flex justify-content-end">
                     <button type="submit" class="btn btn-success">Posting</button>
                 </div>
             </form>
+
+
         </div>
     </div>
     <script>
@@ -88,4 +106,3 @@
         </div>
     @enderror
 </div> --}}
-

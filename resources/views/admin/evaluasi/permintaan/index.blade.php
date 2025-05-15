@@ -2,23 +2,31 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Evaluasi Pelatihan</h1>
+        <h6 class="h4">Evaluasi Pelatihan Permintaan</h6>
     </div>
-    @if (Session::has('success'))
-        <div class="pt-3">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ Session::get('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
+    @if (session('success'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-thumbs-up',
+                    title: 'Berhasil',
+                    message: "{{ session('success') }}"
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 3000
+                });
+            });
+        </script>
     @endif
     <div class="col-lg-18 mb-4 ">
         {{-- <div class="container"> --}}
 
         <!-- Project Card Example -->
-        
+
         <div class="card shadow mb-4">
             <div class="card-header py-3">
                 <div class="d-flex justify-content-start">
@@ -36,20 +44,22 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {{-- @foreach ($data2 as $item)
+                            @foreach ($permintaan as $item)
                                 <tr>
                                     <td>{{ $item->nama_pelatihan }}</td>
                                     <td>{{ \Carbon\Carbon::parse($item->waktu_pelaksanaan)->format('d M Y') }} -
                                         {{ \Carbon\Carbon::parse($item->waktu_selesai)->format('d M Y') }}</td>
                                     <td>
-                                        <a href="{{ route('dashboard.evaluasi.showPermintaan', $item->id) }}"
-                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
-                                        <a href="{{ url('/dashboard/evaluasi/edit-permintaan/' . $item->id) }}" class="btn btn-warning px-2"><i style="width:17px"
-                                                data-feather="edit"></i></a>
+                                        <a href="{{ route('evaluasiShowPermintaanAdmin', $item->id_pelatihan_permintaan) }}"
+                                            class="btn btn-primary px-2">Lihat Detail</a>
+                                        
+                                        {{-- <button class="btn btn-danger btn-delete" data-action="">
+                                            <i style="width:17px" class="la la-trash"></i>
+                                        </button> --}}
                                     </td>
                                 </tr>
-                            @endforeach --}}
-                            <tr>
+                            @endforeach
+                            {{-- <tr>
                                 <td>test</td>
                                 <td>test
                                 </td>
@@ -60,7 +70,7 @@
                                     <a href="" class="btn btn-warning px-2"><span
                                             class="mdi mdi-pencil-outline"></span></i></a>
                                 </td>
-                            </tr>
+                            </tr> --}}
                         </tbody>
                     </table>
                 </div>

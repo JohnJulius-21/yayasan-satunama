@@ -207,3 +207,11 @@
   document.addEventListener('scroll', navmenuScrollspy);
 
 })();
+
+function removeSkeleton(img) {
+  let skeleton = img.previousElementSibling;
+  if (skeleton) {
+      skeleton.style.display = 'none';
+  }
+  img.style.display = 'block';
+}

@@ -21,8 +21,25 @@
             <div class="card-body">
                 <p>{!! $discussion->content !!}</p>
             </div>
+            <div class="card-body">
+                @php
+                    // Cek apakah ada file yang valid (tidak null)
+                    $validFiles = collect($files)->filter(fn($file) => !is_null($file->file_url));
+                @endphp
+
+                @if ($validFiles->isNotEmpty())
+                    @foreach ($validFiles as $file)
+                        <div class="card p-3 mb-2">
+                            <p>File {{ $loop->iteration }}</p>
+                            <a href="{{ $file->file_url }}" target="_blank">Download File</a><br>
+                        </div>
+                    @endforeach
+                @endif
+
+            </div>
             <div class="card-footer">
-                <p class="text-muted">Diposting oleh: {{ $discussion->user->name }} | {{ $discussion->created_at->diffForHumans() }}</p>
+                <p class="text-muted">Diposting oleh: {{ $discussion->user->name }} |
+                    {{ $discussion->created_at->diffForHumans() }}</p>
             </div>
         </div>
 
@@ -30,11 +47,12 @@
         <div class="card mt-3">
             <div class="card-header">Komentar</div>
             <div class="card-body">
-                @foreach ($discussion->comments as $comment)
+                @foreach ($discussion->comments->whereNull('id_parent') as $comment)
                     @include('partials.comment', ['comment' => $comment])
                 @endforeach
             </div>
         </div>
+
 
         <!-- Form Tambah Komentar -->
         @auth
@@ -53,7 +71,7 @@
                 </div>
             </div>
         @else
-            <p class="text-center mt-3">Silakan <a href="{{ route('masuk') }}">login</a> untuk berkomentar.</p>
+            <p class="text-center mt-3">Silakan <a href="" data-bs-toggle="modal" data-bs-target="#loginModal">login</a> untuk berkomentar.</p>
         @endauth
     </div>
 @endsection

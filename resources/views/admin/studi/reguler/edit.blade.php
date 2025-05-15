@@ -1,9 +1,59 @@
 @extends('layouts.admin')
 
 @section('content')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('studiRegulerAdmin') }}" style="color: green !important;">Studi Dampak Reguler</a>
+            </li>
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('studidampakShowRegulerAdmin', $form->id_reguler) }}"
+                    style="color: green !important;">Detail
+                    Studi Dampak Reguler</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Form Studi Dampak Pelatihan Reguler</li>
+        </ol>
+    </nav>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h2>Edit Form Evaluasi</h2>
+        <h6 class="h4">Edit Form Studi Dampak Reguler</h6>
     </div>
+    @if (session('warning'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-exclamation-triangle',
+                    title: 'Peringatan',
+                    message: "{{ session('warning') }}"
+                }, {
+                    type: 'warning',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 4000
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('info'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-info-circle',
+                    title: 'Info',
+                    message: "{{ session('info') }}"
+                }, {
+                    type: 'info',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 4000
+                });
+            });
+        </script>
+    @endif
     <div class="card shadow mb-4">
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-success">Edit Form Evaluasi</h6>
@@ -11,8 +61,7 @@
 
         <div class="card-body">
 
-            <form id="hidden-form" action="" method="post"
-                style="display: none;">
+            <form id="hidden-form" action="{{ route('studidampakUpdateRegulerAdmin', ['id' => $id]) }}" method="post" style="display: none;">
                 @csrf
                 <input type="hidden" id="form" name="form">
                 <input type="hidden" name="id_pelatihan" value="{{ $id }}">
@@ -58,7 +107,10 @@
                     'autocomplete',
                     'button',
                     'hidden',
-                ],
+                    'number',
+                    'file',
+                    'paragraph',
+                ]
 
             };
 

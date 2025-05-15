@@ -1,14 +1,16 @@
 @extends('layouts.admin')
 
 @section('content')
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item" style="color: green"><a href="{{ route('fasilitatorAdmin') }}">Fasilitator</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Detail Fasilitator</li>
-        </ol>
-    </nav>
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Detail Fasilitator</h1>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" style="color: green !important;">
+            <a href="{{ route('fasilitatorAdmin') }}" style="color: green !important;">Fasilitator</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">Detail Informasi Fasilitator</li>
+    </ol>
+</nav>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h6 class="h4">Detail Informasi Fasilitator</h6>
     </div>
 
     <div class="card shadow ">
@@ -33,6 +35,10 @@
                             <tr>
                                 <th>Email : </th>
                                 <td>{{ $item['email_fasilitator'] }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nomor Telepon : </th>
+                                <td>{{ $item['nomor_telepon'] }}</td>
                             </tr>
                             <tr>
                                 <th>Alamat : </th>

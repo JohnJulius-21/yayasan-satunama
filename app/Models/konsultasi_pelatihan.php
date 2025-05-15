@@ -41,8 +41,27 @@ class konsultasi_pelatihan extends Model
     // }
 
     // Relasi ke fasilitator melalui tabel pivot reguler_fasilitators
+    public function peserta_konsultasi()
+    {
+        return $this->hasMany(peserta_pelatihan_konsultasi::class, 'id_pelatihan_konsultasi', 'id_konsultasi');
+    }
+
+    public function konsultasi()
+    {
+        return $this->belongsTo(Konsultasi::class, 'id_konsultasi', 'id_konsultasi');
+    }
+    public function tema()
+    {
+        return $this->belongsTo(tema::class, 'id_tema');
+    }
+
     public function fasilitators()
     {
         return $this->belongsToMany(Fasilitator::class, 'konsultasi_fasilitators', 'id_pelatihan', 'id_fasilitator');
     }
+
+    // public function fasilitator_konsultasi()
+    // {
+    //     return $this->belongsToMany(fasilitator_pelatihan_konsultasi::class, 'konsultasi_fasilitators', 'id_pelatihan', 'id_fasilitator');
+    // }
 }

@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h5">Daftar Pelatihan Reguler</h1>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h6 class="h4">Daftar Pelatihan Reguler</h6>
         <div class="d-flex justify-content-end">
             <a href="{{ route('regulerCreateAdmin') }}" class="btn btn-success "><i style="width:17px" data-feather="plus"></i>
                 Tambah Pelatihan</a>
@@ -24,21 +24,8 @@
                     delay: 3000
                 });
             });
-
-           
         </script>
     @endif
-
-    {{-- @if (Session::has('success'))
-        <div class="pt-3">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ Session::get('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
-    @endif --}}
     <div class="col-lg-18 mb-4 ">
         {{-- <div class="container"> --}}
 
@@ -56,7 +43,8 @@
                         <thead>
                             <tr>
                                 <th class="col-md-3" scope="col">Nama Pelatihan</th>
-                                <th class="col-md-2" scope="col">Tanggal Pelatihan</th>
+                                <th class="col-md-2" scope="col">Tanggal Pendaftaran Pelatihan</th>
+                                <th class="col-md-2" scope="col">Tanggal Pelaksanaan Pelatihan</th>
                                 <th class="col-md-1" scope="col">Tindakan</th>
                             </tr>
                         </thead>
@@ -68,20 +56,20 @@
                                         -
                                         {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}
                                     </td>
+                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
+                                        -
+                                        {{ \Carbon\Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}
+                                    </td>
                                     <td>
                                         <a href="{{ route('regulerShowAdmin', $item->id_reguler) }}"
-                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i></a>
+                                            class="btn btn-primary px-2"><i style="width:17px" class="la la-eye"></i></a>
                                         <a href="{{ route('regulerEditAdmin', $item->id_reguler) }}"
-                                            class="btn btn-warning px-2"><i style="width:17px" data-feather="edit"></i></a>
-                                        <form class="d-inline m-0"
-                                            action="{{ route('regulerDestroyAdmin', $item->id_reguler) }}" method="post">
-                                            @method('DELETE')
-                                            @csrf
-                                            <button class="btn btn-danger px-2" type="submit"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')"><i
-                                                    style="width:17px" data-feather="trash"></i></button>
-
-                                        </form>
+                                            class="btn btn-warning px-2"><i style="width:17px" class="la la-edit"></i></a>
+                                        <button type="button" class="btn btn-danger btn-delete" data-toggle="modal"
+                                            data-target="#deleteModal"
+                                            data-action="{{ route('regulerDestroyAdmin', $item->id_reguler) }}">
+                                            <i class="la la-trash" style="width:17px;"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -92,10 +80,31 @@
         </div>
     </div>
 
-    <!-- Sertakan jQuery dan DataTables JS -->
-    {{-- <link
-        href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.css"
-        rel="stylesheet"> --}}
+    <!-- Modal Konfirmasi Hapus (Bootstrap 4) -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus Pelatihan ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <form id="deleteForm" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Hapus</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <link href="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.css" rel="stylesheet">
 
@@ -118,6 +127,13 @@
                     targets: 2
                 }]
             });
+
+            $('#deleteModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget) // Tombol yang membuka modal
+                var action = button.data('action') // Ambil action dari data-attribute
+                var modal = $(this)
+                modal.find('#deleteForm').attr('action', action) // Set action ke form
+            })
         });
     </script>
 @endsection

@@ -2,17 +2,25 @@
 
 @section('content')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Studi Dampak Pelatihan</h1>
+        <h6 class="h4">Studi Dampak Pelatihan</h6>
     </div>
-    @if (Session::has('success'))
-        <div class="pt-3">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ Session::get('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        </div>
+    @if (session('success'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-thumbs-up',
+                    title: 'Berhasil',
+                    message: "{{ session('success') }}"
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 3000
+                });
+            });
+        </script>
     @endif
     <div class="col-lg-18 mb-4 ">
         {{-- <div class="container"> --}}
@@ -43,9 +51,8 @@
                                     <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->format('d M Y') }}</td>
                                     <td>
                                         <a href="{{ route('studidampakShowRegulerAdmin', $item->id_reguler) }}"
-                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i>Lihat Detail</a>
-                                        <a href="{{ url('/admin/studidampak/edit-form-studidampak-reguler/' . $item->id_reguler) }}" class="btn btn-warning px-2"><i style="width:17px"
-                                                data-feather="edit"></i>Edit Form</a>
+                                            class="btn btn-primary px-2"><i style="width:17px" data-feather="eye"></i>Lihat
+                                            Detail</a>
                                     </td>
 
                                 </tr>

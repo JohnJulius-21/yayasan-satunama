@@ -11,4 +11,5 @@ class tema extends Model
 
     protected $primaryKey = 'id';
     protected $table = 'tema';
+    public $timestamps = false;
 }

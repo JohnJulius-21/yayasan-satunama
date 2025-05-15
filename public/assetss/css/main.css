@@ -286,6 +286,26 @@ h6 {
   }
 }
 
+.header .btn-getstarted.text-only,
+.header .btn-getstarted.text-only:focus {
+  background: none;
+  color: var(--accent-color);
+  font-size: 15px;
+  padding: 8px 15px;
+  margin-left: 30px;
+  border-radius: 0;
+  border: none;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.header .btn-getstarted.text-only:hover,
+.header .btn-getstarted.text-only:focus:hover {
+  color: color-mix(in srgb, var(--accent-color), black 20%);
+  text-decoration: underline;
+}
+
+
 .scrolled .header {
   box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
 }
@@ -1384,14 +1404,20 @@ section,
 /*--------------------------------------------------------------
 # Team Section
 --------------------------------------------------------------*/
-.team .member {
+.team .member .pic {
   position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* rasio 1:1 = kotak */
+  overflow: hidden;
 }
 
-.team .member .pic {
-  overflow: hidden;
-  margin-bottom: 50px;
+.team .member .pic img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
 }
+
 
 .team .member .member-info {
   background-color: var(--surface-color);
@@ -1449,6 +1475,23 @@ section,
 .team .member .social i {
   font-size: 16px;
   margin: 0 2px;
+}
+
+.team .swiper-pagination {
+  margin-top: 70px;
+  position: relative;
+}
+
+.team .swiper-pagination .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  background-color: var(--background-color);
+  opacity: 1;
+  border: 1px solid var(--accent-color);
+}
+
+.team .swiper-pagination .swiper-pagination-bullet-active {
+  background-color: var(--accent-color);
 }
 
 /*--------------------------------------------------------------
@@ -1753,4 +1796,149 @@ section,
 --------------------------------------------------------------*/
 .starter-section {
   /* Add your styles here */
+}
+
+#loginModal .modal-content {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+#loginModal .modal-header {
+  background: linear-gradient(135deg, #127517, #23af2e);
+  padding: 20px;
+  border: none;
+  color: white;
+}
+
+#loginModal .modal-title {
+  font-weight: 600;
+}
+
+#loginModal .modal-body {
+  padding: 30px;
+}
+
+#loginModal .logo-img {
+  max-width: 120px;
+  height: auto;
+}
+
+#loginModal .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+#loginModal .form-control {
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 2px solid #eee;
+  transition: all 0.3s ease;
+}
+
+#loginModal .form-control:focus {
+  border-color: #0f6922;
+  box-shadow: none;
+}
+
+#loginModal .input-group-text {
+  border: none;
+  background: transparent;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  color: #666;
+}
+
+#loginModal .input-group {
+  position: relative;
+}
+
+#loginModal .btn-login {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #127517, #23af2e);
+  border: none;
+  border-radius: 10px;
+  font-weight: 500;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+#loginModal .btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(9, 49, 24, 0.3);
+}
+
+#loginModal .social-login {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+#loginModal .btn-social {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid #eee;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+#loginModal .btn-social:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+#loginModal .btn-social i {
+  margin-right: 10px;
+}
+
+#loginModal .divider {
+  text-align: center;
+  margin: 20px 0;
+  position: relative;
+}
+
+#loginModal .divider::before,
+#loginModal .divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 45%;
+  height: 1px;
+  background: #eee;
+}
+
+#loginModal .divider::before {
+  left: 0;
+}
+
+#loginModal .divider::after {
+  right: 0;
+}
+
+#loginModal .divider span {
+  background: white;
+  padding: 0 10px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+#loginModal .form-check {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
+}
+
+#loginModal .password-toggle {
+  cursor: pointer;
+}
+
+#loginModal .register-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.9rem;
 }

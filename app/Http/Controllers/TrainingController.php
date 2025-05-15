@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\tema;
+use App\Models\User;
 use App\Models\mitra;
 use App\Models\negara;
+use App\Models\status;
 use App\Models\reguler;
 use App\Models\provinsi;
 use App\Models\pelatihan;
@@ -16,15 +18,33 @@ use App\Models\kabupaten_kota;
 use App\Models\jenis_organisasi;
 use Illuminate\Support\Facades\DB;
 use App\Models\informasi_pelatihan;
+use App\Models\konsultasi_pelatihan;
+use App\Models\permintaan_pelatihan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\form_evaluasi_reguler;
+use App\Models\hasil_evaluasi_reguler;
 use Illuminate\Support\Facades\Storage;
+use App\Models\form_evaluasi_konsultasi;
+use App\Models\form_evaluasi_permintaan;
 use App\Models\form_studidampak_reguler;
+use App\Models\hasil_evaluasi_konsultasi;
+use App\Models\hasil_evaluasi_permintaan;
+use App\Models\hasil_studidampak_reguler;
 use App\Models\peserta_pelatihan_reguler;
+use App\Models\form_studidampak_konsultasi;
+use App\Models\form_studidampak_permintaan;
 use App\Models\form_surveykepuasan_reguler;
 use App\Models\assesment_peserta_permintaan;
+use App\Models\hasil_studidampak_konsultasi;
+use App\Models\hasil_studidampak_permintaan;
+use App\Models\hasil_surveykepuasan_reguler;
 use App\Models\peserta_pelatihan_konsultasi;
 use App\Models\peserta_pelatihan_permintaan;
+use App\Models\form_surveykepuasan_konsultasi;
+use App\Models\form_surveykepuasan_permintaan;
+use App\Models\hasil_surveykepuasan_konsultasi;
+use App\Models\hasil_surveykepuasan_permintaan;
 
 class TrainingController extends Controller
 {
@@ -55,7 +75,23 @@ class TrainingController extends Controller
         // Ambil data images langsung dari tabel reguler_images
         $imageNames = DB::table('reguler_images')
             ->where('id_reguler', $id)
-            ->pluck('image_url'); // Ambil hanya nama file
+            ->pluck('image_url');
+
+        $imageUrls = [];
+
+        foreach ($imageNames as $filename) {
+            if ($filename) {
+                $cachePath = public_path('storage/cache_drive/' . $filename);
+
+                if (file_exists($cachePath)) {
+                    $imageUrls[] = asset('storage/cache_drive/' . $filename);
+                } else {
+                    $imageUrls[] = route('file.show', ['filename' => $filename]);
+                }
+            } else {
+                $imageUrls[] = asset('/img/default.jpg');
+            }
+        }
 
         // Ambil data fasilitator yang sudah terhubung dengan reguler ini dari tabel pivot reguler_fasilitators
         $fasilitators = DB::table('reguler_fasilitators')
@@ -69,33 +105,74 @@ class TrainingController extends Controller
         }
 
         // Return the view with the pelatihan details
-        return view('user.training.reguler.show', compact('pelatihan', 'fasilitators', 'imageNames'), [
+        return view('user.training.reguler.show', compact('pelatihan', 'fasilitators', 'imageUrls'), [
             'title' => 'Detail Pelatihan',
         ]);
     }
 
     public function indexReguler(Request $request)
     {
-        // Fetch the specific pelatihan by its ID
         $query = $request->input('search');
+        $status = $request->input('status'); // "buka" atau "tutup"
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
 
+        $regulerQuery = Reguler::query();
+
+        // Filter berdasarkan nama pelatihan
         if ($query) {
-            // Filter pelatihan berdasarkan nama_pelatihan
-            $reguler = reguler::where('nama_pelatihan', 'like', "%{$query}%")->get();
-        } else {
-            $reguler = reguler::all();
+            $regulerQuery->where('nama_pelatihan', 'like', "%{$query}%");
         }
 
-        // Cek apakah ada pelatihan yang ditemukan
+        // Filter berdasarkan status buka/tutup
+        if ($status == 'buka') {
+            $regulerQuery->where('tanggal_batas_pendaftaran', '>=', now());
+        } elseif ($status == 'tutup') {
+            $regulerQuery->where('tanggal_batas_pendaftaran', '<', now());
+        }
+
+        // Filter berdasarkan tanggal mulai dan akhir
+        if ($startDate) {
+            $regulerQuery->whereDate('tanggal_pendaftaran', '>=', $startDate);
+        }
+
+        if ($endDate) {
+            $regulerQuery->whereDate('tanggal_batas_pendaftaran', '<=', $endDate);
+        }
+
+        $reguler = $regulerQuery->get();
         $isEmpty = $reguler->isEmpty();
 
-        // Return the view with the pelatihan details
-        return view('user.training.reguler.index', compact('reguler', 'isEmpty'), [
+        // Ambil gambar
+        foreach ($reguler as $item) {
+            $item->image = DB::table('reguler_images')
+                ->where('id_reguler', $item->id_reguler)
+                ->value('image_url');
+        }
+
+        return view('user.training.reguler.index', [
+            'reguler' => $reguler,
+            'isEmpty' => $isEmpty,
+            'regulerPelatihan' => $reguler, // supaya variabel tetap konsisten di view
             'title' => 'Detail Pelatihan',
         ]);
     }
 
+
     public function getProvinsi($negaraId)
+    {
+        $provinsi = Provinsi::where('id_negara', $negaraId)->pluck('nama_provinsi', 'id');
+        return response()->json(['provinsi' => $provinsi]);
+    }
+
+    public function getKabupaten($provinsiId)
+    {
+        $kabupaten = kabupaten_kota::where('id_provinsi', $provinsiId)->pluck('nama_kabupaten_kota', 'id');
+        return response()->json(['kabupaten' => $kabupaten]);
+    }
+
+
+    public function getProvinsiSurvey($negaraId)
     {
         try {
             $provinsiList = Provinsi::where('id_negara', $negaraId)->pluck('nama_provinsi', 'id')->toArray();
@@ -107,7 +184,7 @@ class TrainingController extends Controller
     }
 
 
-    public function getKabupaten($provinsiId)
+    public function getKabupatenSurvey($provinsiId)
     {
         try {
             $kabupatenList = kabupaten_kota::where('id_provinsi', $provinsiId)->pluck('nama_kabupaten_kota', 'id')->toArray();
@@ -118,17 +195,18 @@ class TrainingController extends Controller
         }
     }
 
-    public function createReguler($id)
+    public function createReguler($id, Request $request)
     {
-        $user = auth()->user(); // Get the authenticated user
-        $reguler = reguler::findOrFail($id); // Retrieve pelatihan based on id
-        $negara = Negara::all(); // Retrieve all countries
+        $user = auth()->user();
+        $reguler = reguler::findOrFail($id);
+        $negara = Negara::all();
+        $jumlahPeserta = $request->query('jumlah', 1); // Default ke 1 jika tidak ada parameter
 
         return view('user.training.reguler.create', compact(
             'reguler',
             'user',
             'negara',
-
+            'jumlahPeserta'
         ), [
             'title' => 'Daftar Pelatihan',
         ]);
@@ -137,61 +215,90 @@ class TrainingController extends Controller
     public function storeReguler(Request $request)
     {
         $request->validate([
-            'nama_peserta' => 'required|string|max:100',
-            'email_peserta' => 'required|email|max:100',
-            'no_hp' => 'required|numeric',
-            'gender' => 'required',
-            'rentang_usia' => 'required',
-            'id_negara' => 'required|integer',
-            'id_provinsi' => 'required|integer',
-            'id_kabupaten' => 'required|integer',
-            'nama_organisasi' => 'required|string|max:100',
-            'organisasi' => 'required',
-            'jabatan_peserta' => 'required|string|max:100',
-            'informasi' => 'required',
-            'pelatihan_relevan' => 'required|string|max:100',
-            'harapan_pelatihan' => 'required',
-        ], [
-            'nama_peserta.required' => 'Kolom Nama peserta harus diisi.',
-            'email_peserta.required' => 'Kolom Email peserta harus diisi.',
-            'email_peserta.email' => 'Kolom Email peserta harus valid.',
-            'no_hp.required' => 'Kolom Nomor HP harus diisi.',
-            'no_hp.numeric' => 'Kolom ini harus diisi dengan angka.',
-            'gender.required' => 'Kolom Jenis kelamin harus diisi.',
-            'rentang_usia.required' => 'Kolom Rentang usia harus diisi.',
-            'id_negara.required' => 'Kolom Negara harus diisi.',
-            'id_provinsi.required' => 'Kolom Provinsi harus diisi.',
-            'id_kabupaten.required' => 'Kolom Kabupaten harus diisi.',
-            'organisasi.required' => 'Kolom Jenis Organisasi harus diisi.',
-            'informasi.required' => 'Kolom Informasi harus diisi.',
-            'harapan_pelatihan.required' => 'Kolom Harapan pelatihan harus diisi.',
-            'pelatihan_relevan.required' => 'Kolom ini harus diisi.',
-            'jabatan_peserta.required' => 'Kolom ini harus diisi.',
-            // 'harapan_pelatihan.max' => 'Harapan pelatihan maksimal hanya 255 karakter.',
+            'peserta' => 'required|array|min:1',
+            'peserta.*.nama_peserta' => 'required|string|max:100',
+            'peserta.*.email_peserta' => 'required|email|max:100',
+            'peserta.*.no_hp' => 'required|numeric',
+            'peserta.*.gender' => 'required',
+            'peserta.*.rentang_usia' => 'required',
+            'peserta.*.id_negara' => 'required|integer|exists:negara,id',
+            'peserta.*.id_provinsi' => 'required|integer|exists:provinsi,id',
+            'peserta.*.id_kabupaten' => 'required|integer|exists:kabupaten_kota,id',
+            'peserta.*.nama_organisasi' => 'required|string|max:100',
+            'peserta.*.organisasi' => 'required',
+            'peserta.*.jabatan_peserta' => 'required|string|max:100',
+            'peserta.*.informasi' => 'required',
+            'peserta.*.pelatihan_relevan' => 'required|string|max:100',
+            'peserta.*.harapan_pelatihan' => 'required|string|max:255',
         ]);
 
-        $pendaftaran = new peserta_pelatihan_reguler;
-        $pendaftaran->id_reguler = $request->id_reguler;
-        $pendaftaran->id_user = $request->id_user;
-        $pendaftaran->nama_peserta = $request->nama_peserta;
-        $pendaftaran->email_peserta = $request->email_peserta;
-        $pendaftaran->no_hp = $request->no_hp;
-        $pendaftaran->gender = $request->gender;
-        $pendaftaran->rentang_usia = $request->rentang_usia;
-        $pendaftaran->id_negara = $request->id_negara;
-        $pendaftaran->id_provinsi = $request->id_provinsi;
-        $pendaftaran->id_kabupaten = $request->id_kabupaten;
-        $pendaftaran->id_kabupaten = $request->id_kabupaten;
-        $pendaftaran->nama_organisasi = $request->nama_organisasi;
-        $pendaftaran->organisasi = $request->organisasi;
-        $pendaftaran->pelatihan_relevan = $request->pelatihan_relevan;
-        $pendaftaran->harapan_pelatihan = $request->harapan_pelatihan;
-        $pendaftaran->save();
+        $akunBaru = []; // Menyimpan peserta yang dibuatkan akun
 
-        // Redirect dengan pesan sukses
-        return redirect()->route('reguler.pelatihan')->with('success', 'Pendaftaran pelatihan berhasil.');
+        foreach ($request->peserta as $peserta) {
+            // Cek apakah user sudah ada berdasarkan email**
+            $user = User::where('email', $peserta['email_peserta'])->first();
+
+            // Jika belum ada, buat akun baru**
+            if (!$user) {
+                $defaultPassword = 'stc12345'; // Password default
+
+                $user = User::create([
+                    'name' => $peserta['nama_peserta'],
+                    'email' => $peserta['email_peserta'],
+                    'password' => Hash::make($defaultPassword),
+                    'roles' => 'peserta',
+                ]);
+
+                // Simpan info akun yang baru dibuat
+                $akunBaru[] = [
+                    'email' => $peserta['email_peserta'],
+                    'password' => $defaultPassword,
+                ];
+            }
+
+            // **Simpan data peserta ke pelatihan**
+            $peserta = peserta_pelatihan_reguler::create([
+                'id_reguler' => $request->id_reguler,
+                'id_user' => $user->id,
+                'nama_peserta' => $peserta['nama_peserta'],
+                'email_peserta' => $peserta['email_peserta'],
+                'no_hp' => $peserta['no_hp'],
+                'gender' => $peserta['gender'],
+                'rentang_usia' => $peserta['rentang_usia'],
+                'id_negara' => $peserta['id_negara'],
+                'id_provinsi' => $peserta['id_provinsi'],
+                'id_kabupaten' => $peserta['id_kabupaten'],
+                'nama_organisasi' => $peserta['nama_organisasi'],
+                'organisasi' => $peserta['organisasi'],
+                'informasi' => $peserta['informasi'],
+                'jabatan_peserta' => $peserta['jabatan_peserta'],
+                'pelatihan_relevan' => $peserta['pelatihan_relevan'],
+                'harapan_pelatihan' => $peserta['harapan_pelatihan'],
+            ]);
+
+             // **Simpan data peserta ke tabel status**
+            status::create([
+                'id_reguler' => $request->id_reguler,
+                'id_peserta' => $peserta->id_peserta_reguler,
+            ]);
+        }
+
+
+
+        // **Siapkan pesan sukses**
+        $successMessage = 'Pendaftaran pelatihan berhasil.';
+
+        if (!empty($akunBaru)) {
+            $successMessage .= 'Akun telah dibuat untuk peserta berikut:';
+            foreach ($akunBaru as $akun) {
+                $successMessage .= "Email: {$akun['email']}, Password: {$akun['password']}";
+            }
+
+        }
+
+        // **Redirect dengan pesan sukses**
+        return redirect()->route('reguler.pelatihan')->with('success', $successMessage);
     }
-
 
     // Pelatihan Permintaan
 
@@ -206,170 +313,73 @@ class TrainingController extends Controller
 
     public function storePermintaan(Request $request)
     {
-        // dd($request->all());
-        // $id_user = $request->id_mitra;
-        // dd($id_user);
-        // Validasi data formulir jika diperlukan
-        $request->validate(
-            [
-                'judul_pelatihan' => 'required',
-                'id_mitra' => 'required',
-                'id_tema' => 'required',
-                'no_pic' => 'required|numeric',
-                'tanggal_waktu_mulai' => 'required|date',
-                'tanggal_waktu_selesai' => 'required|date|after:tanggal_waktu_mulai',
-                'masalah' => 'required',
-                'kebutuhan' => 'required',
-                'materi' => 'required',
-                'nama_peserta.*' => 'required',
-                'email_peserta.*' => 'required|email',
-                'jenis_kelamin.*' => 'required',
-                'jabatan.*' => 'required',
-                'tanggung_jawab.*' => 'required',
-                'request_khusus' => 'required',
-            ],
-            [
-                // 'id_mitra.required' => 'Nama mitra harus diisi.',
-                'judul_pelatihan.required' => 'Judul pelatihan harus diisi.',
-                'id_mitra.required' => 'Mitra harus dipilih.',
-                'id_tema.required' => 'Tema pelatihan harus dipilih.',
-                'no_pic.required' => 'Nomor PIC harus diisi.',
-                'no_pic.numeric' => 'Nomor PIC harus diisi dengan angka.',
-                'tanggal_waktu_mulai.required' => 'Tanggal mulai harus diisi.',
-                'tanggal_waktu_mulai.date' => 'Format tanggal mulai tidak valid.',
-                'tanggal_waktu_selesai.required' => 'Tanggal selesai harus diisi.',
-                'tanggal_waktu_selesai.date' => 'Format tanggal selesai tidak valid.',
-                'tanggal_waktu_selesai.after' => 'Tanggal selesai harus setelah tanggal dan waktu mulai.',
-                'masalah.required' => 'Masalah yang dihadapi oleh lembaga harus diisi.',
-                'kebutuhan.required' => 'Kebutuhan lembaga harus diisi.',
-                'materi.required' => 'Materi dan topik pelatihan harus diisi.',
-                'nama_peserta.*.required' => 'Field ini harus diisi.',
-                'email_peserta.*.required' => 'Email peserta harus diisi.',
-                'email_peserta.*.email' => 'Format email peserta tidak valid.',
-                'jenis_kelamin.*.required' => 'Jenis kelamin peserta harus dipilih.',
-                'jabatan.*.required' => 'Jabatan peserta di lembaga harus diisi.',
-                'tanggung_jawab.*.required' => 'Tanggung jawab utama peserta harus diisi.',
-                'request_khusus.required' => 'Request khusus harus diisi.',
-            ]
-        );
-        // );
+        try {
+            $request->validate([
+                // ... aturan validasi ...
+            ], [
+                // ... pesan validasi ...
+            ]);
 
-        // 'id_user' => Auth::user()->id,
+            $id_user = Auth::user()->id;
 
-        $id_user = Auth::user()->id;
-        // Simpan data formulir ke dalam database
-        $permintaan = new permintaan();
-        $permintaan->id_user = $id_user; // Simpan ID pengguna
-        $nama_mitra = $request->input('nama_mitra');
-        $id_mitra = $request->input('id_mitra');
+            $permintaan = new permintaan();
+            $permintaan->id_user = $id_user;
 
-        // Jika nama mitra disediakan oleh pengguna
-        if (!empty($nama_mitra)) {
-            // Periksa apakah nama mitra sudah ada dalam database
-            $mitra_exist = Mitra::where('nama_mitra', $nama_mitra)->first();
+            $nama_mitra = $request->input('nama_mitra');
+            $no_pic = $request->input('no_pic');
+            $id_mitra = $request->input('id_mitra');
 
-            // Jika mitra sudah ada, ambil ID mitra yang sesuai
-            if ($mitra_exist) {
-                $id_mitra = $mitra_exist->id_mitra;
-            } else {
-                // Jika mitra belum ada, simpan nama mitra baru dan ambil ID mitra yang baru saja disimpan
-                $mitra_baru = new Mitra();
-                $mitra_baru->nama_mitra = $nama_mitra;
-                $mitra_baru->save();
-
-                $id_mitra = $mitra_baru->id_mitra;
+            if (!empty($nama_mitra)) {
+                $mitra_exist = Mitra::where('nama_mitra', $nama_mitra)->first();
+                if ($mitra_exist) {
+                    $id_mitra = $mitra_exist->id_mitra;
+                } else {
+                    $mitra_baru = new Mitra();
+                    $mitra_baru->nama_mitra = $nama_mitra;
+                    $mitra_baru->kontak_pic = $no_pic;
+                    $mitra_baru->save();
+                    $id_mitra = $mitra_baru->id_mitra;
+                }
             }
+
+            $permintaan->id_mitra = $id_mitra;
+            $permintaan->judul_pelatihan = $request->input('judul_pelatihan');
+            $permintaan->id_tema = $request->input('id_tema');
+            $permintaan->no_pic = $no_pic;
+            $permintaan->masalah = $request->input('masalah');
+            $permintaan->kebutuhan = $request->input('kebutuhan');
+            $permintaan->materi = $request->input('materi');
+            $permintaan->tanggal_mulai = $request->input('tanggal_waktu_mulai');
+            $permintaan->tanggal_selesai = $request->input('tanggal_waktu_selesai');
+            $permintaan->request_khusus = $request->input('request_khusus');
+            $permintaan->save();
+
+            foreach ($request->nama_peserta as $key => $value) {
+                $assessmentPeserta = new assesment_peserta_permintaan();
+                $assessmentPeserta->nama_peserta = $value;
+                $assessmentPeserta->email_peserta = $request->email_peserta[$key] ?? null;
+                $assessmentPeserta->jenis_kelamin = $request->jenis_kelamin[$key] ?? null;
+                $assessmentPeserta->jabatan = $request->jabatan[$key] ?? null;
+                $assessmentPeserta->tanggung_jawab = $request->tanggung_jawab[$key] ?? null;
+                $assessmentPeserta->id_permintaan = $permintaan->id_permintaan;
+                $assessmentPeserta->save();
+            }
+
+            return response()->json([
+                'success' => true,
+                'redirect_url' => route('reguler.pelatihan')
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error("Error saat menyimpan permintaan pelatihan: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan data.',
+                'error' => $e->getMessage(), // tampilkan di frontend untuk debug
+            ], 500);
         }
-
-        // Set nilai ID mitra untuk entri permintaan pelatihan
-        $permintaan->id_mitra = $id_mitra;
-        $permintaan->judul_pelatihan = $request->input('judul_pelatihan');
-        // $permintaan->jenis_pelatihan = $request->input('jenis_pelatihan');
-        $permintaan->id_tema = $request->input('id_tema');
-        $permintaan->no_pic = $request->input('no_pic');
-        $permintaan->masalah = $request->input('masalah');
-        $permintaan->kebutuhan = $request->input('kebutuhan');
-        $permintaan->materi = $request->input('materi');
-        $permintaan->tanggal_mulai = $request->input('tanggal_waktu_mulai');
-        $permintaan->tanggal_selesai = $request->input('tanggal_waktu_selesai');
-        $permintaan->request_khusus = $request->input('request_khusus');
-        // dd($permintaan);
-        $permintaan->save();
-
-
-        // $assesmentDasar = new AssessmentDasar();
-        // $assesmentDasar->masalah = $request->masalah;
-        // $assesmentDasar->kebutuhan = $request->kebutuhan;
-        // $assesmentDasar->materi = $request->materi;
-        // $assesmentDasar->id_permintaan = $permintaan->id;
-        // $assesmentDasar->save();
-
-        // Proses penyimpanan data assesment dasar dinamis
-        // foreach ($request->masalah as $key => $value) {
-        //     $assessmentDasar = new AssesmentDasar();
-        //     $assessmentDasar->masalah = $value;
-        //     $assessmentDasar->kebutuhan = $request->kebutuhan[$key];
-        //     $assessmentDasar->materi = $request->materi[$key];
-        //     $assessmentDasar->id_permintaan = $permintaan->id;
-        //     $assessmentDasar->save();
-        // }
-
-        // $assesmentPeserta = new AssessmentPeserta();
-        // $assesmentPeserta->nama_peserta = $request->nama_peserta;
-        // $assesmentPeserta->jenis_kelamin = $request->jenis_kelamin;
-        // $assesmentPeserta->jabatan = $request->jabatan;
-        // $assesmentPeserta->tanggung_jawab = $request->tanggung_jawab;
-        // $assesmentPeserta->id_permintaan = $permintaan->id;
-        // $assesmentPeserta->save();
-
-        // Proses penyimpanan data asesment peserta dinamis
-        foreach ($request->nama_peserta as $key => $value) {
-            $assessmentPeserta = new assesment_peserta_permintaan();
-            $assessmentPeserta->nama_peserta = $value;
-            $assessmentPeserta->email_peserta = $request->email_peserta[$key];
-            ;
-            $assessmentPeserta->jenis_kelamin = $request->jenis_kelamin[$key];
-            $assessmentPeserta->jabatan = $request->jabatan[$key];
-            $assessmentPeserta->tanggung_jawab = $request->tanggung_jawab[$key];
-            $assessmentPeserta->id_permintaan = $permintaan->id_permintaan;
-            // dd($assessmentPeserta);
-            $assessmentPeserta->save();
-        }
-
-        // Simpan data dinamis (assessment dasar) ke dalam database
-        // $masalah = $request->input('masalah');
-        // $kebutuhan = $request->input('kebutuhan');
-        // $materi = $request->input('materi');
-
-        // foreach ($masalah as $key => $value) {
-        //     AssessmentDasar::create([
-        //         'id_permintaan' => $permintaan->id, // Menghubungkan dengan data "form_data"
-        //         'masalah' => $masalah[$key],
-        //         'kebutuhan' => $kebutuhan[$key],
-        //         'materi' => $materi[$key],
-        //         // Tambahan kolom lain yang diperlukan
-        //     ]);
-        // }
-
-        // Simpan data dinamis (assessment peserta) ke dalam database
-        // $namaPeserta = $request->input('nama_peserta');
-        // $jenisKelamin = $request->input('jenis_kelamin');
-        // $jabatan = $request->input('jabatan');
-        // $tanggungJawab = $request->input('tanggung_jawab');
-
-        // foreach ($namaPeserta as $key => $value) {
-        //     AssessmentPeserta::create([
-        //         'id_permintaan' => $permintaan->id, // Menghubungkan dengan data "form_data"
-        //         'nama_peserta' => $namaPeserta[$key],
-        //         'jenis_kelamin' => $jenisKelamin[$key],
-        //         'jabatan' => $jabatan[$key],
-        //         'tanggung_jawab' => $tanggungJawab[$key],
-        //         // Tambahan kolom lain yang diperlukan
-        //     ]);
-        // }
-
-        return redirect()->route('reguler.pelatihan')->with('success', 'Terima Kasih Telah Mendaftar Pelatihan Permintaan. Pelatihan Anda Segera Diproses');
     }
+
 
     public function createKonsultasi()
     {
@@ -387,24 +397,26 @@ class TrainingController extends Controller
     {
         // dd($request->all());
         // Validasi formulir
-        $request->validate([
-            'nama_organisasi' => 'required|string|max:255',
-            'jenis_organisasi' => 'required',
-            'email' => 'required|email:dns',
-            'no_hp' => 'required|numeric',
-            'id_kabupaten' => 'required',
-            'id_provinsi' => 'required',
-            'id_negara' => 'required',
-            'deskripsi_kebutuhan' => 'required|string',
-        ],
-        [
-            'nama_organisasi.required' => 'Nama Organisasi harus diisi.', 
-            'jenis_organisasi.required' => 'Jenis Organisasi harus dipilih.',
-            'email.required' => 'Email harus diisi.',
-            'email.email' => 'Email harus diisi dengan email yang  valid.',
-            'no_hp.numeric' => 'Nomor Telepon harus diisi dengan angka.',
-            'deskripsi_kebutuhan.required' => 'Deskripsi Pelatihan harus diisi.',
-        ]);
+        $request->validate(
+            [
+                'nama_organisasi' => 'required|string|max:255',
+                'jenis_organisasi' => 'required',
+                'email' => 'required|email:dns',
+                'no_hp' => 'required|numeric',
+                'id_kabupaten' => 'required',
+                'id_provinsi' => 'required',
+                'id_negara' => 'required',
+                'deskripsi_kebutuhan' => 'required|string',
+            ],
+            [
+                'nama_organisasi.required' => 'Nama Organisasi harus diisi.',
+                'jenis_organisasi.required' => 'Jenis Organisasi harus dipilih.',
+                'email.required' => 'Email harus diisi.',
+                'email.email' => 'Email harus diisi dengan email yang  valid.',
+                'no_hp.numeric' => 'Nomor Telepon harus diisi dengan angka.',
+                'deskripsi_kebutuhan.required' => 'Deskripsi Pelatihan harus diisi.',
+            ]
+        );
         $id_user = Auth::user()->id;
         // Simpan data formulir ke dalam database
         $konsultasi = new konsultasi();
@@ -418,32 +430,6 @@ class TrainingController extends Controller
         $konsultasi->id_provinsi = $request->input('id_provinsi');
         $konsultasi->id_kabupaten = $request->input('id_kabupaten');
         $konsultasi->save();
-
-
-        // // Simpan data ke dalam database
-        // Konsultasi::create($request->all());
-
-        // $request->validate([
-        //     'nama_organisasi' => 'required|string|max:255',
-        //     'jenis_organisasi' => 'required|integer',
-        //     'email' => 'required|email|max:255',
-        //     'no_hp' => 'required|string|max:15',
-        //     'kabupaten_kota' => 'required|integer',
-        //     'id_provinsi' => 'required|integer',
-        //     'id_negara' => 'required|integer',
-        //     'deskripsi_kebutuhan' => 'required|string',
-        // ], [
-        //     'nama_organisasi.required' => 'Field nama wajib diisi',
-        //     'email.required' => 'Field email wajib diisi',
-        //     'no_hp.required' => 'Field nomor hp wajib diisi',
-        //     'deskripsi_kebutuhan.required' => 'Field deskripsi kebutuhan wajib diisi',
-        // ]);
-
-        // $data = [
-        //     'nama_organisasi' => $request->nama_organisasi,
-        //     'email' => $request->email,
-        //     'telepon' => $request->telepon,
-        // ];
 
         // Redirect atau berikan respons sesuai kebutuhan Anda
         return redirect()->route('reguler.pelatihan')->with('success', 'Terima Kasih Telah Mendaftar Pelatihan Konsultasi. Pelatihan Anda Segera Diproses');
@@ -460,8 +446,11 @@ class TrainingController extends Controller
 
     public function regulerList()
     {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
         // dd(request()->all());
-        $reguler = peserta_pelatihan_reguler::with('reguler')->where('id_user', auth()->user()->id)->get()->sortByDesc(function ($item) {
+        $reguler = peserta_pelatihan_reguler::with('reguler', 'status')->where('id_user', auth()->user()->id)->get()->sortByDesc(function ($item) {
             return $item->reguler->tanggal_mulai; // Mengurutkan berdasarkan tanggal mulai
         });
         // dd($reguler);
@@ -473,11 +462,14 @@ class TrainingController extends Controller
 
     public function regulerListShow($nama_pelatihan)
     {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
         // Decode parameter yang diterima dari URL
         $nama_pelatihan = urldecode($nama_pelatihan);
 
         // Cari data berdasarkan nama pelatihan
-        $reguler = Reguler::where('nama_pelatihan', $nama_pelatihan)->firstOrFail();
+        $reguler = Reguler::with('fasilitators')->where('nama_pelatihan', $nama_pelatihan)->firstOrFail();
 
         return view('user.training.pelatihan.reguler.show', [
             'title' => $reguler->nama_pelatihan,
@@ -485,23 +477,34 @@ class TrainingController extends Controller
         ]);
     }
 
-    //cek user sudah pernah mengisi form
-    // $user_id = Auth::id();
-    // $hasFilledForm = evaluasi_pelatihan_reguler::where('id_reguler', $id_reguler)
-    // ->where('id_user', $user_id)
-    // ->exists();
-
     public function regulerListShowEvaluasi($id)
     {
-
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
         $reguler = reguler::findOrFail($id);
+        // dd($reguler);
         $formEvaluasiReguler = form_evaluasi_reguler::with('reguler')->where('id_reguler', $id)->first();
-        $formData = $formEvaluasiReguler->content;
-        // dd($formData);
+        $peserta = peserta_pelatihan_reguler::with('reguler')
+            ->where('id_user', auth()->user()->id)
+            ->first();
 
+        $pesertaId = $peserta ? $peserta->id_peserta_reguler : null; // Cegah error jika null
 
+        // Debugging untuk memastikan peserta ditemukan
+        if (!$peserta) {
+            dd("Peserta tidak ditemukan untuk id_user: " . auth()->user()->id);
+        }
 
-        return view('user.training.pelatihan.reguler.evaluasi', compact('reguler', 'formEvaluasiReguler'), [
+        // Cek apakah form tersedia dan ubah content JSON menjadi array
+        $formData = $formEvaluasiReguler ? json_decode($formEvaluasiReguler->content, true) : null;
+        // Cek apakah user sudah mengisi evaluasi
+
+        $sudahMengisi = hasil_evaluasi_reguler::with('peserta')->where('id_pelatihan_reguler', $reguler->id_reguler)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+        // dd($sudahMengisi);
+        return view('user.training.pelatihan.reguler.evaluasi', compact('reguler', 'formEvaluasiReguler', 'sudahMengisi', 'peserta', 'pesertaId'), [
             'title' => 'Evaluasi ' . $reguler->nama_pelatihan,
             'formData' => $formData
         ]);
@@ -513,84 +516,705 @@ class TrainingController extends Controller
         // Validasi input
         $request->validate([
             'id_reguler' => 'required|integer',
-            'id_user' => 'required|integer',
+            'id_peserta' => 'required|integer',
             'data_respons' => 'required|string',
         ]);
 
         // Simpan data ke dalam database
-        $evaluasi = new Evaluasi(); // Sesuaikan dengan model Anda
-        $evaluasi->id_reguler = $request->id_reguler;
-        $evaluasi->id_user = $request->id_user;
+        $evaluasi = new hasil_evaluasi_reguler(); // Sesuaikan dengan model Anda
+        $evaluasi->id_pelatihan_reguler = $request->id_reguler;
+        $evaluasi->id_peserta = $request->id_peserta;
         $evaluasi->data_respons = $request->data_respons;
         $evaluasi->save();
 
-        // Redirect dengan pesan sukses
-        return redirect()->route('regulerListShow')->with('success', 'Evaluasi berhasil disimpan!');
+
+        // Ambil nama pelatihan berdasarkan id_reguler
+        $reguler = reguler::find($request->id_reguler); // Sesuaikan dengan model Anda
+
+
+        if (!$reguler) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('reguler.pelatihan.list', ['nama_pelatihan' => $reguler->nama_pelatihan])
+            ->with('success', 'Evaluasi berhasil disimpan!');
     }
+
     public function regulerListShowSurvey($id)
     {
-
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
         $reguler = reguler::findOrFail($id);
         $negara = negara::all();
         $formSurveyReguler = form_surveykepuasan_reguler::with('reguler')->where('id_reguler', $id)->first();
-        $formData = $formSurveyReguler->content;
-        // dd($formEvaluasi);
+        $formData = $formSurveyReguler ? json_decode($formSurveyReguler->content, true) : null;
 
-        //cek user sudah pernah mengisi form
-        // $user_id = Auth::id();
-        // $hasFilledForm = evaluasi_pelatihan_reguler::where('id_reguler', $id_reguler)
-        // ->where('id_user', $user_id)
-        // ->exists();
+        // Cek apakah user sudah mengisi evaluasi
+        $peserta = peserta_pelatihan_reguler::with('reguler')
+            ->where('id_user', auth()->user()->id)
+            ->first();
 
-        return view('user.training.pelatihan.reguler.survey', compact('reguler', 'formSurveyReguler', 'negara'), [
+        $pesertaId = $peserta ? $peserta->id_peserta_reguler : null; // Cegah error jika null
+
+        $sudahMengisi = hasil_surveykepuasan_reguler::with('peserta')->where('id_pelatihan_reguler', $reguler->id_reguler)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+
+        return view('user.training.pelatihan.reguler.survey', compact('reguler', 'formSurveyReguler', 'negara', 'sudahMengisi', 'peserta'), [
             'title' => 'Survey Kepuasan ' . $reguler->nama_pelatihan,
             'formData' => $formData
         ]);
     }
+
+    public function regulerListStoreSurvey(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'id_reguler' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $surveykepuasan = new hasil_surveykepuasan_reguler(); // Sesuaikan dengan model Anda
+        $surveykepuasan->id_pelatihan_reguler = $request->id_reguler;
+        $surveykepuasan->id_peserta = $request->id_peserta;
+        $surveykepuasan->data_respons = $request->data_respons;
+        $surveykepuasan->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_reguler
+        $reguler = reguler::find($request->id_reguler); // Sesuaikan dengan model Anda
+
+
+        if (!$reguler) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('reguler.pelatihan.list', ['nama_pelatihan' => $reguler->nama_pelatihan])
+            ->with('success', 'Evaluasi berhasil disimpan!');
+    }
+
     public function regulerListShowStudi($id)
     {
 
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
         $reguler = reguler::findOrFail($id);
         $formStudiReguler = form_studidampak_reguler::with('reguler')->where('id_reguler', $id)->first();
-        $formData = $formStudiReguler->content;
+        $formData = $formStudiReguler ? json_decode($formStudiReguler->content, true) : null;
         // dd($formEvaluasi);
+        $peserta = peserta_pelatihan_reguler::with('reguler')
+            ->where('id_user', auth()->user()->id)
+            ->first();
+
+        $pesertaId = $peserta ? $peserta->id_peserta_reguler : null; // Cegah error jika null
 
         //cek user sudah pernah mengisi form
-        // $user_id = Auth::id();
-        // $hasFilledForm = evaluasi_pelatihan_reguler::where('id_reguler', $id_reguler)
-        // ->where('id_user', $user_id)
-        // ->exists();
+        $sudahMengisi = hasil_studidampak_reguler::with('peserta')->where('id_pelatihan_reguler', $reguler->id_reguler)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
 
-        return view('user.training.pelatihan.reguler.studi', compact('reguler', 'formStudiReguler'), [
+        return view('user.training.pelatihan.reguler.studi', compact('reguler', 'formStudiReguler', 'sudahMengisi', 'peserta'), [
             'title' => 'Studi Dampak ' . $reguler->nama_pelatihan,
             'formData' => $formData
         ]);
     }
 
+    public function regulerListStoreStudi(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'id_reguler' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $studidampak = new hasil_studidampak_reguler(); // Sesuaikan dengan model Anda
+        $studidampak->id_pelatihan_reguler = $request->id_reguler;
+        $studidampak->id_peserta = $request->id_peserta;
+        $studidampak->data_respons = $request->data_respons;
+        $studidampak->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_reguler
+        $reguler = reguler::find($request->id_reguler); // Sesuaikan dengan model Anda
+
+
+        if (!$reguler) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('reguler.pelatihan.list', ['nama_pelatihan' => $reguler->nama_pelatihan])
+            ->with('success', 'Form Studi dampak berhasil disimpan!');
+    }
+
+    public function regulerListShowMateri($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        $reguler = Reguler::findOrFail($id);
+
+        // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
+        $files = DB::table('reguler_files')
+            ->where('id_reguler', $id)
+            ->get(['file_url']); // Ambil semua file_url
+
+        return view('user.training.pelatihan.reguler.materi', compact('reguler', 'files'), [
+            'title' => 'Materi Pelatihan ' . $reguler->nama_pelatihan,
+        ]);
+    }
+
+
+    public function regulerListShowSertifikat($id)
+    {
+
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        $reguler = reguler::findOrFail($id);
+        // Ambil sertifikat berdasarkan user yang login
+        $files = DB::table('reguler_sertifikat')
+            ->join('peserta_pelatihan_reguler', 'reguler_sertifikat.id_peserta', '=', 'peserta_pelatihan_reguler.id_peserta_reguler')
+            ->where('peserta_pelatihan_reguler.id_user', auth()->user()->id)
+            ->where('peserta_pelatihan_reguler.id_reguler', $id) // filter berdasarkan pelatihan juga
+            ->select('reguler_sertifikat.file_url')
+            ->get();
+
+        return view('user.training.pelatihan.reguler.sertifikat', compact('reguler', 'files'), [
+            'title' => 'Sertifikat Pelatihan ' . $reguler->nama_pelatihan,
+            // 'formData' => $formData
+        ]);
+    }
+
+    // permintaan
 
     public function permintaanShow()
     {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        // return 'true';
         // $user = auth()->user();
-        $permintaans = peserta_pelatihan_permintaan::with(['permintaan_pelatihan'])->where('id_user', auth()->user()->id)->get();
+        $permintaans = peserta_pelatihan_permintaan::with(['permintaan_pelatihan'])->where('id_user', auth()->user()->id)->paginate(4);
+        // dd($permintaans);
         return view('user.training.pelatihan.permintaan.permintaan', compact('permintaans'), [
             'title' => 'Pelatihan Saya',
             // 'pelatihans' => $permintaans
         ]);
     }
 
-    public function konsultasiShow()
+    public function permintaanListShow($nama_pelatihan)
     {
-        // $user = auth()->user();
-        $konsultasi = peserta_pelatihan_konsultasi::with(['pelatihan_konsultasi'])->where('id_user', auth()->user()->id)->get();
-        return view('user.training.pelatihan.konsultasi.konsultasi', compact('konsultasi'), [
-            'title' => 'Pelatihan Saya',
-            // 'pelatihans' => $konsultasis
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        // return 'true';
+        // Decode parameter yang diterima dari URL
+        $nama_pelatihan = urldecode($nama_pelatihan);
+
+        // Cari data berdasarkan nama pelatihan
+        $permintaan = permintaan_pelatihan::with('fasilitators')->where('nama_pelatihan', $nama_pelatihan)->firstOrFail();
+
+        return view('user.training.pelatihan.permintaan.show', [
+            'title' => $permintaan->nama_pelatihan,
+            'permintaan' => $permintaan
+        ]);
+    }
+
+    public function permintaanListShowEvaluasi($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+        // return 'true';
+        // dd($permintaan);
+        $formEvaluasiPermintaan = form_evaluasi_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $id)->first();
+        $peserta = peserta_pelatihan_permintaan::with('permintaan_pelatihan')
+            ->where('id_user', auth()->user()->id)
+            ->first();
+
+
+        $pesertaId = $peserta ? $peserta->id_peserta : null; // Cegah error jika null
+        // dd($pesertaId);
+
+        // Debugging untuk memastikan peserta ditemukan
+        if (!$peserta) {
+            dd("Peserta tidak ditemukan untuk id_user: " . auth()->user()->id);
+        }
+
+        // Cek apakah form tersedia dan ubah content JSON menjadi array
+        $formData = $formEvaluasiPermintaan ? json_decode($formEvaluasiPermintaan->content, true) : null;
+        // Cek apakah user sudah mengisi evaluasi
+
+        $sudahMengisi = hasil_evaluasi_permintaan::with('peserta')->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+        // dd($sudahMengisi);
+        return view('user.training.pelatihan.permintaan.evaluasi', compact('permintaan', 'formEvaluasiPermintaan', 'sudahMengisi', 'peserta', 'pesertaId'), [
+            'title' => 'Evaluasi ' . $permintaan->nama_pelatihan,
+            'formData' => $formData
+        ]);
+    }
+
+    public function permintaanListStoreEvaluasi(Request $request)
+    {
+
+        // Validasi input
+        $request->validate([
+            'id_pelatihan_permintaan' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $evaluasi = new hasil_evaluasi_permintaan(); // Sesuaikan dengan model Anda
+        $evaluasi->id_pelatihan_permintaan = $request->id_pelatihan_permintaan;
+        $evaluasi->id_peserta = $request->id_peserta;
+        $evaluasi->data_respons = $request->data_respons;
+        $evaluasi->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_pelatihan_permintaan
+        $permintaan = permintaan_pelatihan::find($request->id_pelatihan_permintaan); // Sesuaikan dengan model Anda
+
+
+        if (!$permintaan) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('permintaan.pelatihan.list', ['nama_pelatihan' => $permintaan->nama_pelatihan])
+            ->with('success', 'Evaluasi berhasil disimpan!');
+    }
+
+    public function permintaanListShowSurvey($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+        $negara = negara::all();
+        $formSurveyPermintaan = form_surveykepuasan_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $id)->first();
+        $formData = $formSurveyPermintaan ? json_decode($formSurveyPermintaan->content, true) : null;
+
+        // Cek apakah user sudah mengisi evaluasi
+        $peserta = peserta_pelatihan_permintaan::with('permintaan_pelatihan')
+            ->where('id_user', auth()->user()->id)
+            ->first();
+
+        $pesertaId = $peserta ? $peserta->id_peserta : null; // Cegah error jika null
+
+        $sudahMengisi = hasil_surveykepuasan_permintaan::with('peserta')->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+
+        return view('user.training.pelatihan.permintaan.survey', compact('permintaan', 'formSurveyPermintaan', 'negara', 'sudahMengisi', 'peserta'), [
+            'title' => 'Survey Kepuasan ' . $permintaan->nama_pelatihan,
+            'formData' => $formData
+        ]);
+    }
+
+    public function permintaanListStoreSurvey(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'id_pelatihan_permintaan' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $surveykepuasan = new hasil_surveykepuasan_permintaan(); // Sesuaikan dengan model Anda
+        $surveykepuasan->id_pelatihan_permintaan = $request->id_pelatihan_permintaan;
+        $surveykepuasan->id_peserta = $request->id_peserta;
+        $surveykepuasan->data_respons = $request->data_respons;
+        $surveykepuasan->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_pelatihan_permintaan
+        $permintaan = permintaan_pelatihan::find($request->id_pelatihan_permintaan); // Sesuaikan dengan model Anda
+
+
+        if (!$permintaan) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('permintaan.pelatihan.list', ['nama_pelatihan' => $permintaan->nama_pelatihan])
+            ->with('success', 'Form Survey Kepuasan berhasil disimpan!');
+    }
+
+    public function permintaanListShowStudi($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        // return 'true';
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+        $formStudiPermintaan = form_studidampak_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $id)->first();
+        $formData = $formStudiPermintaan ? json_decode($formStudiPermintaan->content, true) : null;
+        // dd($formEvaluasi);
+        $peserta = peserta_pelatihan_permintaan::with('permintaan_pelatihan')
+            ->where('id_user', auth()->user()->id)
+            ->first();
+
+
+        $pesertaId = $peserta ? $peserta->id_peserta : null; // Cegah error jika null
+        // dd($pesertaId);
+
+        //cek user sudah pernah mengisi form
+        $sudahMengisi = hasil_studidampak_permintaan::with('peserta')->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+
+        return view('user.training.pelatihan.permintaan.studi', compact('permintaan', 'formStudiPermintaan', 'sudahMengisi', 'peserta'), [
+            'title' => 'Studi Dampak ' . $permintaan->nama_pelatihan,
+            'formData' => $formData
+        ]);
+    }
+
+    public function permintaanListStoreStudi(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'id_pelatihan_permintaan' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $studidampak = new hasil_studidampak_permintaan(); // Sesuaikan dengan model Anda
+        $studidampak->id_pelatihan_permintaan = $request->id_pelatihan_permintaan;
+        $studidampak->id_peserta = $request->id_peserta;
+        $studidampak->data_respons = $request->data_respons;
+        $studidampak->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_pelatihan_permintaan
+        $permintaan = permintaan_pelatihan::find($request->id_pelatihan_permintaan); // Sesuaikan dengan model Anda
+
+
+        if (!$permintaan) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('permintaan.pelatihan.list', ['nama_pelatihan' => $permintaan->nama_pelatihan])
+            ->with('success', 'Form Studi dampak berhasil disimpan!');
+    }
+
+    public function permintaanListShowMateri($id)
+    {
+
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        // Ambil data permintaan berdasarkan kolom id_pelatihan_permintaan
+        $permintaan = permintaan_pelatihan::where('id_pelatihan_permintaan', $id)->firstOrFail();
+
+        // Ambil semua file yang berelasi dengan id_pelatihan_permintaan
+        $files = DB::table('permintaan_files')
+            ->where('id_permintaan', $id)
+            ->get();
+        // $files[] = (object) ['file_url' => $filesUrl]; // Ganti "image" menjadi "file_url"
+        // dd($files);
+
+        return view('user.training.pelatihan.permintaan.materi', compact('permintaan', 'files'), [
+            'title' => 'Materi Pelatihan ' . $permintaan->nama_pelatihan,
+        ]);
+    }
+
+    public function permintaanListShowSertifikat($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+        $files = DB::table('permintaan_sertifikat')
+            ->join('peserta_pelatihan_permintaan', 'permintaan_sertifikat.id_peserta', '=', 'peserta_pelatihan_permintaan.id_peserta')
+            ->where('peserta_pelatihan_permintaan.id_user', auth()->user()->id)
+            ->where('peserta_pelatihan_permintaan.id_pelatihan_permintaan', $id) // filter berdasarkan pelatihan juga
+            ->select('permintaan_sertifikat.file_url')
+            ->get();
+
+        return view('user.training.pelatihan.permintaan.sertifikat', compact('permintaan', 'files'), [
+            'title' => 'Sertifikat ' . $permintaan->nama_pelatihan,
+            // 'formData' => $formData
         ]);
     }
 
 
+    // konsultasi
+
+    public function konsultasiShow()
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        // Ambil data pelatihan konsultasi yang telah didaftarkan oleh user dengan pagination
+        $konsultasi = peserta_pelatihan_konsultasi::with('pelatihan_konsultasi')
+            ->where('id_user', auth()->user()->id)
+            ->paginate(4);
+
+        return view('user.training.pelatihan.konsultasi.konsultasi', compact('konsultasi'))->with([
+            'title' => 'Pelatihan Saya',
+        ]);
+    }
 
 
+    public function konsultasiListShow($nama_pelatihan)
+    {
+        // Decode parameter yang diterima dari URL
+        $nama_pelatihan = urldecode($nama_pelatihan);
+
+        // Cari data berdasarkan nama pelatihan
+        $konsultasi = konsultasi_pelatihan::with('fasilitators')->where('nama_pelatihan', $nama_pelatihan)->firstOrFail();
+        // dd($konsultasi);
+
+        return view('user.training.pelatihan.konsultasi.show', compact('konsultasi'), [
+            'title' => $konsultasi->nama_pelatihan,
+            'konsultasi' => $konsultasi
+        ]);
+    }
+
+    public function konsultasiListShowEvaluasi($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        $konsultasi = konsultasi_pelatihan::findOrFail($id);
+        // dd($konsultasi);
+        $formEvaluasiKonsultasi = form_evaluasi_konsultasi::with('konsultasi_pelatihan')->where('id_pelatihan_konsultasi', $id)->first();
+        $peserta = peserta_pelatihan_konsultasi::with('pelatihan_konsultasi')
+            ->where('id_user', auth()->user()->id)
+            ->first();
+
+        $pesertaId = $peserta ? $peserta->id_peserta : null; // Cegah error jika null
+
+        // dd($peserta);
+        // Debugging untuk memastikan peserta ditemukan
+        if (!$peserta) {
+            dd("Peserta tidak ditemukan untuk id_user: " . auth()->user()->id);
+        }
+
+        // Cek apakah form tersedia dan ubah content JSON menjadi array
+        $formData = $formEvaluasiKonsultasi ? json_decode($formEvaluasiKonsultasi->content, true) : null;
+        // Cek apakah user sudah mengisi evaluasi
+
+        $sudahMengisi = hasil_evaluasi_konsultasi::with('peserta')->where('id_pelatihan_konsultasi', $konsultasi->id_konsultasi)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+        // dd($sudahMengisi);
+        return view('user.training.pelatihan.konsultasi.evaluasi', compact('konsultasi', 'formEvaluasiKonsultasi', 'sudahMengisi', 'peserta', 'pesertaId'), [
+            'title' => 'Evaluasi ' . $konsultasi->nama_pelatihan,
+            'formData' => $formData
+        ]);
+    }
+
+    public function konsultasiListStoreEvaluasi(Request $request)
+    {
+
+        // Validasi input
+        $request->validate([
+            'id_pelatihan_konsultasi' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $evaluasi = new hasil_evaluasi_konsultasi(); // Sesuaikan dengan model Anda
+        $evaluasi->id_pelatihan_konsultasi = $request->id_pelatihan_konsultasi;
+        $evaluasi->id_peserta = $request->id_peserta;
+        $evaluasi->data_respons = $request->data_respons;
+        $evaluasi->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_pelatihan_konsultasi
+        $konsultasi = konsultasi_pelatihan::find($request->id_pelatihan_konsultasi); // Sesuaikan dengan model Anda
+
+
+        if (!$konsultasi) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('konsultasi.pelatihan.list', ['nama_pelatihan' => $konsultasi->nama_pelatihan])
+            ->with('success', 'Evaluasi berhasil disimpan!');
+    }
+
+    public function konsultasiListShowSurvey($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        $konsultasi = konsultasi_pelatihan::findOrFail($id);
+        $negara = negara::all();
+        $formSurveyKonsultasi = form_surveykepuasan_konsultasi::with('konsultasi_pelatihan')->where('id_pelatihan_konsultasi', $id)->first();
+        $formData = $formSurveyKonsultasi ? json_decode($formSurveyKonsultasi->content, true) : null;
+
+        // Cek apakah user sudah mengisi evaluasi
+        $peserta = peserta_pelatihan_konsultasi::with('pelatihan_konsultasi')
+            ->where('id_user', auth()->user()->id)
+            ->first();
+
+        $pesertaId = $peserta ? $peserta->id_peserta : null; // Cegah error jika null
+
+        $sudahMengisi = hasil_surveykepuasan_konsultasi::with('peserta')->where('id_pelatihan_konsultasi', $konsultasi->id_pelatihan_konsultasi)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+
+        return view('user.training.pelatihan.konsultasi.survey', compact('konsultasi', 'formSurveyKonsultasi', 'negara', 'sudahMengisi', 'peserta'), [
+            'title' => 'Survey Kepuasan ' . $konsultasi->nama_pelatihan,
+            'formData' => $formData
+        ]);
+    }
+
+    public function konsultasiListStoreSurvey(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'id_pelatihan_konsultasi' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $surveykepuasan = new hasil_surveykepuasan_konsultasi(); // Sesuaikan dengan model Anda
+        $surveykepuasan->id_pelatihan_konsultasi = $request->id_pelatihan_konsultasi;
+        $surveykepuasan->id_peserta = $request->id_peserta;
+        $surveykepuasan->data_respons = $request->data_respons;
+        $surveykepuasan->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_pelatihan_konsultasi
+        $konsultasi = konsultasi_pelatihan::find($request->id_pelatihan_konsultasi); // Sesuaikan dengan model Anda
+
+
+        if (!$konsultasi) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('konsultasi.pelatihan.list', ['nama_pelatihan' => $konsultasi->nama_pelatihan])
+            ->with('success', 'Evaluasi berhasil disimpan!');
+    }
+
+    public function konsultasiListShowStudi($id)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+        $konsultasi = konsultasi_pelatihan::findOrFail($id);
+        $formStudiKonsultasi = form_studidampak_konsultasi::with('konsultasi_pelatihan')->where('id_pelatihan_konsultasi', $id)->first();
+        $formData = $formStudiKonsultasi ? json_decode($formStudiKonsultasi->content, true) : null;
+        // dd($formEvaluasi);
+        $peserta = peserta_pelatihan_konsultasi::with('pelatihan_konsultasi')
+            ->where('id_user', auth()->user()->id)
+            ->first();
+
+        $pesertaId = $peserta ? $peserta->id_peserta : null; // Cegah error jika null
+
+        //cek user sudah pernah mengisi form
+        $sudahMengisi = hasil_studidampak_konsultasi::with('peserta')->where('id_pelatihan_konsultasi', $konsultasi->id_pelatihan_konsultasi)
+            ->where('id_peserta', $pesertaId)
+            ->exists();
+
+        return view('user.training.pelatihan.konsultasi.studi', compact('konsultasi', 'formStudiKonsultasi', 'sudahMengisi', 'peserta'), [
+            'title' => 'Studi Dampak ' . $konsultasi->nama_pelatihan,
+            'formData' => $formData
+        ]);
+    }
+
+    public function konsultasiListStoreStudi(Request $request)
+    {
+        // Validasi input
+        $request->validate([
+            'id_pelatihan_konsultasi' => 'required|integer',
+            'id_peserta' => 'required|integer',
+            'data_respons' => 'required|string',
+        ]);
+
+        // Simpan data ke dalam database
+        $studidampak = new hasil_studidampak_konsultasi(); // Sesuaikan dengan model Anda
+        $studidampak->id_pelatihan_konsultasi = $request->id_pelatihan_konsultasi;
+        $studidampak->id_peserta = $request->id_peserta;
+        $studidampak->data_respons = $request->data_respons;
+        $studidampak->save();
+
+
+        // Ambil nama pelatihan berdasarkan id_pelatihan_konsultasi
+        $konsultasi = konsultasi_pelatihan::find($request->id_pelatihan_konsultasi); // Sesuaikan dengan model Anda
+
+
+        if (!$konsultasi) {
+            return redirect()->back()->with('error', 'Pelatihan tidak ditemukan.');
+        }
+
+        // Redirect ke halaman pelatihan berdasarkan nama pelatihan
+        return redirect()->route('konsultasi.pelatihan.list', ['nama_pelatihan' => $konsultasi->nama_pelatihan])
+            ->with('success', 'Form Studi dampak berhasil disimpan!');
+    }
+
+    public function konsultasiListShowMateri($id)
+    {
+
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        $konsultasi = konsultasi_pelatihan::findOrFail($id);
+        $konsultasiId = konsultasi_pelatihan::where('id_konsultasi', $id)->get();
+        $files = [];
+
+        foreach ($konsultasiId as $item) {
+            $filesUrl = DB::table('konsultasi_files')
+                ->where('id_konsultasi', $item->id_konsultasi)
+                ->value('file_url');
+
+            $files[] = (object) ['file_url' => $filesUrl]; // Ganti "image" menjadi "file_url"
+        }
+
+        return view('user.training.pelatihan.konsultasi.materi', compact('konsultasi', 'files'), [
+            'title' => 'Studi Dampak Pelatihan ' . $konsultasi->nama_pelatihan,
+        ]);
+    }
+
+    public function konsultasiListShowSertifikat($id)
+    {
+
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        $konsultasi = konsultasi_pelatihan::findOrFail($id);
+
+        $files = DB::table('konsultasi_sertifikat')
+            ->join('peserta_pelatihan_konsultasi', 'konsultasi_sertifikat.id_peserta', '=', 'peserta_pelatihan_konsultasi.id_peserta')
+            ->where('peserta_pelatihan_konsultasi.id_user', auth()->user()->id)
+            ->where('peserta_pelatihan_konsultasi.id_pelatihan_konsultasi', $id) // filter berdasarkan pelatihan juga
+            ->select('konsultasi_sertifikat.file_url')
+            ->get();
+        // dd( $files);
+
+        return view('user.training.pelatihan.konsultasi.sertifikat', compact('konsultasi', 'files'), [
+            'title' => 'Sertifikat Pelatihan ' . $konsultasi->nama_pelatihan,
+            // 'formData' => $formData
+        ]);
+    }
 
 
 }

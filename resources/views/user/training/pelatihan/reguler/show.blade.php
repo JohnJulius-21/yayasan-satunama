@@ -24,13 +24,17 @@
                 <div class="col-lg-9">
                     <div class="php-email-form">
                         <h3>{{ $reguler->nama_pelatihan }}</h3>
+                        <p><strong>Fasilitator :</strong>
+                            @foreach ($reguler->fasilitators as $fasilitator)
+                                {{ $fasilitator->nama_fasilitator }}{{ !$loop->last ? ',' : '' }}
+                            @endforeach
+                        </p>
                         <p><strong>Deskripsi Pelatihan :</strong> {{ strip_tags($reguler->deskripsi_pelatihan) }}</p>
 
-                        
+
                     </div>
                 </div><!-- End Contact Form -->
             </div>
         </div>
     </section><!-- /Contact Section -->
-
 @endsection

@@ -1,14 +1,22 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Form Edit Pelatihan</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('regulerAdmin') }}" style="color: green !important;">Reguler</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Edit Pelatihan Reguler</li>
+        </ol>
+    </nav>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h6 class="h4">Form Edit Pelatihan Reguler</h6>
     </div>
     <form method="post" action="{{ route('regulerUpdateAdmin', $reguler->id_reguler) }}" enctype="multipart/form-data">
         @method('PUT')
         @csrf
         <div class="row">
-            <div class="col-sm-7 mb-4">
+            <div class="col-sm-7 ">
                 <div class="card shadow">
                     <div class="card-header py-3">
                         <div class="d-flex justify-content-start">
@@ -101,46 +109,11 @@
                             @enderror
                         </div>
 
-                        <!-- Gambar, Materi, dan Deskripsi -->
-                        <div class="mb-3">
-                            <label for="image" class="form-label">Upload Poster Pelatihan</label>
-                            <input value="{{ old('images') }}"
-                                class="form-control mb-2 @error('image.*') is-invalid @enderror" type="file"
-                                id="image" name="image[]" multiple>
-                            @error('images.*')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                            @foreach ($images as $image)
-                                <img src="{{ $image->image_url }}" alt="Gambar Lama" class="img-thumbnail"
-                                    style="max-width: 200px; max-height: 200px;">
-                            @endforeach
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="file" class="form-label">Upload Materi</label>
-                            <input value="{{ old('file') }}"
-                                class="form-control mb-2 @error('file.*') is-invalid @enderror" type="file"
-                                id="file" name="file[]" multiple>
-                            @error('file.*')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                            @foreach ($files as $file)
-                                <a href="{{ $file->file_url }}" target="_blank">Download File</a><br>
-                            @endforeach
-                        </div>
-
                         <div class="mb-3">
                             <label for="deskripsi_pelatihan" class="form-label">Deskripsi Pelatihan</label>
-                            <input id="x" type="hidden" name="deskripsi_pelatihan"
-                                value="{{ old('deskripsi_pelatihan', $reguler->deskripsi_pelatihan) }}">
-                            <trix-editor class="@error('deskripsi_pelatihan') is-invalid @enderror"
-                                input="x"></trix-editor>
-                            <textarea class="ckeditor form-control" name="deskripsi_pelatihan" id="deskripsi_pelatihan"
-                                value="{{ old('deskripsi_pelatihan', $reguler->deskripsi_pelatihan) }}"></textarea>
+                            {{-- <input id="x" type="hidden" name="deskripsi_pelatihan"
+                                value="{{ old('deskripsi_pelatihan', $reguler->deskripsi_pelatihan) }}"> --}}
+                            <textarea class="ckeditor form-control" name="deskripsi_pelatihan">{{ old('deskripsi_pelatihan', $reguler->deskripsi_pelatihan) }}</textarea>
                             @error('deskripsi_pelatihan')
                                 <div class="invalid-feedback">
                                     <p class="text-danger">{{ $message }}</p>
@@ -201,8 +174,8 @@
                         <div class="mb-3">
                             <label for="tanggal_selesai" class="form-label">Tanggal Selesai Pelatihan</label>
                             <input type="date" id="tanggal_selesai"
-                                class="form-control @error('tanggal_selesai') is-invalid @enderror"
-                                name="tanggal_selesai" value="{{ old('tanggal_selesai', $reguler->tanggal_selesai) }}">
+                                class="form-control @error('tanggal_selesai') is-invalid @enderror" name="tanggal_selesai"
+                                value="{{ old('tanggal_selesai', $reguler->tanggal_selesai) }}">
                             @error('tanggal_selesai')
                                 <div class="invalid-feedback">
                                     {{ $message }}
@@ -211,6 +184,70 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Gambar dan Materi -->
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <div class="d-flex justify-content-start">
+                            <h6 class="m-0 font-weight-bold text-success">Poster & Materi</h6>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <label for="image" class="form-label">Upload Poster Pelatihan</label>
+                        <input value="{{ old('images') }}"
+                            class="form-control mb-2 @error('image.*') is-invalid @enderror" type="file"
+                            id="image" name="image[]" multiple>
+                        <div class="p-1">
+                            <li><small>Poster tidak boleh lebih dari 2mb</small></li>
+                            <li><small>Kosongkan kolom upload poster jika tidak ingin merubah poster</small></li>
+                        </div>
+                        @error('images.*')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                        @if ($images && count($images) > 0)
+                            @foreach ($images as $item)
+                                <img src="{{ route('file.show', ['filename' => $item->image]) }}" alt="Gambar Lama"
+                                    class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                            @endforeach
+                        @else
+                            <p class="text-muted">Belum ada poster yang diunggah.</p>
+                        @endif
+                    </div>
+
+                    <div class="card-body">
+                        <label for="file" class="form-label">Upload Materi</label>
+                        <input value="{{ old('file') }}"
+                            class="form-control mb-2 @error('file.*') is-invalid @enderror" type="file"
+                            id="file" name="file[]" multiple>
+                        <div class="p-1">
+                            <li><small>File tidak boleh lebih dari 5mb</small></li>
+                            <li><small>Kosongkan kolom upload materi jika tidak ingin merubah materi</small></li>
+                        </div>
+                        @error('file.*')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                        @php
+                            // Cek apakah ada file yang valid (tidak null)
+                            $validFiles = collect($files)->filter(fn($file) => !is_null($file->file_url));
+                        @endphp
+
+                        @if ($validFiles->isNotEmpty())
+                            @foreach ($validFiles as $file)
+                                <a href="{{ route('file.show', ['filename' => $file->file_url]) }}"
+                                    target="_blank">Download File</a><br>
+                            @endforeach
+                        @else
+                            <p class="text-muted">Belum ada materi yang diunggah.</p>
+                        @endif
+                    </div>
+                </div>
+
 
                 <!-- Fasilitator -->
                 <div class="card shadow mb-4">
@@ -226,7 +263,8 @@
                                 name="id_fasilitator[]" multiple="multiple" style="width: 100%">
                                 @foreach ($fasilitators as $item)
                                     <option value="{{ $item->id_fasilitator }}"
-                                        @if (in_array($item->id_fasilitator, $oldIdFasilitator)) selected @endif>{{ $item->nama_fasilitator }}
+                                        @if (in_array($item->id_fasilitator, $oldIdFasilitator)) selected @endif>
+                                        {{ $item->nama_fasilitator }}
                                     </option>
                                 @endforeach
                             </select>
@@ -241,7 +279,10 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-success mb-3">Simpan</button>
+        <div>
+            <a class="btn btn-secondary" href="{{ route('regulerAdmin') }}">Kembali</a>
+            <button type="submit" class="btn btn-success">Simpan</button>
+        </div>
     </form>
 
 

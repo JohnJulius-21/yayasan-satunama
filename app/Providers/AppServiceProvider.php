@@ -20,8 +20,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // if(config('app.env') === 'local'){
-        //     URL::forceScheme('https');
-        // }
+        if (app()->environment('local')) {
+            // Cek apakah aplikasi berjalan dengan ngrok
+            if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+                URL::forceScheme('https');
+                config(['app.url' => ' https://fe6a-121-101-131-250.ngrok-free.app ' . $_SERVER['HTTP_HOST']]);
+            }
+        }
     }
 }

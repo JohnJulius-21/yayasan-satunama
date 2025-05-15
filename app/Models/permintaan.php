@@ -39,6 +39,10 @@ class permintaan extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function permintaan()
+    {
+        return $this->belongsTo(permintaan::class, 'id_permintaan', 'id_permintaan');
+    }
 
     public function tema()
     {

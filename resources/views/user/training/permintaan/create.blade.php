@@ -75,22 +75,24 @@
                                                     {{ old('id_mitra') == $item->id_mitra ? 'seltected' : '' }}>
                                                     {{ $item->nama_mitra }}</option>
                                             @endforeach
+                                            <option value="Lainnya">Lainnya</option>
                                         </select>
                                         @error('id_mitra')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                        <small style="color: #6c757d"> Note: Jika tidak ada nama organisasi anda, silahkan
+                                            memilih opsi lainnya untuk mengisi nama organisasi anda.</small>
                                     </div>
 
-                                    <div class="form-group mt-3">
-                                        {{-- <label for="judul_pelatihan">Judul Pelatihan</label> --}}
+                                    <div class="form-group mt-3" id="namaMitraContainer" style="display: none;">
                                         <input type="text" class="form-select @error('nama_mitra') is-invalid @enderror"
-                                            id="nama_mitra" name="nama_mitra"
-                                            placeholder="Masukan nama Mitra jika belum ada nama Mitra dalam opsi (Opsional)"
+                                            id="nama_mitra" name="nama_mitra" placeholder="Masukan nama Organisasi anda"
                                             value="{{ old('nama_mitra') }}">
                                         @error('nama_mitra')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
+
 
                                     <div class="form-group mt-3">
                                         {{-- <label for="judul_pelatihan">Judul Pelatihan</label> --}}
@@ -108,14 +110,14 @@
                                         <div class="col">
                                             <div class="form-group mt-3">
                                                 <label for="id_tema">Tema Pelatihan</label>
-                                                <select class="form-select @error('id_tema') is-invalid @enderror"
+                                                <select class="form-control @error('id_tema') is-invalid @enderror"
                                                     name="id_tema" id="id_tema">
                                                     <option value="">Pilih Tema Pelatihan</option>
                                                     @foreach ($tema as $item)
-                                                            <option value="{{ $item->id }}"
-                                                                {{ old('id_tema') == $item->id ? 'selected' : '' }}>
-                                                                {{ $item->judul_tema }}</option>
-                                                        @endforeach
+                                                        <option value="{{ $item->id }}"
+                                                            {{ old('id_tema') == $item->id ? 'selected' : '' }}>
+                                                            {{ $item->judul_tema }}</option>
+                                                    @endforeach
                                                 </select>
                                                 @error('id_tema')
                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -127,9 +129,10 @@
                                     <div class="col">
                                         <div class="form-group mt-3 mb-3">
                                             <label for="no_pic">Nomor PIC Mitra</label>
-                                            <input type="tel" maxlength="12"
+                                            <input type="text" maxlength="12" pattern="[0-9]*" inputmode="numeric"
                                                 class="form-control @error('no_pic') is-invalid @enderror" id="no_pic"
                                                 name="no_pic" placeholder="Masukan Nomor PIC" value="{{ old('no_pic') }}">
+
                                             @error('no_pic')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -379,10 +382,15 @@
         }
     </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.2/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function() {
+
+            document.getElementById('no_pic').addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, ''); // hapus karakter selain angka
+            });
             // Add row for Assessment Dasar
             $(".addRow1").click(function() {
                 console.log('Tombol tambah Assessment Dasar diklik!');
@@ -408,10 +416,18 @@
                 $(this).siblings('.invalid-feedback').remove(); // Menghapus pesan kesalahan
             });
 
-            $('#mitra').select2({
-                placeholder: "Pilih Mitra",
-                // theme: "classic"
+            $('#mitra').on('change', function() {
+                var selected = $(this).val();
+                if (selected === 'Lainnya') {
+                    $('#namaMitraContainer').slideDown();
+                    $('#nama_mitra').prop('required', true);
+                } else {
+                    $('#namaMitraContainer').slideUp();
+                    $('#nama_mitra').val('');
+                    $('#nama_mitra').prop('required', false);
+                }
             });
+
 
             $('.form-control').on('input', function() {
                 $(this).removeClass('is-invalid'); // Menghapus kelas 'is-invalid'
@@ -468,7 +484,12 @@
                     currentStep++;
                     updateStepper();
                 } else {
-                    alert("Silakan isi semua kolom pada langkah ini.");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Form Belum Lengkap',
+                        text: 'Silakan isi semua kolom pada langkah ini sebelum melanjutkan.',
+                        confirmButtonText: 'Oke'
+                    });
                 }
             });
 
@@ -533,28 +554,75 @@
                 // Collect form data
                 var formData = new FormData($('#multi-step-form')[0]);
 
-                // Send AJAX request to store method in the controller
+                // Show loading spinner (optional)
+                Swal.fire({
+                    title: 'Menyimpan data...',
+                    text: 'Mohon tunggu sebentar.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Send AJAX request
                 $.ajax({
-                    url: "{{ route('permintaan.store') }}", // Route to store method
+                    url: "{{ route('permintaan.store') }}", // Route ke controller
                     type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     data: formData,
-                    contentType: false, // Important for FormData
-                    processData: false, // Important for FormData
+                    contentType: false,
+                    processData: false,
                     success: function(response) {
+                        Swal.close(); // Tutup loading
+
                         if (response.success) {
-                            // Handle success (you can display a success message or redirect)
-                            alert('Data successfully saved!');
-                            window.location.href = response
-                            .redirect_url; // Optionally redirect to another page
+                            // Tampilkan alert sukses
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Berhasil!',
+                                text: 'Data berhasil disimpan.',
+                                confirmButtonText: 'Lanjut'
+                            }).then(() => {
+                                window.location.href = response.redirect_url;
+                            });
                         } else {
-                            // Handle validation errors or failure
-                            alert('Something went wrong, please try again.');
+                            // Tampilkan alert gagal (tanpa redirect)
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: 'Terjadi kesalahan, silakan coba lagi.',
+                                confirmButtonText: 'Oke'
+                            });
                         }
                     },
                     error: function(xhr, status, error) {
-                        // Handle AJAX error
-                        alert('Error: ' + xhr.responseText);
+                        Swal.close();
+
+                        if (xhr.responseJSON && xhr.responseJSON.errors) {
+                            let messages = '';
+                            $.each(xhr.responseJSON.errors, function(key, value) {
+                                messages += `• ${value[0]}<br>`;
+                            });
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validasi Gagal',
+                                html: messages,
+                                confirmButtonText: 'Perbaiki'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Terjadi Kesalahan!',
+                                html: xhr.responseJSON?.error ??
+                                    'Gagal mengirim data. Silakan coba lagi nanti.',
+                                confirmButtonText: 'Oke'
+                            });
+                        }
                     }
+
                 });
             });
         });

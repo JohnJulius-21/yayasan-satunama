@@ -1,19 +1,85 @@
 @extends('layouts.admin')
 
 @section('content')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('surveyRegulerAdmin') }}" style="color: green !important;">Survey Kepuasan Reguler</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Detail Survey Kepuasan {{ $reguler->nama_pelatihan }}</li>
+        </ol>
+    </nav>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
-        <h1 class="h2">Detail Hasil Form Evaluasi</h1>
+        <h6 class="h4">Detail Hasil Survey Kepuasan Reguler</h6>
         <div class="d-flex justify-content-end">
-            {{-- @if ($showButtons)
-                <a href="{{ route('dashboard.evaluasi.create', ['id_pelatihan' => $nilai]) }}" class="btn btn-success "><i
+            @if ($showButtons)
+                <a href="{{ route('surveyCreateRegulerAdmin', $reguler->id_reguler) }}" class="btn btn-success "><i
                         style="width:17px" data-feather="plus"></i>
-                    Buat Form Evaluasi</a>
-            @endif --}}
-            <a href="{{ route('surveyCreateRegulerAdmin', $reguler->id_reguler) }}" class="btn btn-success "><i
-                style="width:17px" data-feather="plus"></i>
-            Buat Form Survey Kepuasan</a>
+                    Buat Form Survey Kepuasan</a>
+            @else
+                <a href="{{ url('/admin/survey/edit-form-survey-reguler/' . $reguler->id_reguler) }}"
+                    class="btn btn-warning py-2 mx-1">Edit Form</a>
+                <a href="#" class="btn btn-danger py-2 mx-1" data-toggle="modal" data-target="#deleteModal">Hapus
+                    Form</a>
+            @endif
+
         </div>
     </div>
+    @if (session('success'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-thumbs-up',
+                    title: 'Berhasil',
+                    message: "{{ session('success') }}"
+                }, {
+                    type: 'success',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 3000
+                });
+            });
+        </script>
+    @endif
+    @if (session('warning'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-exclamation-triangle',
+                    title: 'Peringatan',
+                    message: "{{ session('warning') }}"
+                }, {
+                    type: 'warning',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 4000
+                });
+            });
+        </script>
+    @endif
+
+    @if (session('info'))
+        <script>
+            $(document).ready(function() {
+                $.notify({
+                    icon: 'la la-info-circle',
+                    title: 'Info',
+                    message: "{{ session('info') }}"
+                }, {
+                    type: 'info',
+                    placement: {
+                        from: "bottom",
+                        align: "right"
+                    },
+                    delay: 4000
+                });
+            });
+        </script>
+    @endif
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -29,12 +95,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($pesertaStatus as $peserta)
+                        @foreach ($pesertaStatus as $peserta)
                             <tr>
                                 <td>{{ $peserta->nama_peserta }}</td>
-                                <td>{{ $peserta->is_filled ? 'Sudah Mengisi' : 'Belum Mengisi' }}</td>
+                                <td>{{ $peserta->hasilSurveyReguler ? 'Sudah Mengisi' : 'Belum Mengisi' }}</td>
                             </tr>
-                        @endforeach --}}
+                        @endforeach
 
                     </tbody>
                 </table>
@@ -44,17 +110,20 @@
 
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-success">Tabel Evaluasi Pelatihan Peserta</h6>
+            <h6 class="m-0 font-weight-bold text-success">Tabel Survey Kepuasan Pelatihan Peserta</h6>
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                {{-- @if (empty($labels))
-                    <p>Belum ada form evaluasi yang dibuat.</p>
+                @if (empty($labels))
+                    <p class="text-center">Belum ada form evaluasi yang dibuat.</p>
                 @else
                     <table id="evaluasi" class="display table dataTable" style="width: 800px; margin: 0 auto;">
                         <thead>
                             <tr>
                                 <th>Nama Peserta</th>
+                                <th>Negara</th>
+                                <th>Provinsi</th>
+                                <th>Kota / Kabupaten</th>
                                 @foreach ($labels as $item)
                                     <th>{{ $item }}</th>
                                 @endforeach
@@ -63,15 +132,46 @@
                         <tbody>
                             @foreach ($nama_peserta as $index => $nama)
                                 <tr>
-                                    <td>{{ $nama }}</td> <!-- Menampilkan nama pengguna -->
-                                    @foreach ($respons[$index] as $value)
-                                        <td>{{ $value }}</td> <!-- Menampilkan data respons -->
-                                    @endforeach
+                                    <td>{{ $nama }}</td> <!-- Menampilkan nama peserta -->
+                                    <td>{{ $negara[$index] ?? '-' }}</td> <!-- Menampilkan nama negara -->
+                                    <td>{{ $provinsi[$index] ?? '-' }}</td> <!-- Menampilkan nama provinsi -->
+                                    <td>{{ $kabupaten[$index] ?? '-' }}</td> <!-- Menampilkan nama kabupaten -->
+                                    @if (isset($respons[$index]))
+                                        @foreach ($respons[$index] as $value)
+                                            <td>{{ $value }}</td> <!-- Menampilkan data respons -->
+                                        @endforeach
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
-                @endif --}}
+                @endif
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal Hapus Form -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Penghapusan</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin menghapus form survey kepuasan ini? Data survey kepuasan ini tidak dapat dikembalikan.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    <form action="{{ route('surveyDeleteRegulerAdmin', $reguler->id_reguler) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">Hapus Form</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

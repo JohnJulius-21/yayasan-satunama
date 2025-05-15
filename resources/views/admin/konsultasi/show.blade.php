@@ -1,8 +1,16 @@
 @extends('layouts.admin')
 
 @section('content')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('konsultasiAdmin') }}" style="color: green !important;">Konsultasi</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Detail Konsultasi</li>
+        </ol>
+    </nav>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-        <h1 class="h2">Detail Konsultasi</h1>
+        <h1 class="h4">Detail Konsultasi</h1>
         <div class="d-flex justify-content-end">
             @if ($showButtons)
                 @foreach ($konsultasi as $item)
@@ -11,8 +19,10 @@
                     </a>
                 @endforeach
             @endif
-            {{-- <a href="{{ route('dashboard.konsultasi.peserta', ['id' => $item]) }}" class="btn btn-success mx-1"><i style="width:17px" data-feather="plus"></i> Buatkan Akun Peserta</a> --}}
-
+            {{-- @foreach ($konsultasi as $item)
+                <a href="{{ route('konsultasiCreatePeserta', $item->id_konsultasi) }}" class="btn btn-success mx-1"><i
+                        style="width:17px" data-feather="plus"></i> Buatkan Akun Peserta</a>
+            @endforeach --}}
         </div>
     </div>
 
@@ -22,31 +32,37 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table id="konsultasi" class="table table-bordered display responsive nowrap" width="100%">
-                    <thead>
+                <table class="table table-bordered">
+                    @foreach ($konsultasi as $item)
                         <tr>
-                            <th>Nama Organisasi</th>
-                            <th>Email Organisasi</th>
-                            <th>Nomor Telepon Organisasi</th>
-                            <th>Negara</th>
-                            <th>Provinsi</th>
-                            <th>Kabupaten/Kota</th>
-                            <th>Deskripsi Kebutuhan</th>
+                            <th>Nama Organisasi :</th>
+                            <td>{{ $item['nama_organisasi'] }}</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($konsultasi as $item)
-                            <tr>
-                                <td>{{ $item['nama_organisasi'] }}</td>
-                                <td>{{ $item['email'] }}</td>
-                                <td>{{ $item['no_hp'] }}</td>
-                                <td>{{ $item->negara->nama_negara }}</td>
-                                <td>{{ $item->provinsi->nama_provinsi }}</td>
-                                <td>{{ $item->kabupaten_kota->nama_kabupaten_kota }}</td>
-                                <td>{{ $item->deskripsi_kebutuhan }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
+                        <tr>
+                            <th>Email Organisasi :</th>
+                            <td>{{ $item['email'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Nomor Telepon PIC Organisasi :</th>
+                            <td>{{ $item['no_hp'] }}</td>
+                        </tr>
+                        <tr>
+                            <th>Negara :</th>
+                            <td>{{ $item->negara->nama_negara }}</td>
+                        </tr>
+                        <tr>
+                            <th>Provinsi :</th>
+                            <td>{{ $item->provinsi->nama_provinsi }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kabupaten/Kota :</th>
+                            <td>{{ $item->kabupaten_kota->nama_kabupaten_kota }}</td>
+                        </tr>
+                        <tr>
+                            <th>Kebutuhan Lembaga : </th>
+                            <td>{{ $item->deskripsi_kebutuhan }}</td>
+                        </tr>
+                    @endforeach
                 </table>
             </div>
         </div>
