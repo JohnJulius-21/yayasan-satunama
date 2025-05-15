@@ -19,34 +19,24 @@ class HomeController extends Controller
             ->orderBy('tanggal_pendaftaran', 'DESC') // urutkan juga berdasarkan tanggal untuk urutan dalam bulan
             ->paginate(3);
 
-        foreach ($reguler as $item) {
-            $filename = DB::table('reguler_images')
-                ->where('id_reguler', $item->id_reguler)
-                ->value('image_url');
-
-            if ($filename) {
-                $cachePath = public_path('storage/cache_drive/' . $filename);
-
-                if (file_exists($cachePath)) {
-                    $item->image_url = asset('storage/cache_drive/' . $filename);
+            foreach ($reguler as $item) {
+                $filename = DB::table('reguler_images')
+                    ->where('id_reguler', $item->id_reguler)
+                    ->value('image_url');
+            
+                if (!empty($filename)) {
+                    $cachePath = public_path('storage/cache_drive/' . $filename);
+            
+                    if (file_exists($cachePath)) {
+                        $item->image_url = asset('storage/cache_drive/' . $filename);
+                    } else {
+                        $item->image_url = route('file.show', ['filename' => $filename]);
+                    }
                 } else {
-                    $item->image_url = route('file.show', ['filename' => $filename]);
+                    $item->image_url = asset('/images/stc.png'); // fallback image
                 }
-            } else {
-                // fallback jika tidak ada gambar di DB
-                $item->image_url = asset('/img/default.jpg');
             }
-
-
-
-            $cachePath = public_path('storage/cache_drive/' . $filename);
-
-            if (file_exists($cachePath)) {
-                $item->image_url = asset('storage/cache_drive/' . $filename);
-            } else {
-                $item->image_url = route('file.show', ['filename' => $filename]);
-            }
-        }
+            
 
 
         // dd($fasilitator);
