@@ -203,21 +203,31 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <label for="image" class="form-label">Upload Poster Pelatihan</label>
+                        <input value="{{ old('image') }}" class="form-control @error('image.*') is-invalid @enderror"
+                            type="file" id="image" name="image[]" multiple>
+                        <div class="p-1">
+                            <li><small>Poster tidak boleh lebih dari 2mb</small></li>
+                        </div>
+                        @error('image.*')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="card-body">
                         <label for="file" class="form-label">Upload Materi</label>
                         <input value="{{ old('file') }}" class="form-control @error('file.*') is-invalid @enderror"
                             type="file" id="file" name="file[]" multiple>
                         <div class="p-1">
                             <li><small>File tidak boleh lebih dari 5mb</small></li>
                             <li><small>Kosongkan kolom upload materi jika tidak ingin mengupload materi</small></li>
-                            
-                            
                         </div>
                         @error('file.*')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
                 </div>
 

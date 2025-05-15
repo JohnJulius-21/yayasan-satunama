@@ -222,7 +222,6 @@
                                 {{ $message }}
                             </div>
                         @enderror
-
                     </div>
 
                     <div class="card-body">

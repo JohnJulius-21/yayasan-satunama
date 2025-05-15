@@ -23,9 +23,13 @@
                         <div class="card">
                             <div class="skeleton-wrapper">
                                 <div class="skeleton skeleton-img"></div> <!-- Skeleton sementara -->
-                                <img src="{{ route('file.show', ['filename' => $item->image]) }}"
+                                {{-- <img src="{{ route('file.show', ['filename' => $item->image]) }}"
                                     alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
-                                    onload="removeSkeleton(this)" onerror="handleImageError(this)">
+                                    onload="removeSkeleton(this)" onerror="handleImageError(this); this.src='{{ asset('images/stc.png') }}'"> --}}
+
+                                <img src="{{ $item->image_url ?? asset('img/stc.png') }}" alt="{{ $item->nama_pelatihan }}"
+                                    class="card-img-top real-img" onload="removeSkeleton(this)"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}'">
                             </div>
 
                             <div class="card-body">
@@ -60,7 +64,8 @@
                     </div>
                 @endforeach
                 <div class="d-flex justify-content-center">
-                    <a href="{{ route('reguler.index') }}" class="btn btn-outline-success my-5">Lihat Semua Pelatihan Reguler</a>
+                    <a href="{{ route('reguler.index') }}" class="btn btn-outline-success my-5">Lihat Semua Pelatihan
+                        Reguler</a>
                 </div>
             </div>
         </div>
@@ -69,40 +74,59 @@
     <hr class="container" style="height: 3px; background-color: #000000; border: none;">
 
     <section class="pelatihan" id="pelatihan">
-        <h4 class="text-center my-5">Pelatihan Permintaan</h4>
-
+        <div class="my-5">
+            <h4 class="text-center">Pelatihan Permintaan</h4>
+            <p class="text-center">Pelatihan Permintaan yang sedang berlangsung dan telah selesai</p>
+        </div>
         <div class="container">
-            <div class="row d-flex justify-content-center">
-                <div class="col-md-4 text-center"><img src="{{ asset('images/permintaan1.png') }}" alt="Permintaan"
-                        class="img-fluid icon-image" style="width: 70%"></div>
-                <div class="col-md-6">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error, voluptates, non adipisci nesciunt
-                        dolore nisi
-                        corrupti commodi expedita quod omnis iste soluta mollitia veniam ut corporis suscipit debitis
-                        distinctio,
-                        quisquam nulla tenetur et. Iusto, ex, hic eaque officiis, earum molestiae necessitatibus esse quis
-                        fuga
-                        repellendus quas perferendis asperiores eius magnam quos labore explicabo distinctio maxime sunt
-                        modi. A
-                        quae
-                        rerum voluptatibus esse necessitatibus ab est neque mollitia cum. Iusto porro sint quos laborum
-                        optio
-                        consequatur in quaerat nisi molestiae dolor asperiores deserunt eveniet quisquam debitis error earum
-                        amet
-                        nulla
-                        dolores aliquid similique, impedit molestias? Voluptatem sint voluptate voluptas consequuntur ab!
-                    </p>
-                </div>
-            </div>
-
-
             <div class="row">
+                @foreach ($permintaan as $item)
+                    <div class="col-lg-4 mb-4">
+                        <div class="card">
+                            <div class="skeleton-wrapper">
+                                <div class="skeleton skeleton-img"></div> <!-- Skeleton sementara -->
+                                {{-- <img src="{{ route('file.show', ['filename' => $item->image]) }}"
+                        alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
+                        onload="removeSkeleton(this)" onerror="handleImageError(this); this.src='{{ asset('images/stc.png') }}'"> --}}
 
-                <div class="d-flex justify-content-center">
-                    <a href="{{ route('permintaan.create') }}" class="btn btn-outline-success my-5">Daftar Pelatihan
-                        Permintaan</a>
-                    {{-- <button class="btn btn-outline-success my-5">Lebih banyak</button> --}}
-                </div>
+                                <img src="{{ $item->image_url ?? asset('img/stc.png') }}"
+                                    alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
+                                    onload="removeSkeleton(this)"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}'">
+                            </div>
+
+                            <div class="card-body">
+                                <h5 class="card-title d-flex justify-content-between align-items-center">
+                                    {{ $item->nama_pelatihan }}
+                                </h5>
+
+                                <small><i class="far fa-calendar-days"></i> Tanggal Pelatihan :
+                                    {{ \Carbon\Carbon::parse($item->tanggal_mulai)->translatedFormat('d F Y') }}
+                                    -
+                                    {{ \Carbon\Carbon::parse($item->tanggal_selesai)->translatedFormat('d F Y') }}
+                                </small>
+
+                                <p class="card-text mt-2">
+                                    {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
+                                </p>
+
+                                {{-- <a href="{{ route('reguler.show', ['id' => $item->id_reguler]) }}"
+                            class="btn btn-outline-success btn-sm">Lihat Detail</a> --}}
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+
+
+        <div class="row">
+
+            <div class="d-flex justify-content-center">
+                <a href="{{ route('permintaan.create') }}" class="btn btn-outline-success my-5">Daftar Pelatihan
+                    Permintaan</a>
+                {{-- <button class="btn btn-outline-success my-5">Lebih banyak</button> --}}
             </div>
         </div>
     </section>

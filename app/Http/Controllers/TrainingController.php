@@ -52,6 +52,8 @@ class TrainingController extends Controller
     {
         // Ambil data pelatihan
         $reguler = Reguler::paginate(3);
+        $permintaan = permintaan_pelatihan::paginate(3);
+        $konsultasi = konsultasi_pelatihan::paginate(3);
 
         // Untuk setiap pelatihan, ambil gambar terkait
         foreach ($reguler as $item) {
@@ -59,8 +61,18 @@ class TrainingController extends Controller
                 ->where('id_reguler', $item->id_reguler)
                 ->value('image_url'); // Ambil satu gambar (misal gambar pertama)
         }
+        foreach ($permintaan as $item) {
+            $item->image = DB::table('permintaan_images')
+                ->where('id_permintaan', $item->id_permintaan)
+                ->value('image_url'); // Ambil satu gambar (misal gambar pertama)
+        }
+        foreach ($konsultasi as $item) {
+            $item->image = DB::table('konsultasi_images')
+                ->where('id_konsultasi', $item->id_konsultasi)
+                ->value('image_url'); // Ambil satu gambar (misal gambar pertama)
+        }
 
-        return view('user.training.index', compact('reguler'), [
+        return view('user.training.index', compact('reguler','permintaan', 'konsultasi'), [
             'title' => 'Pelatihan',
         ]);
     }

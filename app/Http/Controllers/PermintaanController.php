@@ -81,6 +81,19 @@ class PermintaanController extends Controller
         $permintaan->deskripsi_pelatihan = $request->deskripsi_pelatihan;
         $permintaan->save();
 
+        // Upload images ke Google Drive dan simpan ke database
+        if ($request->hasFile('image')) {
+            foreach ($request->file('image') as $image) {
+                $filename = $image->getClientOriginalName(); // Ambil nama file asli
+                $path = Storage::disk('google')->putFileAs('', $image, $filename); // Simpan di Drive
+
+                DB::table('permintaan_images')->insert([
+                    'id_permintaan' => $permintaan->id_permintaan,
+                    'image_url' => $filename, // Simpan hanya nama file di database
+                ]);
+            }
+        }
+
         if ($request->hasFile('file')) {
             foreach ($request->file('file') as $file) {
                 $filename = $file->getClientOriginalName(); // Nama asli file
@@ -140,6 +153,17 @@ class PermintaanController extends Controller
     public function edit($id)
     {
         $permintaan = permintaan_pelatihan::find($id);
+        $permintaanId = permintaan::where('id_permintaan', $id)->get();
+        // Untuk setiap pelatihan, ambil gambar terkait
+        $images = [];
+
+        foreach ($permintaanId as $item) {
+            $imageUrl = DB::table('permintaan_images')
+                ->where('id_permintaan', $item->id_reguler)
+                ->value('image_url');
+
+            $images[] = (object) ['image' => $imageUrl]; // Simpan sebagai objek
+        }
         $files = DB::table('permintaan_files')
             ->where('id_permintaan', $id)
             ->get(['file_url']); // Ambil semua file_url
@@ -147,7 +171,7 @@ class PermintaanController extends Controller
         $fasilitator = fasilitator::all();
         $tema = tema::all();
         $oldIdFasilitator = $permintaan->fasilitators->pluck('id_fasilitator')->toArray();
-        return view('admin.permintaan.edit', compact('permintaan', 'files', 'fasilitator', 'oldIdFasilitator', 'tema'));
+        return view('admin.permintaan.edit', compact('permintaan', 'files', 'fasilitator', 'oldIdFasilitator', 'tema', 'images'));
     }
 
     public function update(Request $request, $id)
@@ -180,6 +204,19 @@ class PermintaanController extends Controller
             'deskripsi_pelatihan' => $request->deskripsi_pelatihan,
         ]);
 
+        // Update Images
+        if ($request->hasFile('image')) {
+            DB::table('permintaan_images')->where('id_permintaan', $id)->delete();
+            foreach ($request->file('image') as $image) {
+                $filename = $image->getClientOriginalName(); // Ambil nama file asli
+                $path = Storage::disk('google')->putFileAs('', $image, $filename); // Simpan di Drive
+
+                DB::table('permintaan_images')->insert([
+                    'id_permintaan' => $permintaan->id_permintaan,
+                    'image_url' => $filename, // Simpan hanya nama file di database
+                ]);
+            }
+        }
         if ($request->hasFile('file')) {
             // Ambil file lama dari database
             $oldFiles = DB::table('permintaan_files')

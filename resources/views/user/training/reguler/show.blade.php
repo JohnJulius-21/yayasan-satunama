@@ -63,19 +63,18 @@
                     </p>
                     <span>Tentang Pelatihan ini : </span>
                     <div class="deskripsi-container">
-                        <!-- Short text shown initially with ellipsis -->
-                        <p id="deskripsi">
-                            <span id="short-text">
-                                {{ \Illuminate\Support\Str::words(strip_tags($pelatihan->deskripsi_pelatihan), 20, '...') }}
-                            </span>
-                            <span id="more" style="display: none;">
-                                {{ strip_tags($pelatihan->deskripsi_pelatihan) }}
-                            </span>
-                        </p>
+                        <div id="deskripsi">
+                            <div id="short-text">
+                                {!! \Illuminate\Support\Str::words($pelatihan->deskripsi_pelatihan, 30, '...') !!}
+                            </div>
+                            <div id="more" style="display: none;">
+                                {!! $pelatihan->deskripsi_pelatihan !!}
+                            </div>
+                        </div>
                         <div class="show-more-container">
                             <button onclick="toggleDescription()" id="toggleBtn" class="btn btn-link">Show More</button>
                         </div>
-                    </div>
+                    </div>                    
                 </div>
             </div>
 

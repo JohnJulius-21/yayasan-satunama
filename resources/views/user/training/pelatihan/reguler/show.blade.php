@@ -29,7 +29,7 @@
                                 {{ $fasilitator->nama_fasilitator }}{{ !$loop->last ? ',' : '' }}
                             @endforeach
                         </p>
-                        <p><strong>Deskripsi Pelatihan :</strong> {{ strip_tags($reguler->deskripsi_pelatihan) }}</p>
+                        <p><strong>Deskripsi Pelatihan :</strong> {!! \Illuminate\Support\Str::words($reguler->deskripsi_pelatihan, 30, '...') !!}</p>
 
 
                     </div>

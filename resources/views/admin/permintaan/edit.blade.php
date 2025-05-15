@@ -121,6 +121,30 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <label for="image" class="form-label">Upload Poster Pelatihan</label>
+                        <input value="{{ old('images') }}"
+                            class="form-control mb-2 @error('image.*') is-invalid @enderror" type="file"
+                            id="image" name="image[]" multiple>
+                        <div class="p-1">
+                            <li><small>Poster tidak boleh lebih dari 2mb</small></li>
+                            <li><small>Kosongkan kolom upload poster jika tidak ingin merubah poster</small></li>
+                        </div>
+                        @error('images.*')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
+
+                        @if ($images && count($images) > 0)
+                            @foreach ($images as $item)
+                                <img src="{{ route('file.show', ['filename' => $item->image]) }}" alt="Gambar Lama"
+                                    class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                            @endforeach
+                        @else
+                            <p class="text-muted">Belum ada poster yang diunggah.</p>
+                        @endif
+                    </div>
+                    <div class="card-body">
                         <label for="file" class="form-label">Upload Materi</label>
                         <input value="{{ old('file') }}" class="form-control mb-2 @error('file.*') is-invalid @enderror"
                             type="file" id="file" name="file[]" multiple>

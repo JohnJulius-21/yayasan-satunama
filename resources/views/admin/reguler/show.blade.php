@@ -9,7 +9,7 @@
             <li class="breadcrumb-item active" aria-current="page">Daftar Peserta Pelatihan</li>
         </ol>
     </nav>
-     @if (session('success'))
+    @if (session('success'))
         <script>
             $(document).ready(function() {
                 $.notify({
@@ -27,31 +27,38 @@
             });
         </script>
     @endif
-    @if (session('error'))
-    <script>
-        $(document).ready(function () {
-            $.notify({
-                icon: 'la la-exclamation-circle',
-                title: 'Gagal',
-                message: "{{ session('error') }}"
-            }, {
-                type: 'danger',
-                placement: {
-                    from: "bottom",
-                    align: "right"
-                },
-                delay: 4000
+    @if ($errors->any())
+        <script>
+            $(document).ready(function() {
+                // buka kembali modal tambah peserta
+                $('#modalTambahPeserta').modal('show');
+
+                // gabungkan semua pesan error menjadi satu string
+                const errors = `{!! implode('<br>', $errors->all()) !!}`;
+
+                $.notify({
+                    icon: 'la la-exclamation-circle',
+                    title: 'Gagal',
+                    message: errors
+                }, {
+                    type: 'danger',
+                    placement: {
+                        from: 'bottom',
+                        align: 'right'
+                    },
+                    delay: 5000
+                });
             });
-        });
-    </script>
+        </script>
     @endif
+
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h6 class="h4">Daftar Peserta Pelatihan</h6>
         <div class="d-flex justify-content-end">
             <!-- Tombol untuk memunculkan modal -->
-                    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#modalTambahPeserta">
-                        Tambah Peserta
-                    </button>
+            <button class="btn btn-success mb-3" data-toggle="modal" data-target="#modalTambahPeserta">
+                Tambah Peserta
+            </button>
         </div>
     </div>
 
@@ -59,7 +66,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-success">Tabel Daftar Peserta</h6>
         </div>
-        
+
         <div class="card-body">
             <div class="table-responsive">
                 <table id="pesertaReguler" class="display table dataTable" style="width: 800px; margin: 0 auto;">
@@ -87,19 +94,19 @@
                             <!-- Tampilkan data hanya jika nama peserta mengandung kata kunci pencarian -->
                             <tr>
                                 <td class="editable">{{ $item['nama_peserta'] ?? '-' }}</td>
-        <td class="editable">{{ $item['email_peserta'] ?? '-' }}</td>
-        <td class="editable">{{ $item['no_hp'] ?? '-' }}</td>
-        <td class="editable">{{ $item->rentang_usia ?? '-' }}</td>
-        <td class="editable">{{ $item->gender ?? '-' }}</td>
-        <td class="editable">{{ $item->kabupaten_kota->nama_kabupaten_kota ?? '-' }}</td>
-        <td class="editable">{{ $item->provinsi->nama_provinsi ?? '-' }}</td>
-        <td class="editable">{{ $item->negara->nama_negara ?? '-' }}</td>
-        <td class="editable">{{ $item['nama_organisasi'] ?? '-' }}</td>
-        <td class="editable">{{ $item->organisasi ?? '-' }}</td>
-        <td class="editable">{{ $item['jabatan_peserta'] ?? '-' }}</td>
-        <td class="editable">{{ $item->informasi ?? '-' }}</td>
-        <td class="editable">{{ $item['pelatihan_relevan'] ?? '-' }}</td>
-        <td class="editable">{{ $item['harapan_pelatihan'] ?? '-' }}</td>
+                                <td class="editable">{{ $item['email_peserta'] ?? '-' }}</td>
+                                <td class="editable">{{ $item['no_hp'] ?? '-' }}</td>
+                                <td class="editable">{{ $item->rentang_usia ?? '-' }}</td>
+                                <td class="editable">{{ $item->gender ?? '-' }}</td>
+                                <td class="editable">{{ $item->kabupaten_kota->nama_kabupaten_kota ?? '-' }}</td>
+                                <td class="editable">{{ $item->provinsi->nama_provinsi ?? '-' }}</td>
+                                <td class="editable">{{ $item->negara->nama_negara ?? '-' }}</td>
+                                <td class="editable">{{ $item['nama_organisasi'] ?? '-' }}</td>
+                                <td class="editable">{{ $item->organisasi ?? '-' }}</td>
+                                <td class="editable">{{ $item['jabatan_peserta'] ?? '-' }}</td>
+                                <td class="editable">{{ $item->informasi ?? '-' }}</td>
+                                <td class="editable">{{ $item['pelatihan_relevan'] ?? '-' }}</td>
+                                <td class="editable">{{ $item['harapan_pelatihan'] ?? '-' }}</td>
                                 <td>
                                     <select class="form-select form-select-sm status-dropdown"
                                         data-id="{{ $item->id_peserta_reguler }}">
@@ -121,100 +128,156 @@
     </div>
 
     <!-- Modal -->
-<div class="modal fade" id="modalTambahPeserta" tabindex="-1" aria-labelledby="modalTambahPesertaLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <form action="{{route('regulerStorePesertaAdmin')}}" method="POST">
-            @csrf
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTambahPesertaLabel">Tambah Peserta Baru</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="row">
-                        <!-- Nama -->
-                        <div class="col-md-6 mb-3">
-                            <label for="nama_peserta" class="form-label">Nama Peserta</label>
-                            <input type="text" name="nama_peserta" class="form-control" required>
-                        </div>
-                        <!-- Email -->
-                        <div class="col-md-6 mb-3">
-                            <label for="email_peserta" class="form-label">Email</label>
-                            <input type="email" name="email_peserta" class="form-control" required>
-                        </div>
-                        <!-- No HP -->
-                        <div class="col-md-6 mb-3">
-                            <label for="no_hp" class="form-label">No. HP</label>
-                            <input type="text" name="no_hp" class="form-control" required>
-                        </div>
-                        <!-- Gender -->
-                        <div class="col-md-6 mb-3">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select name="gender" class="form-control" required>
-                                <option value="">Pilih Gender</option>
-                                <option value="Laki-Laki">Laki-Laki</option>
-                                <option value="Perempuan">Perempuan</option>
-                                <option value="Transgender">Transgender</option>
-                                <option value="Tidak ingin menyebutkan">Tidak ingin menyebutkan</option>
-                            </select>
-                        </div>
-                        <!-- Rentang Usia -->
-                        <div class="col-md-6 mb-3">
-                            <label for="rentang_usia" class="form-label">Rentang Usia</label>
-                            <select name="rentang_usia" class="form-control">
-                                <option value="">Pilih Rentang Usia</option>
-                                <option value="20-25">20-25</option>
-                                <option value="26-30">26-30</option>
-                                <option value="31-35">31-35</option>
-                                <option value="36-40">36-40</option>
-                                <option value="41-45">41-45</option>
-                                <option value="46-50">46-50</option>
-                                <option value="> 50">> 50</option>
-                            </select>
-                        </div>
-                        <!-- Nama Organisasi -->
-                        <div class="col-md-6 mb-3">
-                            <label for="nama_organisasi" class="form-label">Nama Organisasi</label>
-                            <input type="text" name="nama_organisasi" class="form-control">
-                        </div>
-                        <!-- Jenis Organisasi -->
-                        <div class="col-md-6 mb-3">
-                            <label for="jenis_organisasi" class="form-label">Jenis Organisasi</label>
-                            <select name="organisasi" class="form-control">
-                                                <option value="">Pilih Jenis Organisasi</option>
-                                                <option value="Personal">Personal</option>
-                                                <option value="Pemerintah">Pemerintah</option>
-                                                <option value="Lembaga Pendidikan">Lembaga Pendidikan</option>
-                                                <option value="Komunitas">Komunitas</option>
-                                                <option value="Organisasi Nirlaba">Organisasi Nirlaba</option>
-                                                <option value="Perusahaan">Perusahaan</option>
-                                                <option value="Partai Politik">Partai Politik</option>
-                                            </select>
-                        </div>
-                        <!-- Jabatan -->
-                        <div class="col-md-6 mb-3">
-                            <label for="jabatan_peserta" class="form-label">Jabatan</label>
-                            <input type="text" name="jabatan_peserta" class="form-control">
-                        </div>
-                        <!-- Harapan -->
-                        <div class="col-md-12 mb-3">
-                            <label for="harapan_pelatihan" class="form-label">Harapan Pelatihan</label>
-                            <textarea name="harapan_pelatihan" class="form-control" rows="3"></textarea>
+    <div class="modal fade" id="modalTambahPeserta" tabindex="-1" aria-labelledby="modalTambahPesertaLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <form action="{{ route('regulerStorePesertaAdmin') }}" method="POST">
+                @csrf
+                <input type="hidden" id="id_reguler" name="id_reguler" value="{{ $reguler->id_reguler }}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTambahPesertaLabel">Tambah Peserta Baru</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <!-- Nama -->
+                            <div class="col-md-6 mb-3">
+                                <label for="nama_peserta" class="form-label">Nama Peserta</label>
+                                <input type="text" name="nama_peserta" class="form-control" required>
+                            </div>
+                            <!-- Email -->
+                            <div class="col-md-6 mb-3">
+                                <label for="email_peserta" class="form-label">Email</label>
+                                <input type="email" name="email_peserta" class="form-control" required>
+                            </div>
+                            <!-- No HP -->
+                            <div class="col-md-6 mb-3">
+                                <label for="no_hp" class="form-label">No. HP</label>
+                                <input type="text" name="no_hp"
+                                    class="form-control @error('no_hp') is-invalid @enderror" value="{{ old('no_hp') }}"
+                                    required maxlength="12" pattern="\d{1,12}"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,12);">
+                                @error('no_hp')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Gender -->
+                            <div class="col-md-6 mb-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select name="gender" class="form-control" required>
+                                    <option value="">Pilih Gender</option>
+                                    <option value="Laki-Laki">Laki-Laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                    <option value="Transgender">Transgender</option>
+                                    <option value="Tidak ingin menyebutkan">Tidak ingin menyebutkan</option>
+                                </select>
+                            </div>
+                            <!-- Rentang Usia -->
+                            <div class="col-md-6 mb-3">
+                                <label for="rentang_usia" class="form-label">Rentang Usia</label>
+                                <select name="rentang_usia" class="form-control">
+                                    <option value="">Pilih Rentang Usia</option>
+                                    <option value="20-25">20-25</option>
+                                    <option value="26-30">26-30</option>
+                                    <option value="31-35">31-35</option>
+                                    <option value="36-40">36-40</option>
+                                    <option value="41-45">41-45</option>
+                                    <option value="46-50">46-50</option>
+                                    <option value="> 50">> 50</option>
+                                </select>
+                            </div>
+                            <!-- Nama Organisasi -->
+                            <div class="col-md-6 mb-3">
+                                <label for="nama_organisasi" class="form-label">Nama Organisasi</label>
+                                <input type="text" name="nama_organisasi" class="form-control">
+                            </div>
+                            <!-- Jenis Organisasi -->
+                            <div class="col-md-6 mb-3">
+                                <label for="jenis_organisasi" class="form-label">Jenis Organisasi</label>
+                                <select name="organisasi" class="form-control">
+                                    <option value="">Pilih Jenis Organisasi</option>
+                                    <option value="Personal">Personal</option>
+                                    <option value="Pemerintah">Pemerintah</option>
+                                    <option value="Lembaga Pendidikan">Lembaga Pendidikan</option>
+                                    <option value="Komunitas">Komunitas</option>
+                                    <option value="Organisasi Nirlaba">Organisasi Nirlaba</option>
+                                    <option value="Perusahaan">Perusahaan</option>
+                                    <option value="Partai Politik">Partai Politik</option>
+                                </select>
+                            </div>
+                            <!-- Jabatan -->
+                            <div class="col-md-6 mb-3">
+                                <label for="jabatan_peserta" class="form-label">Jabatan</label>
+                                <input type="text" name="jabatan_peserta" class="form-control">
+                            </div>
+                            {{-- negara --}}
+                            <div class="col-md-6 mb-3">
+                                <label for="negara" class="form-label">Negara</label>
+                                <select
+                                    class="form-control select2 select-negara @error("id_negara") is-invalid @enderror"
+                                    name="id_negara">
+                                    <option value="">Pilih Negara</option>
+                                    @foreach ($negara as $item)
+                                        <option value="{{ $item->id }}"
+                                            {{ old("id_negara") == $item->id ? 'selected' : '' }}>
+                                            {{ $item->nama_negara }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error("id_negara")
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="provinsi" class="form-label">Provinsi</label>
+                                <select
+                                    class="form-control select2 select-provinsi @error("id_provinsi") is-invalid @enderror"
+                                    name="id_provinsi">
+                                    <option value="">Pilih Provinsi</option>
+                                </select>
+                                @error("id_provinsi")
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="kabupaten" class="form-label">Kabupaten</label>
+                                <select
+                                    class="form-control select2 select-kabupaten @error("id_kabupaten") is-invalid @enderror"
+                                    name="id_kabupaten">
+                                    <option value="">Pilih Kota</option>
+                                </select>
+                                @error("id_kabupaten")
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <!-- Alamat -->
+                            <div class="col-md-6 mb-3">
+                                <label for="alamat" class="form-label">Alamat</label>
+                                <input type="text" name="alamat" class="form-control">
+                            </div>
+                            <!-- Harapan -->
+                            <div class="col-md-12 mb-3">
+                                <label for="harapan_pelatihan" class="form-label">Harapan Pelatihan</label>
+                                <textarea name="harapan_pelatihan" class="form-control" rows="3"></textarea>
+                            </div>
                         </div>
                     </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Simpan</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-</div>
 
-<style>
+    <style>
         .select2-container .select2-selection--single {
             height: 38px;
             /* Set tinggi untuk mirip dengan field Bootstrap */
@@ -239,7 +302,7 @@
             /* Warna placeholder mirip Bootstrap */
         }
     </style>
-    
+
     <!-- Sertakan jQuery dan DataTables JS -->
     <!-- DataTables CSS -->
     <link href="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.css" rel="stylesheet">
@@ -248,22 +311,23 @@
 
 
     <script>
-       $(document).ready(function() {
-        $('#pesertaReguler').DataTable({
-            lengthChange: false,
-            responsive: true,
-            paging: true,
-            scrollX: true,
-            scrollY: 300,
-            autoWidth: false,
-            lengthMenu: [
-                [10, 25, 50, -1],
-                [10, 25, 50, 'All']
+        $(document).ready(function() {
+            $('#pesertaReguler').DataTable({
+                lengthChange: false,
+                responsive: true,
+                paging: true,
+                scrollX: true,
+                scrollY: 300,
+                autoWidth: false,
+                lengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, 'All']
                 ],
-            columnDefs: [
-                { orderable: false, targets: 3 }
-                ]
-        });
+                columnDefs: [{
+                    orderable: false,
+                    targets: 3
+                }]
+            });
 
             $('#daftar_hadir').DataTable({
                 // dom: 'Bfrtip',
@@ -301,59 +365,7 @@
                     [10, 25, 50, 'All']
                 ]
             });
-        });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.status-dropdown').forEach(dropdown => {
-                dropdown.addEventListener('change', function() {
-                    const status = this.value;
-                    const id = this.getAttribute('data-id');
-
-                    fetch(`/admin/update-status-peserta/${id}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                status: status
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                $.notify({
-                                    icon: 'la la-thumbs-up',
-                                    title: 'Berhasil',
-                                    message: 'Status berhasil diperbarui'
-                                }, {
-                                    type: 'success',
-                                    placement: {
-                                        from: "bottom",
-                                        align: "right"
-                                    },
-                                    delay: 3000
-                                });
-                            } else {
-                                $.notify({
-                                    icon: 'la la-exclamation-triangle',
-                                    title: 'Gagal',
-                                    message: 'Gagal memperbarui status'
-                                }, {
-                                    type: 'danger',
-                                    placement: {
-                                        from: "bottom",
-                                        align: "right"
-                                    },
-                                    delay: 3000
-                                });
-                            }
-                        });
-                });
-            });
-        });
-        
-        $(document).ready(function() {
             // Inisialisasi Select2
             $('.select2 select-negara').select2();
             $('.select2 select-provinsi').select2();
@@ -415,6 +427,56 @@
                         }
                     });
                 }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.status-dropdown').forEach(dropdown => {
+                dropdown.addEventListener('change', function() {
+                    const status = this.value;
+                    const id = this.getAttribute('data-id');
+
+                    fetch(`/admin/update-status-peserta/${id}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                status: status
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                $.notify({
+                                    icon: 'la la-thumbs-up',
+                                    title: 'Berhasil',
+                                    message: 'Status berhasil diperbarui'
+                                }, {
+                                    type: 'success',
+                                    placement: {
+                                        from: "bottom",
+                                        align: "right"
+                                    },
+                                    delay: 3000
+                                });
+                            } else {
+                                $.notify({
+                                    icon: 'la la-exclamation-triangle',
+                                    title: 'Gagal',
+                                    message: 'Gagal memperbarui status'
+                                }, {
+                                    type: 'danger',
+                                    placement: {
+                                        from: "bottom",
+                                        align: "right"
+                                    },
+                                    delay: 3000
+                                });
+                            }
+                        });
+                });
             });
         });
     </script>

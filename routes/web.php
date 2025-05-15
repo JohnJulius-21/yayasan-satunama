@@ -165,6 +165,9 @@ Route::get('/get-kabupaten/{provinsiId}', [TrainingController::class, 'getKabupa
 Route::get('/get-provinsi-survey/{negaraId}', [TrainingController::class, 'getProvinsiSurvey']);
 Route::get('/get-kabupaten-survey/{provinsiId}', [TrainingController::class, 'getKabupatenSurvey']);
 
+Route::get('/get-provinsi-reguler/{negaraId}', [RegulerController::class, 'getProvinsi']);
+Route::get('/get-kabupaten-reguler/{provinsiId}', [RegulerController::class, 'getKabupaten']);
+
 
 Route::get('/ruang-diskusi', [DiscussionController::class, 'indexUser'])->name('userDiskusi');
 Route::get('/ruang-diskusi/lihat-ruang-diskusi/{id}', [DiscussionController::class, 'showUser'])->name('userForumShow');

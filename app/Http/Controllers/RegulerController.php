@@ -6,6 +6,9 @@ use App\Models\tema;
 use App\Models\User;
 use App\Models\status;
 use App\Models\reguler;
+use App\Models\negara;
+use App\Models\provinsi;
+use App\Models\kabupaten_kota;
 use App\Models\fasilitator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -143,10 +146,6 @@ class RegulerController extends Controller
             }
         }
 
-
-
-
-
         // Simpan ID fasilitator ke tabel pivot
         foreach ($request->id_fasilitator as $id_fasilitator) {
             DB::table('reguler_fasilitators')->insert([
@@ -156,66 +155,6 @@ class RegulerController extends Controller
         }
 
         return redirect()->route('regulerAdmin')->with('success', 'Pelatihan berhasil disimpan');
-    }
-    public function storePeserta(Request $request)
-    {
-        // return 'test';
-        $request->validate([
-            'nama_peserta' => 'required|string|max:255',
-            'email_peserta' => 'required|email',
-            'no_hp' => 'required|string|max:20',
-            'gender' => 'required|string',
-            'rentang_usia' => 'nullable|string',
-            'nama_organisasi' => 'nullable|string',
-            'organisasi' => 'nullable|string',
-            'jabatan_peserta' => 'nullable|string',
-            'harapan_pelatihan' => 'nullable|string',
-            'id_reguler' => 'required|exists:reguler,id_reguler',
-        ]);
-    
-        // Cek user berdasarkan email
-        $user = User::where('email', $request->email_peserta)->first();
-    
-        // Jika belum ada user, buat akun baru
-        if (!$user) {
-            $defaultPassword = 'pesertastc123';
-            $user = User::create([
-                'name' => $request->nama_peserta,
-                'email' => $request->email_peserta,
-                'password' => Hash::make($defaultPassword),
-                'roles' => 'peserta',
-            ]);
-    
-            // Optional: bisa simpan data akun baru yang dibuat ke log atau notifikasi
-        }
-    
-        // Simpan peserta pelatihan
-        $peserta = peserta_pelatihan_reguler::create([
-            'id_reguler' => $request->id_reguler,
-            'id_user' => $user->id,
-            'nama_peserta' => $request->nama_peserta,
-            'email_peserta' => $request->email_peserta,
-            'no_hp' => $request->no_hp,
-            'gender' => $request->gender,
-            'rentang_usia' => $request->rentang_usia,
-            'id_negara' => null, // Tambahkan jika input tersedia
-            'id_provinsi' => null,
-            'id_kabupaten' => null,
-            'nama_organisasi' => $request->nama_organisasi,
-            'organisasi' => $request->organisasi,
-            'informasi' => null,
-            'jabatan_peserta' => $request->jabatan_peserta,
-            'pelatihan_relevan' => null,
-            'harapan_pelatihan' => $request->harapan_pelatihan,
-        ]);
-    
-        // Simpan status peserta
-        status::create([
-            'id_reguler' => $request->id_reguler,
-            'id_peserta' => $peserta->id_peserta_reguler,
-        ]);
-    
-        return redirect()->back()->with('success', 'Peserta berhasil ditambahkan.');
     }
 
     public function show($id)
@@ -230,14 +169,88 @@ class RegulerController extends Controller
 
         // Ambil data files langsung dari tabel reguler_files
         $files = DB::table('reguler_files')->where('id_reguler', $id)->get();
+        $negara = negara::all();
 
 
-        return view('admin.reguler.show', compact('reguler', 'images', 'files', 'nama_pelatihan', 'peserta'));
+        return view('admin.reguler.show', compact('reguler', 'images', 'files', 'nama_pelatihan', 'peserta', 'negara'));
+    }
+
+    public function getProvinsi($negaraId)
+    {
+        $provinsi = provinsi::where('id_negara', $negaraId)->pluck('nama_provinsi', 'id');
+        return response()->json(['provinsi' => $provinsi]);
+    }
+
+    public function getKabupaten($provinsiId)
+    {
+        $kabupaten = kabupaten_kota::where('id_provinsi', $provinsiId)->pluck('nama_kabupaten_kota', 'id');
+        return response()->json(['kabupaten' => $kabupaten]);
+    }
+
+    public function storePeserta(Request $request)
+    {
+        $request->validate([
+            'nama_peserta' => 'required|string|max:255',
+            'email_peserta' => 'required|email',
+            'no_hp' => 'required|max:12',
+            'gender' => 'required|string',
+            'rentang_usia' => 'nullable|string',
+            'nama_organisasi' => 'nullable|string',
+            'organisasi' => 'nullable|string',
+            'jabatan_peserta' => 'nullable|string',
+            'harapan_pelatihan' => 'nullable|string',
+            'id_reguler' => 'required|exists:reguler,id_reguler',
+        ]);
+
+        // Cek user berdasarkan email
+        $user = User::where('email', $request->email_peserta)->first();
+
+        // Jika belum ada user, buat akun baru
+        if (!$user) {
+            $defaultPassword = 'stc12345';
+            $user = User::create([
+                'name' => $request->nama_peserta,
+                'email' => $request->email_peserta,
+                'password' => Hash::make($defaultPassword),
+                'roles' => 'peserta',
+            ]);
+
+            // Optional: bisa simpan data akun baru yang dibuat ke log atau notifikasi
+        }
+
+        // Simpan peserta pelatihan
+        $peserta = peserta_pelatihan_reguler::create([
+            'id_reguler' => $request->id_reguler,
+            'id_user' => $user->id,
+            'nama_peserta' => $request->nama_peserta,
+            'email_peserta' => $request->email_peserta,
+            'no_hp' => $request->no_hp,
+            'gender' => $request->gender,
+            'rentang_usia' => $request->rentang_usia,
+            'id_negara' => $request->id_negara ?? null, // Tambahkan jika input tersedia
+            'id_provinsi' => $request->id_provinsi ?? null,
+            'id_kabupaten' => $request->id_kabupaten ?? null,
+            'nama_organisasi' => $request->nama_organisasi,
+            'organisasi' => $request->organisasi,
+            'informasi' => $request->informasi ?? null,
+            'jabatan_peserta' => $request->jabatan_peserta,
+            'pelatihan_relevan' => $request->pelatihan_relevan ?? null,
+            'alamat' => $request->jabatan_peserta,
+            'harapan_pelatihan' => $request->harapan_pelatihan,
+        ]);
+
+        // Simpan status peserta
+        status::create([
+            'id_reguler' => $request->id_reguler,
+            'id_peserta' => $peserta->id_peserta_reguler,
+        ]);
+
+        return redirect()->back()->with('success', 'Peserta berhasil ditambahkan.');
     }
 
     public function updateStatus(Request $request, $id)
     {
-        $status = \App\Models\Status::where('id_peserta', $id)->first();
+        $status = status::where('id_peserta', $id)->first();
 
         if ($status) {
             $status->status = $request->status;
