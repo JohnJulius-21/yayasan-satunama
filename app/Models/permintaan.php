@@ -31,7 +31,7 @@ class permintaan extends Model
 
     public function mitra()
     {
-        return $this->belongsTo(Mitra::class, 'id_mitra');
+        return $this->belongsTo(mitra::class, 'id_mitra');
     }
 
     public function user()
