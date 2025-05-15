@@ -177,7 +177,7 @@
             }
         }
     </style>
-   
+
     <section id="hero" class="hero section">
 
         <div class="container">
@@ -214,9 +214,9 @@
                         <div class="card">
                             <div class="skeleton-wrapper">
                                 <div class="skeleton skeleton-img"></div> <!-- Skeleton sementara -->
-                                <img src="{{ $item->image_url }}" alt="{{ $item->nama_pelatihan }}"
+                                <img src="{{ $item->image_url ?? asset('img/stc.png') }}" alt="{{ $item->nama_pelatihan }}"
                                     class="card-img-top real-img" onload="removeSkeleton(this)"
-                                    onerror="this.src='/img/default.jpg'">
+                                    onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}'">
 
 
                             </div>
@@ -486,11 +486,11 @@
         }
 
         function removeSkeleton(img) {
-        let skeleton = img.previousElementSibling;
-        if (skeleton) {
-            skeleton.style.display = 'none';
+            let skeleton = img.previousElementSibling;
+            if (skeleton) {
+                skeleton.style.display = 'none';
+            }
+            img.style.display = 'block';
         }
-        img.style.display = 'block';
-    }
     </script>
 @endsection

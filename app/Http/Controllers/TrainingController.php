@@ -89,7 +89,7 @@ class TrainingController extends Controller
                     $imageUrls[] = route('file.show', ['filename' => $filename]);
                 }
             } else {
-                $imageUrls[] = asset('/img/default.jpg');
+                $imageUrls[] = asset('/images/stc.png');
             }
         }
 
