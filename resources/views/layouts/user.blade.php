@@ -70,7 +70,7 @@
                         <div class="mb-3">
                             <label class="form-label">Email </label>
                             <div class="input-group">
-                                <input type="email" class="form-control" placeholder="name@example.com"
+                                <input type="email" class="form-control" placeholder="email@example.com"
                                     name="email">
                                 <span class="input-group-text">
                                     <i class="fas fa-envelope"></i>
@@ -134,18 +134,19 @@
 
                     <h5 class="text-center mb-3">Reset Password</h5>
 
-                    <form action="{{ route('password.email') }}" method="POST">
+                    <form action="{{ route('password.whatsapp') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
+                            <label class="form-label">Nomor WhatsApp*</label>
                             <div class="input-group">
-                                <input type="email" class="form-control" placeholder="name@example.com"
-                                    name="email" required>
-                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                <input type="text" name="no_hp" class="form-control" placeholder="08xxxxxxxxxx"
+                                    required>
+                                <span class="input-group-text"><i class="fab fa-whatsapp"></i></span>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">Kirim Link Reset</button>
+                        <button type="submit" class="btn btn-success w-100">Kirim Link via WhatsApp</button>
                     </form>
+
 
                     <div class="text-center mt-3">
                         <button class="btn btn-link text-decoration-none" data-bs-dismiss="modal"
@@ -178,19 +179,25 @@
                 <div class="col-lg-2 col-md-3 footer-links">
                     <h4>Link</h4>
                     <ul>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Beranda</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Daftar Pelatihan</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Tentang Kami</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Ruang Diskusi</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="{{ route('beranda') }}">Beranda</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="{{ route('pelatihan') }}">Daftar
+                                Pelatihan</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="{{ route('tentang') }}">Tentang Kami</a>
+                        </li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="{{ route('userDiskusi') }}">Ruang
+                                Diskusi</a></li>
                     </ul>
                 </div>
 
                 <div class="col-lg-2 col-md-3 footer-links">
                     <h4>Pelatihan Kami</h4>
                     <ul>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Reguler</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Permintaan</a></li>
-                        <li><i class="bi bi-chevron-right"></i> <a href="#">Konsultasi</a></li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="{{ route('reguler.index') }}">Reguler</a>
+                        </li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="{{ route('pelatihan') }}">Permintaan</a>
+                        </li>
+                        <li><i class="bi bi-chevron-right"></i> <a href="{{ route('pelatihan') }}">Konsultasi</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -335,6 +342,13 @@
                       </div>`
                 });
             @endif
+
+            @if (session('error') && session('from') === 'forgot-password')
+                const forgotModalEl = document.getElementById('forgotPasswordModal');
+                const forgotModal = new bootstrap.Modal(forgotModalEl);
+                forgotModal.show();
+            @endif
+
         });
     </script>
 </body>

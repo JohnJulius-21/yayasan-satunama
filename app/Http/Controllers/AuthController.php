@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Laravel\Socialite\Facades\Socialite;
@@ -246,28 +247,52 @@ class AuthController extends Controller
     // Send reset link to user's email
     public function sendResetLink(Request $request)
     {
-        // Validate the email input
         $request->validate([
-            'email' => 'required|email|exists:users,email',
+            'no_hp' => 'required',
         ], [
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.exists' => 'Email tidak ditemukan.',
+            'no_hp.required' => 'Nomor WhatsApp wajib diisi.',
         ]);
 
-        // Send the password reset link
-        $response = Password::sendResetLink(
-            $request->only('email')
-        );
+        // Normalisasi nomor HP jadi format internasional (ganti 08 jadi 628)
+        $inputNumber = preg_replace('/[^0-9]/', '', $request->no_hp);
+        $normalizedNumber = preg_replace('/^0/', '62', $inputNumber);
 
-        // Check the response
-        if ($response == Password::RESET_LINK_SENT) {
-            // Notify user that email has been sent
-            return back()->with('status', 'Link reset password telah dikirim ke email Anda.');
-        } else {
-            // If there's an error, show the error message
-            return back()->withErrors(['email' => 'Terjadi kesalahan. Silakan coba lagi.']);
+        // Cari user berdasarkan no_hp
+        $user = User::where('no_hp', $normalizedNumber)->first();
+
+        if (!$user) {
+            return back()->withErrors(['no_hp' => 'Nomor WhatsApp tidak ditemukan.']);
         }
+
+        // Buat token reset
+        $token = Password::createToken($user);
+
+        // Rakit link reset
+        $resetLink = url(route('password.reset', [
+            'token' => $token,
+            'email' => $user->email,
+        ], false));
+
+        // Isi pesan WhatsApp
+        $message = "*Halo {$user->name}!* 👋\n"
+            . "Gunakan link berikut untuk mengganti password akun Anda:\n\n"
+            . "{$resetLink}\n\n"
+            . "_Link hanya berlaku selama 60 menit._";
+
+        // Kirim ke Fonnte
+        $resp = Http::withHeaders([
+            'Authorization' => env('FONNTE_TOKEN'),
+        ])->asForm()->post('https://api.fonnte.com/send', [
+                    'target' => $normalizedNumber,
+                    'message' => $message,
+                ]);
+
+        if ($resp->successful() && ($resp->json()['status'] ?? false)) {
+            return back()->with('success', 'Link reset password telah dikirim ke WhatsApp Anda.');
+        }
+
+        return back()->with('error', 'Gagal mengirim WhatsApp. Silakan coba lagi.');
+
     }
 
     // Show reset password form

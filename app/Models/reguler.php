@@ -43,7 +43,7 @@ class reguler extends Model
     // Relasi ke fasilitator melalui tabel pivot reguler_fasilitators
     public function fasilitators()
     {
-        return $this->belongsToMany(Fasilitator::class, 'reguler_fasilitators', 'id_pelatihan', 'id_fasilitator');
+        return $this->belongsToMany(fasilitator::class, 'reguler_fasilitators', 'id_pelatihan', 'id_fasilitator');
     }
 
     public function peserta()

@@ -40,7 +40,7 @@ Route::post('/reset-password-update', [AuthController::class, 'resetPasswordManu
 Route::get('forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
 
 // Handle password reset link request
-Route::post('forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+Route::post('forgot-password', [AuthController::class, 'sendResetLink'])->name('password.whatsapp');
 
 // Reset password form (after user clicks the reset link in the email)
 Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
