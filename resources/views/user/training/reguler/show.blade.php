@@ -17,36 +17,52 @@
         <!-- Adjust the image size and add border radius -->
         <!-- Container for the image gallery -->
         <div class="container-image">
-            @foreach ($imageUrls as $index => $imageUrl)
-                <div class="mySlides">
-                    <div class="numbertext">{{ $index + 1 }} / {{ count($imageUrls) }}</div>
-                    <div class="skeleton skeleton-img"></div>
-                    <img src="{{ $imageUrl }}" style="width:100%; display: none;" onload="removeSkeleton(this)">
-                </div>
-            @endforeach
-
-            <!-- Next and previous buttons -->
-            <div class="container-buttons">
-                <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-                <a class="next" onclick="plusSlides(1)">&#10095;</a>
-            </div>
-            {{-- <!-- Image text -->
-            <div class="caption-container">
-                <p id="caption"></p>
-            </div> --}}
-
-            <!-- Thumbnail images -->
-            <div class="row">
+            @if (count($imageUrls) > 0)
                 @foreach ($imageUrls as $index => $imageUrl)
-                    <div class="column">
-                        <div class="skeleton skeleton-thumbnail"></div>
-                        <img class="demo cursor" src="{{ $imageUrl }}"
-                            style="width:100%; display: none;" onclick="currentSlide({{ $index + 1 }})"
+                    <div class="mySlides">
+                        <div class="numbertext">{{ $index + 1 }} / {{ count($imageUrls) }}</div>
+                        <div class="skeleton skeleton-img"></div>
+                        <img src="{{ $imageUrl ?: asset('images/stc.png') }}" style="width:100%; display: none;"
                             onload="removeSkeleton(this)">
                     </div>
                 @endforeach
-            </div>
+
+                <!-- Next and previous buttons -->
+                <div class="container-buttons">
+                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                </div>
+
+                <!-- Thumbnail images -->
+                <div class="row">
+                    @foreach ($imageUrls as $index => $imageUrl)
+                        <div class="column">
+                            <div class="skeleton skeleton-thumbnail"></div>
+                            <img class="demo cursor" src="{{ $imageUrl ?: asset('images/stc.png') }}"
+                                style="width:100%; display: none;" onclick="currentSlide({{ $index + 1 }})"
+                                onload="removeSkeleton(this)">
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                {{-- Jika tidak ada gambar sama sekali, tampilkan 1 gambar default --}}
+                <div class="mySlides">
+                    <div class="numbertext">1 / 1</div>
+                    <div class="skeleton skeleton-img"></div>
+                    <img src="{{ asset('images/stc.png') }}" style="width:100%;" onload="removeSkeleton(this)">
+                </div>
+
+                <div class="container-buttons" style="display:none;"></div>
+
+                <div class="row">
+                    <div class="column">
+                        <div class="skeleton skeleton-thumbnail"></div>
+                        <img class="demo cursor" src="{{ asset('images/stc.png') }}" style="width:100%;">
+                    </div>
+                </div>
+            @endif
         </div>
+
 
         <hr class="container mt-5" style="height: 3px; background-color: #000000; border: none;">
 
@@ -73,7 +89,7 @@
                         <div class="show-more-container">
                             <button onclick="toggleDescription()" id="toggleBtn" class="btn btn-link">Show More</button>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </div>
 

@@ -73,9 +73,10 @@
                             <div class="card">
                                 <div class="skeleton-wrapper">
                                     <div class="skeleton skeleton-img"></div> <!-- Skeleton sementara -->
-                                    <img src="{{ route('file.show', ['filename' => $item->image]) }}"
+                                    <img src="{{ $item->image_url ?? asset('img/stc.png') }}"
                                         alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
-                                        onload="removeSkeleton(this)" onerror="handleImageError(this)">
+                                        onload="removeSkeleton(this)"
+                                        onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}'">
                                 </div>
 
                                 <div class="card-body">
@@ -103,7 +104,7 @@
                                     </p>
 
                                     <a href="{{ route('reguler.show', ['hash' => $item->hash_id]) }}"
-                                    class="btn btn-outline-success btn-sm">Lihat Detail</a>
+                                        class="btn btn-outline-success btn-sm">Lihat Detail</a>
                                 </div>
 
                             </div>
@@ -132,7 +133,7 @@
                                 <option value="tutup" {{ request('status') == 'tutup' ? 'selected' : '' }}>Tutup</option>
                             </select>
                         </div>
-                        
+
                         <!-- Tambahkan filter lain jika diperlukan -->
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
