@@ -18,6 +18,7 @@ use App\Models\kabupaten_kota;
 use App\Models\jenis_organisasi;
 use Illuminate\Support\Facades\DB;
 use App\Models\informasi_pelatihan;
+use Vinkla\Hashids\Facades\Hashids;
 use App\Models\konsultasi_pelatihan;
 use App\Models\permintaan_pelatihan;
 use Illuminate\Support\Facades\Auth;
@@ -48,6 +49,16 @@ use App\Models\hasil_surveykepuasan_permintaan;
 
 class TrainingController extends Controller
 {
+    /** Decode hash dan kembalikan int ID */
+    private function decodeHash(string $hash): int
+    {
+        $decoded = Hashids::decode($hash);
+        if (empty($decoded)) {
+            abort(404); // hash tidak valid
+        }
+        return (int) $decoded[0];
+    }
+
     public function index()
     {
         // Ambil data pelatihan
@@ -72,17 +83,18 @@ class TrainingController extends Controller
                 ->value('image_url'); // Ambil satu gambar (misal gambar pertama)
         }
 
-        return view('user.training.index', compact('reguler','permintaan', 'konsultasi'), [
+        return view('user.training.index', compact('reguler', 'permintaan', 'konsultasi'), [
             'title' => 'Pelatihan',
         ]);
     }
 
 
-    public function showReguler($id)
+    public function showReguler(string $hash)
     {
+        $id        = $this->decodeHash($hash);
         // Fetch the specific pelatihan by its ID
         $pelatihan = reguler::findOrFail($id);
-        // dd($pelatihan);
+        dd($pelatihan);
 
         // Ambil data images langsung dari tabel reguler_images
         $imageNames = DB::table('reguler_images')
@@ -207,8 +219,9 @@ class TrainingController extends Controller
         }
     }
 
-    public function createReguler($id, Request $request)
+    public function createReguler(string $hash, Request $request)
     {
+        $id           = $this->decodeHash($hash);
         $user = auth()->user();
         $reguler = reguler::findOrFail($id);
         $negara = Negara::all();
@@ -288,7 +301,7 @@ class TrainingController extends Controller
                 'harapan_pelatihan' => $peserta['harapan_pelatihan'],
             ]);
 
-             // **Simpan data peserta ke tabel status**
+            // **Simpan data peserta ke tabel status**
             status::create([
                 'id_reguler' => $request->id_reguler,
                 'id_peserta' => $peserta->id_peserta_reguler,

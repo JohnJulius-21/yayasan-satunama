@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Vinkla\Hashids\Facades\Hashids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class reguler extends Model
 {
@@ -27,6 +28,11 @@ class reguler extends Model
         'tanggal_selesai',
         'deskripsi_pelatihan',
     ];
+
+    public function getHashIdAttribute()
+    {
+        return Hashids::encode($this->id_reguler);
+    }
 
     // Relasi ke tabel reguler_images
     public function images()

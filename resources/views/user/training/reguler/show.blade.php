@@ -48,7 +48,6 @@
             </div>
         </div>
 
-
         <hr class="container mt-5" style="height: 3px; background-color: #000000; border: none;">
 
         <div class="row gx-6">

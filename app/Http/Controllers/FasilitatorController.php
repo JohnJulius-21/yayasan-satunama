@@ -41,7 +41,7 @@ class FasilitatorController extends Controller
             'email_fasilitator' => 'required|email:dns',
             'nomor_telepon' => 'required|numeric|digits:12',
             'alamat' => 'required',
-            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'foto' => 'image|mimes:jpeg,png,jpg|max:2048',
             'gender' => 'required',
             'asal_lembaga' => 'required',
             'id_internal_eksternal' => 'required',
@@ -49,7 +49,6 @@ class FasilitatorController extends Controller
         ], [
             'nama_fasilitator.required' => 'Field nama fasilitator wajib diisi',
             'nik.required' => 'Field nik wajib diisi',
-            'foto.required' => 'Field foto wajib diisi',
             'foto.image' => 'Field foto harus berformat gambar',
             'foto.max' => 'Field foto tidak boleh lebih dari 2mb',
             'nik.numeric' => 'Field nik harus berupa angka',

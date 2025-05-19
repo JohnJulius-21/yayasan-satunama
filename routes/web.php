@@ -55,8 +55,8 @@ Route::get('/pelatihan', [TrainingController::class, 'index'])->name('pelatihan'
 Route::get('/pelatihan/reguler', [TrainingController::class, 'indexReguler'])->name('reguler.index');
 Route::post('/pelatihan/reguler', [TrainingController::class, 'storeReguler'])->name('store.index');
 
-Route::get('/pelatihan/reguler/{id}', [TrainingController::class, 'showReguler'])->name('reguler.show');
-Route::get('/pelatihan/reguler/daftar/{id}', [TrainingController::class, 'createReguler'])->name('reguler.create');
+Route::get('/pelatihan/reguler/{hash}', [TrainingController::class, 'showReguler'])->name('reguler.show');
+Route::get('/pelatihan/reguler/daftar/{hash}', [TrainingController::class, 'createReguler'])->name('reguler.create');
 
 Route::get('/file/{filename}', function ($filename) {
     try {

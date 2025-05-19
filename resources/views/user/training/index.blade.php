@@ -27,9 +27,10 @@
                                     alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
                                     onload="removeSkeleton(this)" onerror="handleImageError(this); this.src='{{ asset('images/stc.png') }}'"> --}}
 
-                                <img src="{{ $item->image_url ?? asset('img/stc.png') }}" alt="{{ $item->nama_pelatihan }}"
-                                    class="card-img-top real-img" onload="removeSkeleton(this)"
-                                    onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}'">
+                                <img src="{{ $item->image ? route('file.show', ['filename' => $item->image]) : asset('images/stc.png') }}"
+                                    alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
+                                    onload="removeSkeleton(this)"
+                                    onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}';" />
                             </div>
 
                             <div class="card-body">
@@ -55,8 +56,9 @@
                                 <p class="card-text mt-2">
                                     {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
                                 </p>
+                                
 
-                                <a href="{{ route('reguler.show', ['id' => $item->id_reguler]) }}"
+                                <a href="{{ route('reguler.show', $item->hash_id) }}"
                                     class="btn btn-outline-success btn-sm">Lihat Detail</a>
                             </div>
 
@@ -89,10 +91,10 @@
                         alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
                         onload="removeSkeleton(this)" onerror="handleImageError(this); this.src='{{ asset('images/stc.png') }}'"> --}}
 
-                                <img src="{{ $item->image_url ?? asset('img/stc.png') }}"
+                                <img src="{{ $item->image ? route('file.show', ['filename' => $item->image]) : asset('images/stc.png') }}"
                                     alt="{{ $item->nama_pelatihan }}" class="card-img-top real-img"
                                     onload="removeSkeleton(this)"
-                                    onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}'">
+                                    onerror="this.onerror=null; this.src='{{ asset('images/stc.png') }}';" />
                             </div>
 
                             <div class="card-body">

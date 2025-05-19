@@ -116,15 +116,15 @@
             $('#reguler').DataTable({
                 lengthChange: true,
                 responsive: true,
+                scrollX: true,
+                scrollY: 300,
                 paging: true,
                 lengthMenu: [
                     [10, 25, 50, -1],
                     [10, 25, 50, 'All']
                 ],
-                rowReorder: true,
                 columnDefs: [{
-                    orderable: false,
-                    targets: 2
+                    targets: 3
                 }]
             });
 
