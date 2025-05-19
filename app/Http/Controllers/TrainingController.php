@@ -18,7 +18,7 @@ use App\Models\kabupaten_kota;
 use App\Models\jenis_organisasi;
 use Illuminate\Support\Facades\DB;
 use App\Models\informasi_pelatihan;
-use Vinkla\Hashids\Facades\Hashids;
+use Hashids\Hashids;
 use App\Models\konsultasi_pelatihan;
 use App\Models\permintaan_pelatihan;
 use Illuminate\Support\Facades\Auth;
@@ -50,13 +50,11 @@ use App\Models\hasil_surveykepuasan_permintaan;
 class TrainingController extends Controller
 {
     /** Decode hash dan kembalikan int ID */
-    private function decodeHash(string $hash): int
+    private function decodeHash(string $hash)
     {
-        $decoded = Hashids::decode($hash);
-        if (empty($decoded)) {
-            abort(404); // hash tidak valid
-        }
-        return (int) $decoded[0];
+        $hashids = new Hashids(env('HASHIDS_SALT'), 10); // Sesuaikan salt dan min_length sesuai encode
+        $decoded = $hashids->decode($hash);
+        return $decoded[0] ?? abort(404);
     }
 
     public function index()
@@ -91,7 +89,7 @@ class TrainingController extends Controller
 
     public function showReguler(string $hash)
     {
-        $id        = $this->decodeHash($hash);
+        $id = $this->decodeHash($hash);
         // Fetch the specific pelatihan by its ID
         $pelatihan = reguler::findOrFail($id);
         // dd($pelatihan);
@@ -221,7 +219,7 @@ class TrainingController extends Controller
 
     public function createReguler(string $hash, Request $request)
     {
-        $id           = $this->decodeHash($hash);
+        $id = $this->decodeHash($hash);
         $user = auth()->user();
         $reguler = reguler::findOrFail($id);
         $negara = Negara::all();

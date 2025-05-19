@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Vinkla\Hashids\Facades\Hashids;
+use Hashids\Hashids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -31,20 +31,21 @@ class reguler extends Model
 
     public function getHashIdAttribute()
     {
-        return Hashids::encode($this->id_reguler);
+        $hashids = new Hashids(env('HASHIDS_SALT'), 10); // sesuai dengan salt & min_length
+        return $hashids->encode($this->id_reguler);
     }
 
     // Relasi ke tabel reguler_images
-    public function images()
-    {
-        return $this->hasMany(RegulerImage::class, 'id_reguler', 'id_reguler');
-    }
+    // public function images()
+    // {
+    //     return $this->hasMany(RegulerImage::class, 'id_reguler', 'id_reguler');
+    // }
 
-    // Relasi ke tabel reguler_files
-    public function files()
-    {
-        return $this->hasMany(RegulerFile::class, 'id_reguler', 'id_reguler');
-    }
+    // // Relasi ke tabel reguler_files
+    // public function files()
+    // {
+    //     return $this->hasMany(RegulerFile::class, 'id_reguler', 'id_reguler');
+    // }
 
     // Relasi ke fasilitator melalui tabel pivot reguler_fasilitators
     public function fasilitators()
