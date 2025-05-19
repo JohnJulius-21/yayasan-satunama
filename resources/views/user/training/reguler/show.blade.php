@@ -367,7 +367,7 @@
     <script>
         document.getElementById('btnLanjutDaftar').addEventListener('click', function() {
             let jumlahPeserta = document.getElementById('jumlah_peserta').value;
-            let idPelatihan = "{{ $pelatihan->id_reguler }}"; // Ambil ID pelatihan dari Blade
+            let idPelatihan = "{{ $pelatihan->hash_id }}"; // Ambil ID pelatihan dari Blade
 
             // Redirect ke halaman pendaftaran dengan jumlah peserta
             window.location.href = `/pelatihan/reguler/daftar/${idPelatihan}?jumlah=${jumlahPeserta}`;

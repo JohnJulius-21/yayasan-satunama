@@ -36,11 +36,12 @@
 
                                     <!-- Nama Peserta -->
                                     <div class="form-group mt-3">
-                                        <h6>Nama Peserta</h6>
+                                        <h6>Nama Lengkap Peserta</h6>
                                         <input type="text" id="nama_peserta_{{ $i }}"
                                             name="peserta[{{ $i }}][nama_peserta]"
                                             class="form-control @error("peserta.{$i}.nama_peserta") is-invalid @enderror"
-                                            placeholder="Masukkan nama Anda" value="{{ old("peserta.{$i}.nama_peserta") }}">
+                                            placeholder="Masukkan nama lengkap Anda"
+                                            value="{{ old("peserta.{$i}.nama_peserta") }}">
                                         @error("peserta.{$i}.nama_peserta")
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -279,10 +280,23 @@
                                     </div>
 
                                     <hr>
+                                    <div class="mb-3">
+                                        <small>Notes:
+                                            <li>Mohon untuk mengisi nama lengkap anda karena nama lengkap peserta akan
+                                                digunakan dalam pencetakan sertifikat pelatihan dan harap pastikan nama
+                                                penulisan nama
+                                                sudah benar.</li>
+                                            <li>Mohon untuk menggunakan email pribadi (bukan milik orang lain)
+                                                yang sudah terdaftar di sistem, email akan digunakan untuk
+                                                keperluan pelatihan dan akses materi dalam pelatihan.
+                                            </li>
+                                        </small>
+                                    </div>
                                 @endfor
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-success" style="width: 30%;">Daftar
-                                        Pelatihan</button>
+                                    <button type="submit" class="btn btn-success" style="width: 50%;">Daftar
+                                        Pelatihan
+                                    </button>
                                 </div>
                         </form>
                     </div>

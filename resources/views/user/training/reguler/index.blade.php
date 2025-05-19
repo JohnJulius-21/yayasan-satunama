@@ -102,8 +102,8 @@
                                         {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
                                     </p>
 
-                                    <a href="{{ route('reguler.show', ['id' => $item->id_reguler]) }}"
-                                        class="btn btn-outline-success btn-sm">Lihat Detail</a>
+                                    <a href="{{ route('reguler.show', $item->hash_id) }}"
+                                    class="btn btn-outline-success btn-sm">Lihat Detail</a>
                                 </div>
 
                             </div>

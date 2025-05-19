@@ -94,7 +94,7 @@ class TrainingController extends Controller
         $id        = $this->decodeHash($hash);
         // Fetch the specific pelatihan by its ID
         $pelatihan = reguler::findOrFail($id);
-        dd($pelatihan);
+        // dd($pelatihan);
 
         // Ambil data images langsung dari tabel reguler_images
         $imageNames = DB::table('reguler_images')
