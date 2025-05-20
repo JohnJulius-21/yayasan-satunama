@@ -16,84 +16,59 @@
     <div class="container overflow-hidden">
         <!-- Adjust the image size and add border radius -->
         <!-- Container for the image gallery -->
-        <div class="container-image">
-            @if (count($imageUrls) > 0)
-                @foreach ($imageUrls as $index => $imageUrl)
-                    <div class="mySlides">
-                        <div class="numbertext">{{ $index + 1 }} / {{ count($imageUrls) }}</div>
-                        <div class="skeleton skeleton-img"></div>
-                        <img src="{{ $imageUrl ?: asset('images/stc.png') }}" style="width:100%; display: none;"
-                            onload="removeSkeleton(this)">
-                    </div>
-                @endforeach
-
-                <!-- Next and previous buttons -->
-                <div class="container-buttons">
-                    <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
-                    <a class="next" onclick="plusSlides(1)">&#10095;</a>
-                </div>
-
-                <!-- Thumbnail images -->
-                <div class="row">
-                    @foreach ($imageUrls as $index => $imageUrl)
-                        <div class="column">
-                            <div class="skeleton skeleton-thumbnail"></div>
-                            <img class="demo cursor" src="{{ $imageUrl ?: asset('images/stc.png') }}"
-                                style="width:100%; display: none;" onclick="currentSlide({{ $index + 1 }})"
-                                onload="removeSkeleton(this)">
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                {{-- Jika tidak ada gambar sama sekali, tampilkan 1 gambar default --}}
-                <div class="mySlides">
-                    <div class="numbertext">1 / 1</div>
-                    <div class="skeleton skeleton-img"></div>
-                    <img src="{{ asset('images/stc.png') }}" style="width:100%;" onload="removeSkeleton(this)">
-                </div>
-
-                <div class="container-buttons" style="display:none;"></div>
-
-                <div class="row">
-                    <div class="column">
-                        <div class="skeleton skeleton-thumbnail"></div>
-                        <img class="demo cursor" src="{{ asset('images/stc.png') }}" style="width:100%;">
-                    </div>
-                </div>
-            @endif
-        </div>
-
-
-        <hr class="container mt-5" style="height: 3px; background-color: #000000; border: none;">
-
         <div class="row gx-6">
-            <div class="col-sm-6 col-md-8">
-                <div class="p-3">
-                    <h4>{{ $pelatihan->nama_pelatihan }}</h4>
-                    <p>Tanggal Pelaksanaan Pelatihan : <small><i class="far fa-calendar-days"></i>
-                            {{ \Carbon\Carbon::parse($pelatihan->tanggal_mulai)->locale('id')->translatedFormat('d F Y') }}
-                            -
-                            {{ \Carbon\Carbon::parse($pelatihan->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}
-                        </small>
-                    </p>
-                    <span>Tentang Pelatihan ini : </span>
-                    <div class="deskripsi-container">
-                        <div id="deskripsi">
-                            <div id="short-text">
-                                {!! \Illuminate\Support\Str::words($pelatihan->deskripsi_pelatihan, 30, '...') !!}
+            {{-- KIRI: Gambar --}}
+            <div class="col-sm-6 col-md-8 mb-3">
+                <div class="container-image">
+                    @if (count($imageUrls) > 0)
+                        @foreach ($imageUrls as $index => $imageUrl)
+                            <div class="mySlides">
+                                <div class="numbertext">{{ $index + 1 }} / {{ count($imageUrls) }}</div>
+                                <div class="skeleton skeleton-img"></div>
+                                <img src="{{ $imageUrl ?: asset('images/stc.png') }}"
+                                    style="width: auto; height: 600px; object-fit: cover; display: none;"
+                                    onload="removeSkeleton(this)">
                             </div>
-                            <div id="more" style="display: none;">
-                                {!! $pelatihan->deskripsi_pelatihan !!}
+                        @endforeach
+
+                        <!-- Next and previous buttons -->
+                        <div class="container-buttons">
+                            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+                            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+                        </div>
+
+                        <!-- Thumbnail images -->
+                        <div class="row">
+                            @foreach ($imageUrls as $index => $imageUrl)
+                                <div class="column">
+                                    <div class="skeleton skeleton-thumbnail"></div>
+                                    <img class="demo cursor" src="{{ $imageUrl ?: asset('images/stc.png') }}"
+                                        style="width:100%; display: none;" onclick="currentSlide({{ $index + 1 }})"
+                                        onload="removeSkeleton(this)">
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        {{-- Jika tidak ada gambar sama sekali, tampilkan 1 gambar default --}}
+                        <div class="mySlides">
+                            {{-- <div class="numbertext">1 / 1</div> --}}
+                            <div class="skeleton skeleton-img"></div>
+                            <img src="{{ asset('images/stc.png') }}" style="width:100%;" onload="removeSkeleton(this)">
+                        </div>
+
+                        <div class="container-buttons" style="display:none;"></div>
+
+                        <div class="row">
+                            <div class="column">
+                                <div class="skeleton skeleton-thumbnail"></div>
+                                <img class="demo cursor" src="{{ asset('images/stc.png') }}" style="width:100%;">
                             </div>
                         </div>
-                        <div class="show-more-container">
-                            <button onclick="toggleDescription()" id="toggleBtn" class="btn btn-link">Show More</button>
-                        </div>
-                    </div>
+                    @endif
                 </div>
             </div>
 
-            <div class="col-12 col-md-4 mb-3">
+            <div class="col-sm-6 col-md-4 mb-3">
                 <div class="card p-3 mt-3">
                     <h5>Daftar Pelatihan</h5>
                     <span>Tanggal Pendaftaran : </span>
@@ -139,11 +114,43 @@
                             </button>
                         @endguest
 
+
                     </div>
 
                 </div>
             </div>
         </div>
+
+        <hr class="container mt-5" style="height: 3px; background-color: #000000; border: none;">
+
+
+
+        {{-- <div class="row gx-6"> --}}
+        {{-- <div class="col-12 col-md-4 mb-3 offset-md-8"> --}}
+        <h4>{{ $pelatihan->nama_pelatihan }}</h4>
+        <p>Tanggal Pelaksanaan Pelatihan : <small><i class="far fa-calendar-days"></i>
+                {{ \Carbon\Carbon::parse($pelatihan->tanggal_mulai)->locale('id')->translatedFormat('d F Y') }}
+                -
+                {{ \Carbon\Carbon::parse($pelatihan->tanggal_selesai)->locale('id')->translatedFormat('d F Y') }}
+            </small>
+        </p>
+        <span>Tentang Pelatihan ini : </span>
+        <div class="deskripsi-container">
+            <div id="deskripsi">
+                <div id="short-text">
+                    {!! \Illuminate\Support\Str::words($pelatihan->deskripsi_pelatihan, 30, '...') !!}
+                </div>
+                <div id="more" style="display: none;">
+                    {!! $pelatihan->deskripsi_pelatihan !!}
+                </div>
+            </div>
+            <div class="show-more-container">
+                <button onclick="toggleDescription()" id="toggleBtn" class="btn btn-link">Show
+                    More</button>
+            </div>
+        </div>
+        {{-- </div> --}}
+        {{-- </div> --}}
     </div>
 
     <!-- Modal Pilih Jumlah Peserta -->

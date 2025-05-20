@@ -90,7 +90,8 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="redirect_to" value="{{ url()->full() }}">
+                        <input type="hidden" name="redirect_to" id="redirect_to_login" value="{{ url()->current() }}">
+
 
                         <div class="form-check">
                             <div>

@@ -26,6 +26,7 @@
                         <form action="{{ route('register.process') }}" method="POST" style="width: 100%;">
                             @csrf
 
+
                             <!-- Nama -->
                             <div class="mb-3">
                                 <label for="name" class="form-label">Nama</label>
@@ -72,9 +73,14 @@
                                 @enderror
                             </div>
 
+                            <input type="hidden" name="redirect_to" id="redirect_to_register"
+                                value="{{ url()->current() }}">
+
+
                             <div class="buttons d-flex justify-content-center mt-4">
                                 <button type="submit" class="btn btn-success btn-lg px-5 py-2">Daftar</button>
                             </div>
+
                             <div class="mt-3 text-center">
                                 <button class="btn btn-link text-success p-0" data-bs-toggle="modal"
                                     data-bs-target="#loginModal">

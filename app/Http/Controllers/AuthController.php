@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Password;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Validator;
@@ -26,6 +27,7 @@ class AuthController extends Controller
 
     public function redirectToGoogle()
     {
+        Session::put('url.intended', url()->previous());
         return Socialite::driver('google')->redirect();
     }
 
@@ -51,14 +53,15 @@ class AuthController extends Controller
                 'email' => $user->email
             ], [
                 'name' => $user->name,
-                'password' => bcrypt('pesertastc123#'), // Set a random password
+                'password' => bcrypt('stc123456'), // Set a random password
                 'roles' => 'peserta'
             ]);
             Auth::login($newUser);
         }
 
         // Redirect the user to the dashboard or any other secure page
-        return redirect()->route('beranda');
+        return redirect()->intended(route('beranda'));
+
     }
 
     // Process the login request
@@ -66,7 +69,6 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        // Validasi input
         $validator = Validator::make($credentials, [
             'email' => 'required|email',
             'password' => 'required|min:6',
@@ -77,24 +79,29 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->first();
-
         if (!$user) {
-            return back()->with('error', 'Kamu belum terdaftar dalam database kami, Ayo daftar dulu.')->withInput();
+            return back()->with('error', 'Kamu belum terdaftar, ayo daftar dulu.')->withInput();
         }
-
         if ($user->roles !== 'peserta') {
-            return back()->with('error', 'Anda tidak memiliki akses, silahkan login sebagai admin')->withInput();
+            return back()->with('error', 'Anda tidak memiliki akses, silakan login sebagai admin.')->withInput();
         }
 
-        // Autentikasi user
         if (Auth::attempt($credentials)) {
-            $redirectTo = $request->input('redirect_to', '/');
-            return redirect($redirectTo)->with('success', 'Login berhasil!');
+
+            // ① ‑ simpan redirect_to kalau dikirim langsung dari form
+            if ($request->filled('redirect_to')) {
+                session(['url.intended' => $request->redirect_to]);
+            }
+
+            // ② ‑ ambil intended URL, jika kosong fallback ke beranda
+            $redirect = session()->pull('url.intended', route('beranda'));
+
+            return redirect($redirect)->with('success', 'Login berhasil!');
         }
 
-
-        return back()->with('error', 'Email atau Password anda salah!.')->withInput();
+        return back()->with('error', 'Email atau Password salah!')->withInput();
     }
+
 
 
 
@@ -110,8 +117,7 @@ class AuthController extends Controller
     // Process the registration request
     public function registerProcess(Request $request)
     {
-        // dd($request->all());
-        // Validate the form input
+        // Validasi input form
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
@@ -130,8 +136,7 @@ class AuthController extends Controller
             'password.confirmed' => 'Konfirmasi password tidak sesuai.',
         ]);
 
-
-        // Create the user
+        // Buat user baru
         User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -139,13 +144,19 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        // Log the user in
-        // Auth::attempt($request->only('email', 'password'));
+        // Simpan redirect ke sesi jika tersedia
+        if ($request->filled('redirect_to')) {
+            session(['url.intended' => $request->redirect_to]);
+        }
 
 
-        return redirect()->route('daftar')->with('show_login_modal', true)->with('success', 'Registrasi berhasil! Silakan login.');
-
+        // Redirect ke halaman daftar (agar modal login muncul) + redirect fallback ke halaman sebelumnya jika nanti login berhasil
+        return redirect()
+            ->route('daftar')
+            ->with('show_login_modal', true)
+            ->with('success', 'Registrasi berhasil! Silakan login.');
     }
+
 
     // Menampilkan form login admin
     public function adminLogin()
