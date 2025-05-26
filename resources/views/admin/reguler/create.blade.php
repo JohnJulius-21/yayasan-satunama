@@ -138,6 +138,20 @@
                                 </div>
                             @enderror
                         </div>
+
+                        <div class="trix-content mb-3">
+                            <label for="pengumuman" class="form-label">Pengumuman Pelatihan</label>
+                            <input id="pengumuman" type="hidden" name="pengumuman"
+                                value="{{ old('pengumuman') }}">
+                            {{-- <trix-editor class="{{ $errors->has('pengumuman') ? 'is-invalid' : '' }}"
+                                input="pengumuman" upload-url="/dashboard/reguler/upload/image"></trix-editor> --}}
+                            <textarea class="ckeditor form-control" name="pengumuman" id="pengumuman"></textarea>
+                            @error('pengumuman')
+                                <div class="invalid-feedback">
+                                    <p class="text-danger">{{ $message }}</p>
+                                </div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>

@@ -27,6 +27,7 @@ class reguler extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'deskripsi_pelatihan',
+        'pengumuman',
     ];
 
     public function getHashIdAttribute()

@@ -120,6 +120,17 @@
                                 </div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                            <label for="pengumuman" class="form-label">Pengumuman Pelatihan</label>
+                            {{-- <input id="x" type="hidden" name="pengumuman"
+                                value="{{ old('pengumuman', $reguler->pengumuman) }}"> --}}
+                            <textarea class="ckeditor form-control" name="pengumuman">{{ old('pengumuman', $reguler->pengumuman) }}</textarea>
+                            @error('pengumuman')
+                                <div class="invalid-feedback">
+                                    <p class="text-danger">{{ $message }}</p>
+                                </div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
             </div>

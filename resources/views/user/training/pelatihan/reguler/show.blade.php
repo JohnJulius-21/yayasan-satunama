@@ -29,7 +29,14 @@
                                 {{ $fasilitator->nama_fasilitator }}{{ !$loop->last ? ',' : '' }}
                             @endforeach
                         </p>
-                        <p><strong>Deskripsi Pelatihan :</strong> {!! \Illuminate\Support\Str::words($reguler->deskripsi_pelatihan, 30, '...') !!}</p>
+                        @if (!empty($reguler->pengumuman))
+                            <p><strong>Pengumuman Pelatihan :</strong>
+                                {!! \Illuminate\Support\Str::words($reguler->pengumuman, 1000, '...') !!}
+                            </p>
+                        @else
+                            <p>Belum ada pengumuman untuk pelatihan ini</p>
+                        @endif
+
 
 
                     </div>
@@ -38,3 +45,5 @@
         </div>
     </section><!-- /Contact Section -->
 @endsection
+
+

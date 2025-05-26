@@ -96,6 +96,7 @@ class RegulerController extends Controller
         $reguler->tanggal_mulai = $request->tanggal_mulai;
         $reguler->tanggal_selesai = $request->tanggal_selesai;
         $reguler->deskripsi_pelatihan = $request->deskripsi_pelatihan;
+        $reguler->pengumuman = $request->pengumuman;
         $reguler->save();
 
         // Upload images ke Google Drive dan simpan ke database
@@ -324,6 +325,7 @@ class RegulerController extends Controller
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
             'deskripsi_pelatihan' => $request->deskripsi_pelatihan,
+            'pengumuman' => $request->pengumuman,
         ]);
 
         // Update Images
