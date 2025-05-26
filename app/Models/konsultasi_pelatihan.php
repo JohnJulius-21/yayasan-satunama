@@ -57,7 +57,7 @@ class konsultasi_pelatihan extends Model
 
     public function fasilitators()
     {
-        return $this->belongsToMany(Fasilitator::class, 'konsultasi_fasilitators', 'id_pelatihan', 'id_fasilitator');
+        return $this->belongsToMany(fasilitator::class, 'konsultasi_fasilitators', 'id_pelatihan', 'id_fasilitator');
     }
 
     // public function fasilitator_konsultasi()

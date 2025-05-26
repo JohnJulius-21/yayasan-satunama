@@ -45,7 +45,7 @@ class permintaan_pelatihan extends Model
 
     public function fasilitators()
     {
-        return $this->belongsToMany(Fasilitator::class, 'permintaan_fasilitators', 'id_pelatihan', 'id_fasilitator');
+        return $this->belongsToMany(fasilitator::class, 'permintaan_fasilitators', 'id_pelatihan', 'id_fasilitator');
     }
 
 

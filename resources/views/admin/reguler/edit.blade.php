@@ -209,8 +209,12 @@
 
                         @if ($images && count($images) > 0)
                             @foreach ($images as $item)
-                                <img src="{{ route('file.show', ['filename' => $item->image]) }}" alt="Gambar Lama"
-                                    class="img-thumbnail" style="max-width: 100px; max-height: 100px;">
+                                {{-- <img src="{{ route('file.show', ['filename' => $item->image]) }}" alt="Gambar Lama"
+                                    class="img-thumbnail" style="max-width: 100px; max-height: 100px;"> --}}
+
+                                <img src="{{ $item->image ? route('file.show', ['filename' => $item->image]) : asset('images/stc.png') }}"
+                                    class="img-thumbnail"
+                                    style="max-width: 100px; max-height: 100px;" />
                             @endforeach
                         @else
                             <p class="text-muted">Belum ada poster yang diunggah.</p>

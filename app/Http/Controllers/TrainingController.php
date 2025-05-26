@@ -500,36 +500,46 @@ class TrainingController extends Controller
         ]);
     }
 
-    public function regulerListShowEvaluasi($id)
+    public function regulerListShowEvaluasi(string $hash)
     {
-        if (!auth()->check()) {
-            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
-        }
+        $id = $this->decodeHash($hash);
         $reguler = reguler::findOrFail($id);
-        // dd($reguler);
-        $formEvaluasiReguler = form_evaluasi_reguler::with('reguler')->where('id_reguler', $id)->first();
-        $peserta = peserta_pelatihan_reguler::with('reguler')
-            ->where('id_user', auth()->user()->id)
-            ->first();
+        $formEvaluasiReguler = form_evaluasi_reguler::where('id_reguler', $id)->first();
+        $formData = $formEvaluasiReguler ? json_decode($formEvaluasiReguler->content, true) : null;
 
-        $pesertaId = $peserta ? $peserta->id_peserta_reguler : null; // Cegah error jika null
-
-        // Debugging untuk memastikan peserta ditemukan
-        if (!$peserta) {
-            dd("Peserta tidak ditemukan untuk id_user: " . auth()->user()->id);
+        // For non-logged-in users, just show the page with empty data
+        if (!auth()->check()) {
+            return view('user.training.pelatihan.reguler.evaluasi', [
+                'reguler' => $reguler,
+                'formEvaluasiReguler' => $formEvaluasiReguler,
+                'formData' => $formData,
+                'title' => 'Evaluasi ' . $reguler->nama_pelatihan,
+                'showLoginModal' => true, // Flag to show modal
+                'sudahMengisi' => false,
+                'peserta' => null,
+                'pesertaId' => null
+            ]);
         }
 
-        // Cek apakah form tersedia dan ubah content JSON menjadi array
-        $formData = $formEvaluasiReguler ? json_decode($formEvaluasiReguler->content, true) : null;
-        // Cek apakah user sudah mengisi evaluasi
+        // For logged-in users (existing logic)
+        $peserta = peserta_pelatihan_reguler::where('id_user', auth()->id())->first();
+        $pesertaId = $peserta?->id_peserta_reguler;
 
-        $sudahMengisi = hasil_evaluasi_reguler::with('peserta')->where('id_pelatihan_reguler', $reguler->id_reguler)
-            ->where('id_peserta', $pesertaId)
-            ->exists();
-        // dd($sudahMengisi);
-        return view('user.training.pelatihan.reguler.evaluasi', compact('reguler', 'formEvaluasiReguler', 'sudahMengisi', 'peserta', 'pesertaId'), [
+        $sudahMengisi = hasil_evaluasi_reguler::where([
+            'id_pelatihan_reguler' => $reguler->id_reguler,
+            'id_peserta' => $pesertaId
+        ])->exists();
+
+        return view('user.training.pelatihan.reguler.evaluasi', compact(
+            'reguler',
+            'formEvaluasiReguler',
+            'sudahMengisi',
+            'peserta',
+            'pesertaId'
+        ), [
             'title' => 'Evaluasi ' . $reguler->nama_pelatihan,
-            'formData' => $formData
+            'formData' => $formData,
+            'showLoginModal' => false
         ]);
     }
 

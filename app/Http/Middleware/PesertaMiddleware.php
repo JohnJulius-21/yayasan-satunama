@@ -23,10 +23,16 @@ class PesertaMiddleware
             return $next($request);
         }
 
-        // Simpan URL saat ini ke session agar bisa digunakan setelah login
-        session(['url.intended' => url()->current()]);
+        // Simpan URL intended hanya jika belum login
+        if (!auth()->check()) {
+            session(['url.intended' => url()->full()]);
+        }
 
-        return redirect()->route('masuk')->with('error', 'Anda tidak memiliki akses sebagai peserta.');
+        // Izinkan akses halaman, tapi pakai flag untuk munculkan modal login
+        $request->merge(['show_login_modal' => true]);
+
+        return $next($request);
     }
+
 
 }

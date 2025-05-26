@@ -35,15 +35,25 @@
                                     style="max-width:400px; height:auto">
                                 <h5>Anda telah mengisi Form Evaluasi.</h5>
                             </div>
+                        @elseif (!Auth::check())
+                            <!-- Jika belum login, tampilkan trigger untuk modal login -->
+                            <div class="text-center" style="margin-top: 2rem;">
+                                <p>Silakan <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                                        style="cursor:pointer; text-decoration: underline; color:rgb(17, 100, 42);">login
+                                        terlebih
+                                        dahulu</a> untuk mengisi form evaluasi.</p>
+                            </div>
                         @elseif (!empty($formData) && is_array($formData) && count($formData) > 0)
-                            <!-- Tampilkan Form Evaluasi jika user belum mengisi -->
+                            <!-- Tampilkan Form Evaluasi jika user sudah login dan belum mengisi -->
                             <form action="{{ route('reguler.pelatihan.evaluasi.store') }}" method="POST" id="form-eval">
                                 @csrf
                                 <input type="hidden" name="form_source" value="pelatihan">
                                 <input type="hidden" id="data_respons" name="data_respons">
                                 <input type="hidden" name="id_reguler" value="{{ $reguler->id_reguler }}">
-                                <input type="hidden" id="id_peserta" name="id_peserta"
-                                    value="{{ $peserta->id_peserta_reguler }}">
+
+                                @if ($pesertaId)
+                                    <input type="hidden" id="id_peserta" value="{{ $pesertaId }}">
+                                @endif
 
                                 <div id="stepContainer"></div>
 
@@ -64,11 +74,33 @@
                             </div>
                         @endif
 
+                        @push('scripts')
+                            <script>
+                                // Ketika klik link login, buka modal login yang sudah ada dengan id #loginModal
+                                document.getElementById('loginTrigger')?.addEventListener('click', function(e) {
+                                    e.preventDefault();
+                                    var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                                    loginModal.show();
+                                });
+                            </script>
+                        @endpush
+
+
                     </div>
                 </div><!-- End Contact Form -->
             </div>
         </div>
     </section><!-- /Contact Section -->
+
+    @if ($showLoginModal)
+        <script>
+            $(document).ready(function() {
+                $('#loginModal').modal('show');
+            });
+        </script>
+    @endif
+
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
@@ -98,6 +130,7 @@
             });
 
             function saveCurrentStepData() {
+
                 $('#stepContainer input, #stepContainer textarea, #stepContainer select').each(function() {
                     var name = $(this).attr('name');
                     if (!name) return;
@@ -281,8 +314,8 @@
                     type: "POST",
                     data: {
                         _token: "{{ csrf_token() }}",
-                        id_reguler: "{{ $reguler->id_reguler }}",
-                        id_peserta: "{{ $peserta->id_peserta_reguler }}",
+                        id_reguler: $('#id_reguler').val(),
+                        id_peserta: $('#id_peserta').val(),
                         data_respons: JSON.stringify(userData)
                     },
                     success: function(response) {

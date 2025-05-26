@@ -132,17 +132,19 @@ Route::middleware(['peserta'])->group(function () {
     Route::get('/ruang-diskusi/buat-ruang-diskusi', [DiscussionController::class, 'createUser'])->middleware('peserta')->name('userForumCreate');
     Route::post('/ruang-diskusi/simpan-ruang-diskusi', [DiscussionController::class, 'storeUser'])->name('userForumStore');
     Route::post('/ruang-diskusi/simpan-komen-ruang-diskusi/{id}', [DiscussionController::class, 'storeKomenUser'])->name('userKomenStore');
+
+    Route::get('/form-evaluasi/{hash}', [TrainingController::class, 'regulerListShowEvaluasi'])
+        ->name('reguler.pelatihan.evaluasi');
+
+    Route::post('/pelatihan-saya/evaluasi/simpan', [TrainingController::class, 'regulerListStoreEvaluasi'])
+        ->name('reguler.pelatihan.evaluasi.store');
 });
 
 Route::get('/pelatihan-saya/{nama_pelatihan}', [TrainingController::class, 'regulerListShow'])
     ->name('reguler.pelatihan.list');
 
 
-Route::get('/pelatihan-saya/evaluasi/{id}', [TrainingController::class, 'regulerListShowEvaluasi'])
-    ->name('reguler.pelatihan.evaluasi');
 
-Route::post('/pelatihan-saya/evaluasi/simpan', [TrainingController::class, 'regulerListStoreEvaluasi'])
-    ->name('reguler.pelatihan.evaluasi.store');
 
 Route::get('/pelatihan-saya/survey-kepuasan/{id}', [TrainingController::class, 'regulerListShowSurvey'])
     ->name('reguler.pelatihan.survey');
@@ -376,6 +378,6 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/admin/diskusi/{id}', [DiscussionController::class, 'destroyAdmin'])->name('adminDestroyDiskusi');
 
     Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
-    
+
     // Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
 });

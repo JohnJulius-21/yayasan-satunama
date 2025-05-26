@@ -87,16 +87,8 @@ class AuthController extends Controller
         }
 
         if (Auth::attempt($credentials)) {
-
-            // ① ‑ simpan redirect_to kalau dikirim langsung dari form
-            if ($request->filled('redirect_to')) {
-                session(['url.intended' => $request->redirect_to]);
-            }
-
-            // ② ‑ ambil intended URL, jika kosong fallback ke beranda
-            $redirect = session()->pull('url.intended', route('beranda'));
-
-            return redirect($redirect)->with('success', 'Login berhasil!');
+            return redirect($request->input('redirect_to', route('beranda')))
+                ->with('success', 'Login berhasil!');
         }
 
         return back()->with('error', 'Email atau Password salah!')->withInput();
