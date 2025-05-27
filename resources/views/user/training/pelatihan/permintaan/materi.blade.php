@@ -37,15 +37,41 @@
                             @endforeach
 
                             <div class="mt-3">
-                                {{ $files->onEachSide(5)->links() }}
+                                @if ($files->hasPages())
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination">
+                                            {{-- Tombol Previous --}}
+                                            <li class="page-item {{ $files->onFirstPage() ? 'disabled' : '' }}">
+                                                <a class="page-link" href="{{ $files->previousPageUrl() }}"
+                                                    tabindex="-1">Previous</a>
+                                            </li>
+
+                                            {{-- Nomor halaman --}}
+                                            @for ($i = 1; $i <= $files->lastPage(); $i++)
+                                                <li class="page-item {{ $files->currentPage() == $i ? 'active' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ $files->url($i) }}">{{ $i }}</a>
+                                                </li>
+                                            @endfor
+
+                                            {{-- Tombol Next --}}
+                                            <li class="page-item {{ !$files->hasMorePages() ? 'disabled' : '' }}">
+                                                <a class="page-link" href="{{ $files->nextPageUrl() }}">Next</a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                @endif
                             </div>
                         @else
                             <p class="text-muted">Belum ada materi yang diunggah.</p>
                         @endif
                     </div>
-                </div><!-- End Contact Form -->
-            </div>
+                @else
+                    <p class="text-muted">Belum ada materi yang diunggah.</p>
+                    @endif
+                </div>
+            </div><!-- End Contact Form -->
+        </div>
         </div>
     </section><!-- /Contact Section -->
-
 @endsection
