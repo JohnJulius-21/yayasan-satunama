@@ -705,7 +705,7 @@ class TrainingController extends Controller
         // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
         $files = DB::table('reguler_files')
             ->where('id_reguler', $id)
-            ->get(['file_url', 'filename']); // Ambil semua file_url
+            ->get(['file_url', 'file_name']); // Ambil semua file_url
 
         return view('user.training.pelatihan.reguler.materi', compact('reguler', 'files'), [
             'title' => 'Materi Pelatihan ' . $reguler->nama_pelatihan,
