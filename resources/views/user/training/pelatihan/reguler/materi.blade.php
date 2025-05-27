@@ -27,27 +27,21 @@
                 <div class="col-lg-9">
                     <div class="php-email-form">
                         <h3>Materi Pelatihan</h3>
-                        @php
-                            // Cek apakah ada file yang valid (tidak null)
-                            $validFiles = collect($files)->filter(fn($file) => !is_null($file->file_url));
-                        @endphp
 
-                        @if ($validFiles->isNotEmpty())
-                            @foreach ($validFiles as $file)
+                        @if ($files->isNotEmpty())
+                            @foreach ($files as $file)
                                 <div class="card p-3 mb-2">
                                     <p>{{ $loop->iteration }}. {{ $file->file_name }}</p>
                                     <a href="{{ $file->file_url }}" target="_blank">Download File</a><br>
                                 </div>
                             @endforeach
 
-                            {{-- Tambahkan ini untuk menampilkan navigasi pagination --}}
                             <div class="mt-3">
                                 {{ $files->links() }}
                             </div>
                         @else
                             <p class="text-muted">Belum ada materi yang diunggah.</p>
                         @endif
-
                     </div>
                 </div><!-- End Contact Form -->
             </div>

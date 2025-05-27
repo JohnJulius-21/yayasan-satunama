@@ -705,7 +705,9 @@ class TrainingController extends Controller
         // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
         $files = DB::table('reguler_files')
             ->where('id_reguler', $id)
-            ->paginate(5, ['file_url', 'file_name']); // 5 file per halaman
+            ->whereNotNull('file_url') // tambahkan ini agar file_url tidak null
+            ->paginate(5, ['file_url', 'file_name']);
+
 
 
         return view('user.training.pelatihan.reguler.materi', compact('reguler', 'files'), [
@@ -967,8 +969,8 @@ class TrainingController extends Controller
         // Ambil semua file dari permintaan_files yang sesuai dengan id_permintaan
         $files = DB::table('permintaan_files')
             ->where('id_permintaan', $id)
-            ->paginate(5, ['file_url', 'file_name']); // 5 file per halaman
-        // dd($files);
+            ->whereNotNull('file_url') // tambahkan ini agar file_url tidak null
+            ->paginate(5, ['file_url', 'file_name']);
 
         return view('user.training.pelatihan.permintaan.materi', compact('permintaan', 'files'), [
             'title' => 'Materi Pelatihan ' . $permintaan->nama_pelatihan,
