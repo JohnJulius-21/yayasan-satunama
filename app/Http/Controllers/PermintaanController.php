@@ -166,7 +166,7 @@ class PermintaanController extends Controller
         }
         $files = DB::table('permintaan_files')
             ->where('id_permintaan', $id)
-            ->get(['file_url']); // Ambil semua file_url
+            ->get(['file_url', 'file_name']); // Ambil semua file_url
         // dd($permintaan);
         $fasilitator = fasilitator::all();
         $tema = tema::all();

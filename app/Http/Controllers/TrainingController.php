@@ -705,7 +705,8 @@ class TrainingController extends Controller
         // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
         $files = DB::table('reguler_files')
             ->where('id_reguler', $id)
-            ->get(['file_url', 'file_name']); // Ambil semua file_url
+            ->paginate(5, ['file_url', 'file_name']); // 5 file per halaman
+
 
         return view('user.training.pelatihan.reguler.materi', compact('reguler', 'files'), [
             'title' => 'Materi Pelatihan ' . $reguler->nama_pelatihan,
@@ -963,11 +964,10 @@ class TrainingController extends Controller
         // Ambil data permintaan berdasarkan kolom id_pelatihan_permintaan
         $permintaan = permintaan_pelatihan::where('id_pelatihan_permintaan', $id)->firstOrFail();
 
-        // Ambil semua file yang berelasi dengan id_pelatihan_permintaan
+        // Ambil semua file dari permintaan_files yang sesuai dengan id_permintaan
         $files = DB::table('permintaan_files')
             ->where('id_permintaan', $id)
-            ->get();
-        // $files[] = (object) ['file_url' => $filesUrl]; // Ganti "image" menjadi "file_url"
+            ->paginate(5, ['file_url', 'file_name']); // 5 file per halaman
         // dd($files);
 
         return view('user.training.pelatihan.permintaan.materi', compact('permintaan', 'files'), [

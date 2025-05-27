@@ -284,7 +284,7 @@ class RegulerController extends Controller
         // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
         $files = DB::table('reguler_files')
             ->where('id_reguler', $id)
-            ->get(['file_url']); // Ambil semua file_url
+            ->get(['file_url', 'file_name']); // Ambil semua file_url
         // dd($files);
 
         $tema = Tema::all();
