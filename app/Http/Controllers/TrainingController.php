@@ -702,15 +702,32 @@ class TrainingController extends Controller
 
         $reguler = Reguler::findOrFail($id);
 
-        // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
-        $files = DB::table('reguler_files')
+        $records = DB::table('reguler_files')
             ->where('id_reguler', $id)
-            ->whereNotNull('file_url') // tambahkan ini agar file_url tidak null
-            ->paginate(5, ['file_url', 'file_name']);
+            ->get(['file_path', 'file_url', 'file_name']);
+
+        // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
+        $tree = [];
+        foreach ($records as $r) {
+            $parts = preg_split('/[\/\\\\]/', $r->file_path);   // session plan\BAB I …
+            $cursor = &$tree;
+            foreach ($parts as $idx => $part) {
+                if ($idx === count($parts) - 1) {
+                    // file
+                    $cursor[$part] = [
+                        'file_name' => $r->file_name,
+                        'file_url' => $r->file_url,
+                    ];
+                } else {
+                    // folder
+                    $cursor[$part] ??= [];
+                    $cursor = &$cursor[$part];
+                }
+            }
+        }
 
 
-
-        return view('user.training.pelatihan.reguler.materi', compact('reguler', 'files'), [
+        return view('user.training.pelatihan.reguler.materi', compact('reguler', 'tree'), [
             'title' => 'Materi Pelatihan ' . $reguler->nama_pelatihan,
         ]);
     }
@@ -967,12 +984,60 @@ class TrainingController extends Controller
         $permintaan = permintaan_pelatihan::where('id_pelatihan_permintaan', $id)->firstOrFail();
 
         // Ambil semua file dari permintaan_files yang sesuai dengan id_permintaan
-        $files = DB::table('permintaan_files')
-            ->where('id_permintaan', $id)
-            ->whereNotNull('file_url') // tambahkan ini agar file_url tidak null
-            ->paginate(5, ['file_url', 'file_name']);
+        // $files = DB::table('permintaan_files')
+        //     ->where('id_permintaan', $id)
+        //     ->whereNotNull('file_url')
+        //     ->paginate(5, ['file_url', 'file_name', 'file_path']);
 
-        return view('user.training.pelatihan.permintaan.materi', compact('permintaan', 'files'), [
+        // // Bangun struktur folder-file (tree) dari file_path
+        // $tree = [];
+
+        // foreach ($files as $file) {
+        //     $parts = preg_split('/[\/\\\\]/', $file->file_path); // split dengan slash / atau \
+        //     $current = &$tree;
+
+        //     foreach ($parts as $index => $part) {
+        //         if ($index === count($parts) - 1) {
+        //             // ini file, simpan data file (nama & url)
+        //             $current[$part] = [
+        //                 'file_name' => $file->file_name,
+        //                 'file_url' => $file->file_url,
+        //             ];
+        //         } else {
+        //             // ini folder, buat key jika belum ada
+        //             if (!isset($current[$part])) {
+        //                 $current[$part] = [];
+        //             }
+        //             $current = &$current[$part];
+        //         }
+        //     }
+        // }
+
+        $records = DB::table('permintaan_files')
+            ->where('id_permintaan', $id)
+            ->get(['file_path', 'file_url', 'file_name']);
+
+        $tree = [];
+        foreach ($records as $r) {
+            $parts = preg_split('/[\/\\\\]/', $r->file_path);   // session plan\BAB I …
+            $cursor = &$tree;
+            foreach ($parts as $idx => $part) {
+                if ($idx === count($parts) - 1) {
+                    // file
+                    $cursor[$part] = [
+                        'file_name' => $r->file_name,
+                        'file_url' => $r->file_url,
+                    ];
+                } else {
+                    // folder
+                    $cursor[$part] ??= [];
+                    $cursor = &$cursor[$part];
+                }
+            }
+        }
+
+
+        return view('user.training.pelatihan.permintaan.materi', compact('permintaan', 'tree'), [
             'title' => 'Materi Pelatihan ' . $permintaan->nama_pelatihan,
         ]);
     }

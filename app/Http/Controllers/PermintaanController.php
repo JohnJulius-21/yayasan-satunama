@@ -4,18 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Models\tema;
 use App\Models\User;
-use App\Models\assesment_peserta_permintaan;
 use App\Models\permintaan;
 use App\Models\fasilitator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\permintaan_pelatihan;
-use App\Models\peserta_pelatihan_permintaan;
-use Illuminate\Support\Facades\Storage;
 use Google_Service_Drive_DriveFile;
+use App\Models\permintaan_pelatihan;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use App\Models\assesment_peserta_permintaan;
+use App\Models\peserta_pelatihan_permintaan;
 
 class PermintaanController extends Controller
 {
+
+    private function getDriveFileId($path)
+    {
+        $directory = dirname($path);
+        $filename = basename($path);
+
+        $contents = Storage::disk('google')->listContents($directory);
+
+        foreach ($contents as $item) {
+            if ($item instanceof \League\Flysystem\FileAttributes) {
+                if (basename($item->path()) === $filename) {
+                    // Ambil metadata asli dari Google Drive
+                    $adapter = Storage::disk('google')->getAdapter();
+                    $rawMetadata = $adapter->getMetadata($item->path());
+
+                    return $rawMetadata['id'] ?? null;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function index()
     {
         $permintaan = permintaan::with('mitra')->get();
@@ -164,6 +191,7 @@ class PermintaanController extends Controller
 
             $images[] = (object) ['image' => $imageUrl]; // Simpan sebagai objek
         }
+
         $files = DB::table('permintaan_files')
             ->where('id_permintaan', $id)
             ->get(['file_url', 'file_name']); // Ambil semua file_url
@@ -188,7 +216,8 @@ class PermintaanController extends Controller
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
             'id_fasilitator' => 'required|array',
             'deskripsi_pelatihan' => 'required',
-            'file.*' => 'nullable|mimes:pdf,doc,docx,ppt,pptx|max:5120',
+            // 'file.*' => 'nullable|mimes:pdf,doc,docx,ppt,pptx|max:5120',
+            'materi_zip' => 'nullable|file|mimes:zip|max:20480'
         ]);
 
         $permintaan = permintaan_pelatihan::findOrFail($id);
@@ -217,48 +246,62 @@ class PermintaanController extends Controller
                 ]);
             }
         }
-        if ($request->hasFile('file')) {
-            // Ambil file lama dari database
-            $oldFiles = DB::table('permintaan_files')
-                ->where('id_permintaan', $permintaan->id_pelatihan_permintaan)
-                ->pluck('file_url');
+        if ($request->hasFile('materi_zip')) {
+            // — simpan ZIP sementara
+            $zipFile = $request->file('materi_zip');
+            $zipTemp = storage_path('app/temp/' . $zipFile->hashName());
+            $zipFile->move(dirname($zipTemp), basename($zipTemp));
 
-            // Hapus file lama dari Google Drive
-            foreach ($oldFiles as $oldFile) {
-                preg_match('/id=([^&]+)/', $oldFile, $matches);
-                if (isset($matches[1])) {
-                    Storage::disk('google')->delete($matches[1]); // Hapus berdasarkan ID
+            // - STEP 2 — ekstrak
+            $extractPath = storage_path("app/temp/extracted_$id");
+            $zip = new \ZipArchive;
+
+            if ($zip->open($zipTemp) === TRUE) {
+                if (!file_exists($extractPath)) {
+                    mkdir($extractPath, 0755, true);
                 }
+                $zip->extractTo($extractPath);
+                $zip->close();
+                unlink($zipTemp);
+            } else {
+                unlink($zipTemp);
+                return back()->withErrors(['materi_zip' => 'File ZIP tidak valid atau rusak.']);
             }
 
-            // Hapus data file lama dari database
-            DB::table('permintaan_files')->where('id_permintaan', $permintaan->id_pelatihan_permintaan)->delete();
+            // - STEP 3 — telusuri rekursif & upload ke Drive
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($extractPath, RecursiveDirectoryIterator::SKIP_DOTS)
+            );
 
-            // Simpan file baru ke Google Drive
-            foreach ($request->file('file') as $file) {
-                $filename = $file->getClientOriginalName(); // Ambil nama file asli
-                $filePath = Storage::disk('google')->putFileAs('', $file, $filename); // Simpan ke Drive
+            foreach ($iterator as $file) {
+                if ($file->isDir())
+                    continue;
 
-                // Ambil metadata file untuk mendapatkan file ID
-                $service = Storage::disk('google')->getAdapter()->getService();
-                $fileMetadata = new Google_Service_Drive_DriveFile();
-                $fileList = $service->files->listFiles([
-                    'q' => "name='$filename' and trashed=false",
-                    'fields' => 'files(id, name)'
+                $relative = Str::after($file->getPathname(), $extractPath . DIRECTORY_SEPARATOR);
+                $drivePath = "permintaan_files/$id/$relative";
+
+                Storage::disk('google')->makeDirectory(dirname($drivePath));
+
+                Storage::disk('google')->putFileAs(
+                    dirname($drivePath),
+                    new \Illuminate\Http\File($file->getPathname()),
+                    $file->getFilename()
+                );
+
+                // ===== ambil ID file di Drive  =====
+                $idDrive = $this->getDriveFileId($drivePath);   // pastikan method ini sudah ada
+                $publicUrl = "https://drive.google.com/uc?id=$idDrive&export=download";
+
+                DB::table('permintaan_files')->insert([
+                    'id_permintaan' => $id,
+                    'file_name' => $file->getFilename(),
+                    'file_path' => $relative,
+                    'file_url' => $publicUrl,
                 ]);
-
-                if (count($fileList->getFiles()) > 0) {
-                    $fileId = $fileList->getFiles()[0]->getId();
-
-                    // Simpan link berbentuk URL langsung ke database
-                    $fileUrl = "https://drive.google.com/file/d/$fileId/view?usp=sharing";
-
-                    DB::table('permintaan_files')->insert([
-                        'id_permintaan' => $permintaan->id_pelatihan_permintaan,
-                        'file_url' => $fileUrl, // Simpan URL langsung
-                    ]);
-                }
             }
+
+            // ⬇️  STEP 4 — bersihkan temp
+            File::deleteDirectory($extractPath);
         }
 
         // Update Fasilitators

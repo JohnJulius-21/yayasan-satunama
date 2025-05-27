@@ -122,9 +122,8 @@
                     </div>
                     <div class="card-body">
                         <label for="image" class="form-label">Upload Poster Pelatihan</label>
-                        <input value="{{ old('images') }}"
-                            class="form-control mb-2 @error('image.*') is-invalid @enderror" type="file"
-                            id="image" name="image[]" multiple>
+                        <input value="{{ old('images') }}" class="form-control mb-2 @error('image.*') is-invalid @enderror"
+                            type="file" id="image" name="image[]" multiple>
                         <div class="p-1">
                             <li><small>Poster tidak boleh lebih dari 2mb</small></li>
                             <li><small>Kosongkan kolom upload poster jika tidak ingin merubah poster</small></li>
@@ -145,14 +144,13 @@
                         @endif
                     </div>
                     <div class="card-body">
-                        <label for="file" class="form-label">Upload Materi</label>
-                        <input value="{{ old('file') }}" class="form-control mb-2 @error('file.*') is-invalid @enderror"
-                            type="file" id="file" name="file[]" multiple>
+                        <label for="file" class="form-label">Upload Materi (zip)</label>
+                        <input type="file" name="materi_zip" class="form-control" accept=".zip">
                         <div class="p-1">
-                            <li><small>File tidak boleh lebih dari 5mb</small></li>
+                            <li><small>File tidak boleh lebih dari 20mb</small></li>
                             <li><small>Kosongkan kolom upload materi jika tidak ingin merubah materi</small></li>
                         </div>
-                        @error('file.*')
+                        @error('materi_zip')
                             <div class="invalid-feedback">
                                 {{ $message }}
                             </div>

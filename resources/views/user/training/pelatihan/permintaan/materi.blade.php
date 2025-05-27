@@ -28,7 +28,56 @@
                     <div class="php-email-form">
                         <h3>Materi Pelatihan</h3>
 
-                        @if ($files->isNotEmpty())
+                        <div class="container my-4">
+
+                            @if ($tree)
+                                @include('partials.tree', ['branch' => $tree])
+                            @else
+                                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                                    <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image"
+                                        style="max-width:400px; height:auto">
+                                    <h5>Belum ada Materi.</h5>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- @php
+                            use Illuminate\Support\Arr;
+
+                            $tree = [];
+
+                            // pastikan variabel $files adalah Collection, tidak null
+                            foreach ($files as $f) {
+                                // Jika elemen bukan object tapi array, gunakan $f['file_path']
+                                // Ganti '/' -> '.' agar Arr::set bisa membuat nested array
+                                $dotPath = str_replace('/', '.', $f->file_path);
+                                Arr::set($tree, $dotPath, $f->file_url);
+                            }
+
+                            function renderTree($branch, $prefix = '')
+                            {
+                                foreach ($branch as $name => $node) {
+                                    if (is_array($node)) {
+                                        echo "<strong>{$prefix}{$name}/</strong><br>";
+                                        renderTree($node, $prefix . '&nbsp;&nbsp;&nbsp;');
+                                    } else {
+                                        echo "{$prefix}<a href=\"{$node}\" target=\"_blank\">{$name}</a><br>";
+                                    }
+                                }
+                            }
+                        @endphp
+
+
+                        <div class="card p-3">
+                            @if (!empty($tree))
+                                @include('partials.tree', ['tree' => $tree])
+                            @else
+                                <p>Tidak ada file ditemukan.</p>
+                            @endif
+                        </div> --}}
+
+
+                        {{-- @if ($files->isNotEmpty())
                             @foreach ($files as $file)
                                 <div class="card p-3 mb-2">
                                     <p>{{ $loop->iteration }}. {{ $file->file_name }}</p>
@@ -40,13 +89,13 @@
                                 @if ($files->hasPages())
                                     <nav aria-label="Page navigation">
                                         <ul class="pagination">
-                                            {{-- Tombol Previous --}}
+                                             Tombol Previous 
                                             <li class="page-item {{ $files->onFirstPage() ? 'disabled' : '' }}">
                                                 <a class="page-link" href="{{ $files->previousPageUrl() }}"
                                                     tabindex="-1">Previous</a>
                                             </li>
 
-                                            {{-- Nomor halaman --}}
+                                            
                                             @for ($i = 1; $i <= $files->lastPage(); $i++)
                                                 <li class="page-item {{ $files->currentPage() == $i ? 'active' : '' }}">
                                                     <a class="page-link"
@@ -54,7 +103,7 @@
                                                 </li>
                                             @endfor
 
-                                            {{-- Tombol Next --}}
+                                            
                                             <li class="page-item {{ !$files->hasMorePages() ? 'disabled' : '' }}">
                                                 <a class="page-link" href="{{ $files->nextPageUrl() }}">Next</a>
                                             </li>
@@ -64,14 +113,15 @@
                             </div>
                         @else
                             <p class="text-muted">Belum ada materi yang diunggah.</p>
-                        @endif
+                        @endif --}}
                     </div>
-                @else
-                    <p class="text-muted">Belum ada materi yang diunggah.</p>
-                    @endif
+
                 </div>
             </div><!-- End Contact Form -->
         </div>
         </div>
     </section><!-- /Contact Section -->
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 @endsection
