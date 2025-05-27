@@ -171,9 +171,9 @@
                     </a>
                     <div class="footer-contact pt-3">
                         <p>Jl. Sambisari Jl. Duwet No.99</p>
-                        <p>Sleman, Daerah Istimewa Yogyakarta 55285</p>
-                        <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-                        <p><strong>Email:</strong> <span>info@example.com</span></p>
+                        <p>Sleman, Daerah Istimewa Yogyakarta, 55285</p>
+                        <p class="mt-3"><strong>Phone:</strong> <span>+62 822-2688-7110</span></p>
+                        <p><strong>Email:</strong> <span>training@satunama.org</span></p>
                     </div>
                 </div>
 

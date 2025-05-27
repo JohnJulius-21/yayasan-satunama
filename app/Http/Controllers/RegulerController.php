@@ -380,6 +380,7 @@ class RegulerController extends Controller
 
                     DB::table('reguler_files')->insert([
                         'id_reguler' => $reguler->id_reguler,
+                        'file_name' => $filename, // Simpan nama file langsung
                         'file_url' => $fileUrl, // Simpan URL langsung
                     ]);
                 }

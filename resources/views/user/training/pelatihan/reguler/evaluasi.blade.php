@@ -112,233 +112,233 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         jQuery(function($) {
-            var formData = {!! json_encode($formData) !!};
-            var fbRender = $('#stepContainer');
-            var currentStep = 0;
-            var totalSteps = formData.length;
-            var userData = {}; // Menyimpan jawaban user
+    var formDataGrouped = {!! json_encode($formData) !!};
+    var fbRender = $('#stepContainer');
+    var groups = Object.keys(formDataGrouped || {});
+    var currentGroupIndex = 0;
+    var currentStepIndex = 0;
+    var userData = {};
 
-            // Mencegah form terkirim ketika menekan Enter dalam input
-            $(document).on("keydown", "input, textarea", function(event) {
-                if (event.key === "Enter") {
-                    event.preventDefault(); // Mencegah submit form
-
-                    if ($("#nextBtn").is(":visible") && !$("#nextBtn").prop("disabled")) {
-                        $("#nextBtn").click(); // Jika tombol Next tersedia, lanjut ke step berikutnya
+    function renderField(field) {
+        var fieldDiv = $('<div class="form-eval mb-3"></div>');
+        if (field.label) {
+            var label = $('<label></label>').html(field.label);
+            if (field.required) label.append($('<span>*</span>').css('color', 'red'));
+            fieldDiv.append(label);
+        }
+        var input;
+        switch (field.type) {
+            case 'text':
+            case 'number':
+            case 'date':
+                input = $('<input class="form-control">').attr('type', field.type).attr('name', field.name);
+                break;
+            case 'textarea':
+                input = $('<textarea class="form-control"></textarea>').attr('name', field.name);
+                break;
+            case 'radio-group':
+                var radioDiv = $('<div></div>');
+                field.values.forEach(function(value) {
+                    var radio = $('<input class="form-check-input">')
+                        .attr('type', 'radio')
+                        .attr('name', field.name)
+                        .val(value.value);
+                    if (userData[field.name] === value.value) {
+                        radio.prop('checked', true);
                     }
-                }
-            });
-
-            function saveCurrentStepData() {
-
-                $('#stepContainer input, #stepContainer textarea, #stepContainer select').each(function() {
-                    var name = $(this).attr('name');
-                    if (!name) return;
-
-                    if ($(this).is(':radio')) {
-                        if ($(this).is(':checked')) {
-                            userData[name] = $(this).val();
-                        }
-                    } else if ($(this).is(':checkbox')) {
-                        if (!userData[name]) userData[name] = [];
-                        if ($(this).is(':checked')) {
-                            userData[name].push($(this).val());
-                        }
-                    } else {
-                        userData[name] = $(this).val();
-                    }
+                    var radioLabel = $('<label class="form-check-label"></label>').text(value.label);
+                    radioDiv.append($('<div class="form-check"></div>').append(radio).append(radioLabel));
                 });
+                fieldDiv.append(radioDiv);
+                break;
+            case 'checkbox-group':
+                var checkboxDiv = $('<div></div>');
+                field.values.forEach(function(value) {
+                    var checkbox = $('<input class="form-check-input">')
+                        .attr('type', 'checkbox')
+                        .attr('name', field.name)
+                        .val(value.value);
+                    if (userData[field.name] && userData[field.name].includes(value.value)) {
+                        checkbox.prop('checked', true);
+                    }
+                    var checkboxLabel = $('<label class="form-check-label"></label>').text(value.label);
+                    checkboxDiv.append($('<div class="form-check"></div>').append(checkbox).append(checkboxLabel));
+                });
+                fieldDiv.append(checkboxDiv);
+                break;
+            case 'select':
+                var select = $('<select class="form-control"></select>').attr('name', field.name);
+                field.values.forEach(function(option) {
+                    var optionElement = $('<option></option>').attr('value', option.value).text(option.label);
+                    if (userData[field.name] === option.value) {
+                        optionElement.prop('selected', true);
+                    }
+                    select.append(optionElement);
+                });
+                fieldDiv.append(select);
+                break;
+        }
+        if (input) {
+            if (userData[field.name]) {
+                input.val(userData[field.name]);
+            }
+            fieldDiv.append(input);
+        }
+        return fieldDiv;
+    }
 
-                console.log("Data sementara:", userData); // Debugging
+    function renderCurrentStep() {
+        fbRender.fadeOut(300, function() {
+            fbRender.empty();
+
+            var currentGroup = groups[currentGroupIndex];
+            var fields = formDataGrouped[currentGroup] || [];
+
+            // Judul group
+            fbRender.append($('<h5></h5>').text(currentGroup.charAt(0).toUpperCase() + currentGroup.slice(1)));
+
+            var field = fields[currentStepIndex];
+            if (field) {
+                fbRender.append(renderField(field));
             }
 
-            function validateStep() {
-                var isValid = true;
-                $('#stepContainer input, #stepContainer textarea, #stepContainer select').each(function() {
-                    var name = $(this).attr('name');
-                    if (!name) return;
+            $('#prevBtn').toggle(currentGroupIndex > 0 || currentStepIndex > 0);
+            $('#nextBtn').toggle(true);
+            $('#submitBtn').toggle(false);
 
-                    if ($(this).is(':radio')) {
-                        if (!$('input[name="' + name + '"]:checked').length) {
-                            isValid = false;
-                        }
-                    } else if ($(this).is(':checkbox')) {
-                        if (!$('input[name="' + name + '"]:checked').length) {
-                            isValid = false;
-                        }
-                    } else {
-                        if (!$(this).val()) {
-                            isValid = false;
-                        }
-                    }
-                });
-
-                return isValid;
+            // Jika sudah di akhir group dan field terakhir, tampilkan submit
+            if (currentGroupIndex === groups.length - 1 && currentStepIndex === fields.length - 1) {
+                $('#nextBtn').hide();
+                $('#submitBtn').show();
             }
 
-            function renderStep(step) {
-                fbRender.fadeOut(300, function() {
-                    fbRender.empty();
-                    var field = formData[step];
-                    var fieldDiv = $('<div class="form-eval mb-3"></div>');
-
-                    if (field.label) {
-                        var label = $('<label></label>').html(field.label);
-                        if (field.required) label.append($('<span>*</span>').css('color', 'red'));
-                        fieldDiv.append(label);
-                    }
-
-                    var input;
-                    switch (field.type) {
-                        case 'text':
-                        case 'number':
-                        case 'date':
-                            input = $('<input class="form-control">')
-                                .attr('type', field.type)
-                                .attr('name', field.name);
-                            break;
-                        case 'textarea':
-                            input = $('<textarea class="form-control"></textarea>')
-                                .attr('name', field.name);
-                            break;
-                        case 'radio-group':
-                            var radioDiv = $('<div></div>');
-                            field.values.forEach(function(value) {
-                                var radio = $('<input class="form-check-input">')
-                                    .attr('type', 'radio')
-                                    .attr('name', field.name)
-                                    .val(value.value);
-                                if (userData[field.name] === value.value) {
-                                    radio.prop('checked', true);
-                                }
-                                var radioLabel = $('<label class="form-check-label"></label>')
-                                    .text(value.label);
-                                radioDiv.append($('<div class="form-check"></div>').append(radio)
-                                    .append(radioLabel));
-                            });
-                            fieldDiv.append(radioDiv);
-                            break;
-                        case 'checkbox-group':
-                            var checkboxDiv = $('<div></div>');
-                            field.values.forEach(function(value) {
-                                var checkbox = $('<input class="form-check-input">')
-                                    .attr('type', 'checkbox')
-                                    .attr('name', field.name)
-                                    .val(value.value);
-                                if (userData[field.name] && userData[field.name].includes(value
-                                        .value)) {
-                                    checkbox.prop('checked', true);
-                                }
-                                var checkboxLabel = $('<label class="form-check-label"></label>')
-                                    .text(value.label);
-                                checkboxDiv.append($('<div class="form-check"></div>').append(
-                                    checkbox).append(checkboxLabel));
-                            });
-                            fieldDiv.append(checkboxDiv);
-                            break;
-                        case 'select':
-                            var select = $('<select class="form-control"></select>').attr('name', field
-                                .name);
-                            field.values.forEach(function(option) {
-                                var optionElement = $('<option></option>')
-                                    .attr('value', option.value)
-                                    .text(option.label);
-                                if (userData[field.name] === option.value) {
-                                    optionElement.prop('selected', true);
-                                }
-                                select.append(optionElement);
-                            });
-                            fieldDiv.append(select);
-                            break;
-                    }
-
-                    if (input) {
-                        if (userData[field.name]) {
-                            input.val(userData[field.name]);
-                        }
-                        fieldDiv.append(input);
-                    }
-
-                    fbRender.append(fieldDiv).fadeIn(300);
-
-                    $('#prevBtn').toggle(step > 0);
-                    $('#nextBtn').toggle(step < totalSteps - 1);
-                    $('#submitBtn').toggle(step === totalSteps - 1);
-
-                    checkNextButton();
-                });
-            }
-
-            function checkNextButton() {
-                $('#nextBtn').prop('disabled', !validateStep());
-            }
-
-            $('#stepContainer').on('input change', 'input, textarea, select', function() {
-                checkNextButton();
-            });
-
-            renderStep(currentStep);
-
-            $('#nextBtn').click(function() {
-                if (!validateStep()) {
-                    alert("Harap isi semua pertanyaan sebelum melanjutkan.");
-                    return;
-                }
-
-                saveCurrentStepData();
-                if (currentStep < totalSteps - 1) {
-                    currentStep++;
-                    renderStep(currentStep);
-                }
-            });
-
-            $('#prevBtn').click(function() {
-                saveCurrentStepData();
-                if (currentStep > 0) {
-                    currentStep--;
-                    renderStep(currentStep);
-                }
-            });
-
-            $('#submitBtn').click(function(e) {
-                e.preventDefault();
-
-                saveCurrentStepData(); // Simpan data terakhir sebelum submit
-
-                $('#data_respons').val(JSON.stringify(userData)); // Simpan ke hidden input
-
-                console.log("Data yang akan dikirim:", userData); // Debugging
-
-                $.ajax({
-                    url: "{{ route('reguler.pelatihan.evaluasi.store') }}",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id_reguler: $('#id_reguler').val(),
-                        id_peserta: $('#id_peserta').val(),
-                        data_respons: JSON.stringify(userData)
-                    },
-                    success: function(response) {
-                        Swal.fire({
-                            title: "Berhasil!",
-                            text: "Form Evaluasi berhasil disimpan!",
-                            icon: "success",
-                            confirmButtonText: "OK"
-                        }).then(() => {
-                            window.location.href =
-                                "{{ route('reguler.pelatihan.list', ['nama_pelatihan' => $reguler->nama_pelatihan]) }}";
-                        });
-                    },
-                    error: function(xhr) {
-                        Swal.fire({
-                            title: "Gagal!",
-                            text: "Terjadi kesalahan: " + xhr.responseText,
-                            icon: "error",
-                            confirmButtonText: "Tutup"
-                        });
-                    }
-                });
-            });
+            checkNextButton();
+            fbRender.fadeIn(300);
         });
+    }
+
+    function saveCurrentStepData() {
+        $('#stepContainer input, #stepContainer textarea, #stepContainer select').each(function() {
+            var name = $(this).attr('name');
+            if (!name) return;
+
+            if ($(this).is(':radio')) {
+                if ($(this).is(':checked')) {
+                    userData[name] = $(this).val();
+                }
+            } else if ($(this).is(':checkbox')) {
+                if (!userData[name]) userData[name] = [];
+                if ($(this).is(':checked')) {
+                    userData[name].push($(this).val());
+                }
+            } else {
+                userData[name] = $(this).val();
+            }
+        });
+        console.log("Data sementara:", userData);
+    }
+
+    function validateStep() {
+        var isValid = true;
+        $('#stepContainer input, #stepContainer textarea, #stepContainer select').each(function() {
+            var name = $(this).attr('name');
+            if (!name) return;
+
+            if ($(this).is(':radio')) {
+                if (!$('input[name="' + name + '"]:checked').length) {
+                    isValid = false;
+                }
+            } else if ($(this).is(':checkbox')) {
+                if (!$('input[name="' + name + '"]:checked').length) {
+                    isValid = false;
+                }
+            } else {
+                if (!$(this).val()) {
+                    isValid = false;
+                }
+            }
+        });
+        return isValid;
+    }
+
+    function checkNextButton() {
+        $('#nextBtn').prop('disabled', !validateStep());
+    }
+
+    $('#stepContainer').on('input change', 'input, textarea, select', function() {
+        checkNextButton();
+    });
+
+    $('#nextBtn').click(function() {
+        if (!validateStep()) {
+            alert("Harap isi semua pertanyaan sebelum melanjutkan.");
+            return;
+        }
+        saveCurrentStepData();
+
+        var currentGroup = groups[currentGroupIndex];
+        var fields = formDataGrouped[currentGroup];
+
+        if (currentStepIndex < fields.length - 1) {
+            currentStepIndex++;
+        } else if (currentGroupIndex < groups.length - 1) {
+            currentGroupIndex++;
+            currentStepIndex = 0;
+        }
+        renderCurrentStep();
+    });
+
+    $('#prevBtn').click(function() {
+        saveCurrentStepData();
+
+        if (currentStepIndex > 0) {
+            currentStepIndex--;
+        } else if (currentGroupIndex > 0) {
+            currentGroupIndex--;
+            var prevGroup = groups[currentGroupIndex];
+            currentStepIndex = (formDataGrouped[prevGroup] || []).length - 1;
+        }
+        renderCurrentStep();
+    });
+
+    $('#submitBtn').click(function(e) {
+        e.preventDefault();
+        saveCurrentStepData();
+
+        $('#data_respons').val(JSON.stringify(userData));
+
+        $.ajax({
+            url: "{{ route('reguler.pelatihan.evaluasi.store') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                id_reguler: '{{ $reguler->id_reguler }}',
+                id_peserta: $('#id_peserta').val(),
+                data_respons: JSON.stringify(userData)
+            },
+            success: function(response) {
+                Swal.fire({
+                    title: "Berhasil!",
+                    text: "Form Evaluasi berhasil disimpan!",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    window.location.href = "{{ route('reguler.pelatihan.list', ['nama_pelatihan' => $reguler->nama_pelatihan]) }}";
+                });
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: "Gagal!",
+                    text: "Terjadi kesalahan: " + xhr.responseText,
+                    icon: "error",
+                    confirmButtonText: "Tutup"
+                });
+            }
+        });
+    });
+
+    renderCurrentStep();
+});
+
     </script>
 @endsection

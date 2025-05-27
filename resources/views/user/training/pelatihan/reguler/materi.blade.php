@@ -30,12 +30,13 @@
                         @php
                             // Cek apakah ada file yang valid (tidak null)
                             $validFiles = collect($files)->filter(fn($file) => !is_null($file->file_url));
+                            
                         @endphp
 
                         @if ($validFiles->isNotEmpty())
                             @foreach ($validFiles as $file)
                                 <div class="card p-3 mb-2">
-                                    <p>Materi {{ $loop->iteration }}</p>
+                                    <p>{{ $loop->iteration }}. {{ $file->filename }}</p>
                                     <a href="{{ $file->file_url }}" target="_blank">Download File</a><br>
                                 </div>
                             @endforeach

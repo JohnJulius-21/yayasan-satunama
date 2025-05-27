@@ -505,23 +505,27 @@ class TrainingController extends Controller
         $id = $this->decodeHash($hash);
         $reguler = reguler::findOrFail($id);
         $formEvaluasiReguler = form_evaluasi_reguler::where('id_reguler', $id)->first();
-        $formData = $formEvaluasiReguler ? json_decode($formEvaluasiReguler->content, true) : null;
+        $formDataRaw = $formEvaluasiReguler ? json_decode($formEvaluasiReguler->content, true) : null;
 
-        // For non-logged-in users, just show the page with empty data
+        // Grouping formData berdasarkan 'group'
+        $groupedFormData = null;
+        if (is_array($formDataRaw)) {
+            $groupedFormData = collect($formDataRaw)->groupBy('group')->toArray();
+        }
+
         if (!auth()->check()) {
             return view('user.training.pelatihan.reguler.evaluasi', [
                 'reguler' => $reguler,
                 'formEvaluasiReguler' => $formEvaluasiReguler,
-                'formData' => $formData,
+                'formData' => $groupedFormData, // Kirim data sudah dikelompokkan
                 'title' => 'Evaluasi ' . $reguler->nama_pelatihan,
-                'showLoginModal' => true, // Flag to show modal
+                'showLoginModal' => true,
                 'sudahMengisi' => false,
                 'peserta' => null,
                 'pesertaId' => null
             ]);
         }
 
-        // For logged-in users (existing logic)
         $peserta = peserta_pelatihan_reguler::where('id_user', auth()->id())->first();
         $pesertaId = $peserta?->id_peserta_reguler;
 
@@ -538,10 +542,11 @@ class TrainingController extends Controller
             'pesertaId'
         ), [
             'title' => 'Evaluasi ' . $reguler->nama_pelatihan,
-            'formData' => $formData,
+            'formData' => $groupedFormData,
             'showLoginModal' => false
         ]);
     }
+
 
     public function regulerListStoreEvaluasi(Request $request)
     {
@@ -700,7 +705,7 @@ class TrainingController extends Controller
         // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
         $files = DB::table('reguler_files')
             ->where('id_reguler', $id)
-            ->get(['file_url']); // Ambil semua file_url
+            ->get(['file_url', 'filename']); // Ambil semua file_url
 
         return view('user.training.pelatihan.reguler.materi', compact('reguler', 'files'), [
             'title' => 'Materi Pelatihan ' . $reguler->nama_pelatihan,
