@@ -39,9 +39,15 @@
                                     <a href="{{ $file->file_url }}" target="_blank">Download File</a><br>
                                 </div>
                             @endforeach
+
+                            {{-- Tambahkan ini untuk menampilkan navigasi pagination --}}
+                            <div class="mt-3">
+                                {{ $files->links() }}
+                            </div>
                         @else
                             <p class="text-muted">Belum ada materi yang diunggah.</p>
                         @endif
+
                     </div>
                 </div><!-- End Contact Form -->
             </div>
