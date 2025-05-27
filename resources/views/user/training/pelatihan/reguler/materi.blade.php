@@ -37,7 +37,7 @@
                             @endforeach
 
                             <div class="mt-3">
-                                {{ $files->links() }}
+                                {{ $files->onEachSide(5)->links() }}
                             </div>
                         @else
                             <p class="text-muted">Belum ada materi yang diunggah.</p>
