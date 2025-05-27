@@ -238,7 +238,8 @@
                             class="form-control mb-2 @error('file.*') is-invalid @enderror" type="file"
                             id="file" name="file[]" multiple>
                         <div class="p-1">
-                            <li><small>File tidak boleh lebih dari 5mb</small></li>
+                            <li><small>File tidak boleh lebih dari 10mb</small></li>
+                            <li><small>File yang sudah diupload akan hilang akan jika mengupload ulang materi</small></li>
                             <li><small>Kosongkan kolom upload materi jika tidak ingin merubah materi</small></li>
                         </div>
                         @error('file.*')
@@ -255,7 +256,7 @@
                         @if ($validFiles->isNotEmpty())
                             @foreach ($validFiles as $file)
                                 <a href="{{ route('file.show', ['filename' => $file->file_url]) }}"
-                                    target="_blank">Download File</a><br>
+                                    target="_blank">{{ $file->file_name }}</a><br>
                             @endforeach
                         @else
                             <p class="text-muted">Belum ada materi yang diunggah.</p>
