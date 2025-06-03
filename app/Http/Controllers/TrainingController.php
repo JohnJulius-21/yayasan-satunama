@@ -59,6 +59,7 @@ class TrainingController extends Controller
 
     public function index()
     {
+        session(['show_tutorial' => true]);
         // Ambil data pelatihan
         $reguler = Reguler::paginate(3);
         $permintaan = permintaan_pelatihan::paginate(3);

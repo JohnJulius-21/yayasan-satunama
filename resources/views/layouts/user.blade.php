@@ -30,8 +30,8 @@
     <link href="{{ asset('assetss/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/intro.js/introjs.css">
     <!-- Main CSS File -->
+    
     <link href="{{ asset('assetss/css/main.css') }}" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="/css/trix.css">
@@ -40,10 +40,23 @@
 
 <body class="index-page">
 
+
+
     @include('partials.header')
 
 
     <main class="main">
+
+        {{-- @if (session('show_tutorial'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    introJs().setOptions({
+                        steps: @json(session('tutorial_steps'))
+                    }).start();
+                });
+            </script>   
+        @endif --}}
+
 
         <div class="content-wrapper">
             @yield('content')
@@ -259,7 +272,7 @@
     <script src="{{ asset('assetss/vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
     <script src="{{ asset('assetss/vendor/swiper/swiper-bundle.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-    <script src="https://unpkg.com/intro.js/intro.js"></script>
+    
     <!-- Main JS File -->
     <script src="{{ asset('assetss/js/main.js') }}"></script>
     <script src="{{ asset('/ckeditor/ckeditor.js') }}"></script>
@@ -351,6 +364,8 @@
                 const forgotModal = new bootstrap.Modal(forgotModalEl);
                 forgotModal.show();
             @endif
+
+
 
         });
     </script>

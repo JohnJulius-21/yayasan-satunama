@@ -56,7 +56,7 @@
                                 <p class="card-text mt-2">
                                     {{ \Illuminate\Support\Str::words(strip_tags($item->deskripsi_pelatihan), 5, '...') }}
                                 </p>
-                                
+
 
                                 <a href="{{ route('reguler.show', ['hash' => $item->hash_id]) }}"
                                     class="btn btn-outline-success btn-sm">Lihat Detail</a>
@@ -171,6 +171,15 @@
             </div>
         </div>
     </section>
+
+    @if (session('show_tutorial'))
+        <script>
+            window.onload = function() {
+                introJs().start();
+            }
+        </script>
+    @endif
+
 
     <!-- Custom CSS for Hover Animations -->
     <style>
@@ -350,6 +359,9 @@
             }
         }
     </style>
+
+    <link rel="stylesheet" href="https://unpkg.com/intro.js/introjs.css">
+    <script src="https://unpkg.com/intro.js/intro.js"></script>
     <script>
         function removeSkeleton(img) {
             let skeleton = img.previousElementSibling; // Skeleton ada sebelum gambar
@@ -362,5 +374,12 @@
         function handleImageError(img) {
             img.style.display = 'none'; // Sembunyikan gambar jika gagal dimuat
         }
+
+        // introJs().setOptions({
+        //     steps: [{
+        //         title: 'welcome',
+        //         intro: 'hello'
+        //     }]
+        // }).start();
     </script>
 @endsection

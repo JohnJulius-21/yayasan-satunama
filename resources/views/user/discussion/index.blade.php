@@ -31,7 +31,7 @@
 
 
             <!-- Sidebar -->
-            <div class="col-md-4">
+            {{-- <div class="col-md-4">
                 <!-- Kategori -->
                 <div class="card mb-3">
                     <div class="card-body">
@@ -51,13 +51,14 @@
 
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
             <!-- Konten Utama -->
-            <div class="col-md-8">
+            <div class="col-md-12">
 
                 <!-- Daftar Postingan -->
-                @foreach ($discussions as $discussion)
+                <!-- Daftar Postingan -->
+                @forelse ($discussions as $discussion)
                     <div class="card mb-3">
                         <div class="card-body">
                             <h5 class="card-title">
@@ -69,8 +70,6 @@
                                     <p class="text-muted mt-2">Oleh: {{ $discussion->user->name }}</p>
                                 </div>
                             </div>
-
-
                         </div>
                         <div class="card-footer">
                             <!-- Jumlah Komentar -->
@@ -97,7 +96,12 @@
                             </div>
                         </div>
                     </div>
-                @endforeach
+                @empty
+                    <div class="alert alert-info text-center">
+                        Belum ada ruang diskusi yang dibuat.
+                    </div>
+                @endforelse
+
 
                 <!-- Pagination -->
                 <div class="d-flex justify-content-center mt-4">
