@@ -186,12 +186,19 @@
                     <h1>Apakah Anda Membutuhkan Pengembangan Kapasitas?</h1>
                     <p>Kami siap membantu Anda dalam meningkatkan kemampuan dan kapasitas melalui berbagai program pelatihan
                         dan pendampingan.</p>
-                    <div class="d-flex">
+                    <div class="d-flex flex-wrap gap-2">
                         <a href="{{ route('pelatihan') }}" class="btn-get-started">Cari Pelatihan</a>
+
                         <a href="https://youtu.be/6IJRKUNlnxM?si=b27BlsoK5eelsJBd"
-                            class="glightbox btn-watch-video d-flex align-items-center"><i
-                                class="bi bi-play-circle"></i><span>Tentang Kami</span></a>
+                            class="glightbox btn-watch-video d-flex align-items-center">
+                            <i class="bi bi-play-circle"></i><span>Tentang Kami</span>
+                        </a>
+
+                        <a href="{{ asset('files/panduan-pengguna.pdf') }}" class="btn btn-outline" download>
+                            <i class="bi bi-download me-1"></i> Download Panduan Pengguna
+                        </a>
                     </div>
+
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2 hero-img" data-aos="zoom-out" data-aos-delay="100">
                     <img src="assetss/img/hero-img.png" class="img-fluid animated" alt="">
