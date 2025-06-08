@@ -187,4 +187,82 @@ class FasilitatorController extends Controller
         return redirect()->route('fasilitatorAdmin')->with('success', 'Berhasil menghapus data');
     }
 
+    public function createFasilitator()
+    {
+        return view('admin.fasilitator.fasilitator', [
+            'internal_eksternal' => internal_eksternal::all()
+        ]);
+    }
+
+
+    public function storeFasilitator(Request $request)
+    {
+        // return 'text';
+        $request->validate([
+            'nama_fasilitator' => 'required',
+            'email_fasilitator' => 'required|email:dns',
+            'nomor_telepon' => 'required|numeric|digits:12',
+            'alamat' => 'required',
+            'foto' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'jenis_kelamin' => 'required',
+            'asal_lembaga' => 'required',
+            'id_internal_eksternal' => 'required',
+            'body' => 'required|array|min:1', // Ubah validasi untuk body
+            'body.*' => 'required|string|min:3', // Validasi setiap item dalam array
+        ], [
+            'nama_fasilitator.required' => 'Field nama fasilitator wajib diisi',
+            'foto.required' => 'Field foto wajib diisi',
+            'foto.image' => 'Field foto harus berformat gambar',
+            'foto.max' => 'Field foto tidak boleh lebih dari 2mb',
+            'email_fasilitator.required' => 'Field email wajib diisi',
+            'email_fasilitator.email' => 'Field email harus email yang valid',
+            'nomor_telepon.required' => 'Field nomor telepon wajib diisi',
+            'nomor_telepon.digits' => 'Field nomor telepon harus 12 angka',
+            'id_internal_eksternal.required' => 'Field fasilitator internal atau eksternal wajib diisi',
+            'alamat.required' => 'Field alamat wajib diisi',
+            'jenis_kelamin.required' => 'Field jenis kelamin wajib diisi',
+            'body.required' => 'Minimal satu keahlian wajib diisi',
+            'body.min' => 'Minimal satu keahlian wajib diisi',
+            'body.*.required' => 'Field keahlian wajib diisi',
+            'body.*.min' => 'Keahlian minimal 3 karakter',
+            'asal_lembaga.required' => 'Field asal lembaga wajib diisi',
+        ]);
+
+        try {
+            // Simpan data fasilitator
+            $fasilitator = Fasilitator::create([
+                'nama_fasilitator' => $request->nama_fasilitator,
+                'email_fasilitator' => $request->email_fasilitator,
+                'nomor_telepon' => $request->nomor_telepon,
+                'alamat' => $request->alamat,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'id_internal_eksternal' => $request->id_internal_eksternal,
+                'asal_lembaga' => $request->asal_lembaga,
+                'facebook' => $request->facebook,
+                'x' => $request->x,
+                'instagram' => $request->instagram,
+                'linkedin' => $request->linkedin,
+                'body[]' => array_filter($request->body)
+            ]);
+
+            // Upload images ke Google Drive dan simpan ke database
+            if ($request->hasFile('foto')) {
+                $foto = $request->file('foto');
+                $filename = $foto->getClientOriginalName();
+                $path = Storage::disk('google')->putFileAs('', $foto, $filename);
+
+
+                DB::table('fasilitator_foto')->insert([
+                    'id_fasilitator' => $fasilitator->id_fasilitator,
+                    'photo_url' => $filename, // Simpan hanya nama file di database
+                ]);
+            }
+
+            return redirect()->back()->with('success', 'Data fasilitator berhasil disimpan.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data.');
+        }
+    }
+
+
 }

@@ -381,3 +381,6 @@ Route::middleware(['admin'])->group(function () {
 
     // Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
 });
+
+Route::get('/form-fasilitator', [FasilitatorController::class, 'createFasilitator'])->name('fasilitatorCreate');
+Route::post('/form-fasilitator/store', [FasilitatorController::class, 'storeFasilitator'])->name('fasilitatorStore');

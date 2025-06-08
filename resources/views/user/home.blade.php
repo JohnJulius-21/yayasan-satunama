@@ -267,6 +267,7 @@
         </div>
     </section>
 
+
     <!-- Portfolio Section -->
     <section id="portfolio" class="portfolio section">
 
@@ -343,6 +344,60 @@
         </div>
 
     </section><!-- /Portfolio Section -->
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats section">
+        <div class="container section-title" data-aos="fade-up">
+            <span>Dampak Kami</span>
+            <h2>Dampak Kami</h2>
+            {{-- <p>Telusuri produk - produk pelatihan kami untuk menunjang pekerjaan dan
+                usaha Anda</p> --}}
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            {{-- d-flex justify-content-center --}}
+            <div class="row gy-3">
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item text-center w-100 h-100">
+                        <p>
+
+                            <span data-purecounter-start="0" data-purecounter-end="290" data-purecounter-duration="1"
+                                class="purecounter"></span>
+                                +
+                        </p>
+                        <p>Clients</p>
+                    </div>
+                </div><!-- End Stats Item -->
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item text-center w-100 h-100">
+                        <span data-purecounter-start="0" data-purecounter-end="586964836800"
+                            data-purecounter-duration="1" data-purecounter-currency="Rp" data-purecounter-decimals="10" data-purecounter-separator="true" class="purecounter"></span>
+                        <p>Projects</p>
+                    </div>
+                </div><!-- End Stats Item -->
+
+                <div class="col-lg-3 col-md-6">
+                    <div class="stats-item text-center w-100 h-100">
+                        <span data-purecounter-start="0" data-purecounter-end="1599" data-purecounter-duration="1"
+                            class="purecounter"></span>
+                        <p>Hours Of Support</p>
+                    </div>
+                </div><!-- End Stats Item -->
+                {{--   
+            <div class="col-lg-3 col-md-6">
+              <div class="stats-item text-center w-100 h-100">
+                <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1" class="purecounter"></span>
+                <p>Workers</p>
+              </div>
+            </div><!-- End Stats Item --> --}}
+
+            </div>
+
+        </div>
+
+    </section><!-- /Stats Section -->
 
 
     <script>
