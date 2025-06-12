@@ -23,39 +23,47 @@
 
         @include('partials.navbar-pelatihan')
 
-        @foreach ($reguler as $item)
-            @if ($item->status && $item->status->status === 'belum_bayar')
-                <div class="card px-3 my-4 py-3 bg-warning-subtle" data-aos="fade-up" data-aos-delay="100">
-                    <strong>{{ $item->reguler->nama_pelatihan }}</strong>
-                    <p class="mt-2">Mohon melakukan pembayaran ke:</p>
-                    <ul>
-                        <li><strong>Bank Account</strong> : YAYASAN SATUNAMA YOGYAKARTA</li>
-                        <li><strong>Account Number</strong> : 5557778967</li>
-                        <li><strong>Address</strong> : BNI KCP UGM Yogyakarta JL. Kaliurang KM 4.5, Sleman, DI
-                            Yogyakarta</li>
-                        <li><strong>Currency</strong> : IDR</li>
-                        <li><strong>Swift Code</strong> : BNINIDJA</li>
-                    </ul>
-                    <div class="text-start mt-3">
-                        <p>Mohon untuk mengirim bukti pembayaran dinomor ini  <a href="https://api.whatsapp.com/send?phone=6282226887110&text=Halo,%20saya%20ingin%20mengirim%20bukti%20pembayaran%20pelatihan."
-                            target="_blank"><i class="bi bi-whatsapp"></i> +62 822-2688-7110</a></p>
+        @if (isset($reguler) && $reguler->isEmpty())
+            <div class="text-center">
+                <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image" class="img-small">
+                <h5>Sayangnya, belum ada pelatihan Reguler yang anda telah daftarkan.</h5>
+            </div>
+        @else
+            @foreach ($reguler as $item)
+                @if ($item->status && $item->status->status === 'belum_bayar')
+                    <div class="card px-3 my-4 py-3 bg-warning-subtle" data-aos="fade-up" data-aos-delay="100">
+                        <strong>{{ $item->reguler->nama_pelatihan }}</strong>
+                        <p class="mt-2">Mohon melakukan pembayaran ke:</p>
+                        <ul>
+                            <li><strong>Bank Account</strong> : YAYASAN SATUNAMA YOGYAKARTA</li>
+                            <li><strong>Account Number</strong> : 5557778967</li>
+                            <li><strong>Address</strong> : BNI KCP UGM Yogyakarta JL. Kaliurang KM 4.5, Sleman, DI
+                                Yogyakarta</li>
+                            <li><strong>Currency</strong> : IDR</li>
+                            <li><strong>Swift Code</strong> : BNINIDJA</li>
+                        </ul>
+                        <div class="text-start mt-3">
+                            <p>Mohon untuk mengirim bukti pembayaran dinomor ini <a
+                                    href="https://api.whatsapp.com/send?phone=6282226887110&text=Halo,%20saya%20ingin%20mengirim%20bukti%20pembayaran%20pelatihan."
+                                    target="_blank"><i class="bi bi-whatsapp"></i> +62 822-2688-7110</a></p>
+                        </div>
                     </div>
-                </div>
-            @elseif ($item->status && $item->status->status === 'sudah_bayar')
-                <div class="card px-3 my-4 py-3" data-aos="fade-up" data-aos-delay="100">
-                    <strong>{{ $item->reguler->nama_pelatihan }}</strong>
-                    <p>Tanggal Pelatihan:
-                        {{ \Carbon\Carbon::parse($item->reguler->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
-                        -
-                        {{ \Carbon\Carbon::parse($item->reguler->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}
-                    </p>
-                    <div class="text-start">
-                        <a href="{{ route('reguler.pelatihan.list', urlencode($item->reguler->nama_pelatihan)) }}"
-                            class="btn btn-outline-success">Lihat Detail</a>
+                @elseif ($item->status && $item->status->status === 'sudah_bayar')
+                    <div class="card px-3 my-4 py-3" data-aos="fade-up" data-aos-delay="100">
+                        <strong>{{ $item->reguler->nama_pelatihan }}</strong>
+                        <p>Tanggal Pelatihan:
+                            {{ \Carbon\Carbon::parse($item->reguler->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
+                            -
+                            {{ \Carbon\Carbon::parse($item->reguler->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}
+                        </p>
+                        <div class="text-start">
+                            <a href="{{ route('reguler.pelatihan.list', urlencode($item->reguler->nama_pelatihan)) }}"
+                                class="btn btn-outline-success">Lihat Detail</a>
+                        </div>
                     </div>
-                </div>
-            @endif
-        @endforeach
+                @endif
+            @endforeach
+        @endif
 
 
     </div>
