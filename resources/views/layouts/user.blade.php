@@ -31,7 +31,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
     <!-- Main CSS File -->
-    
+
     <link href="{{ asset('assetss/css/main.css') }}" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="/css/trix.css">
@@ -82,10 +82,10 @@
                     <form action="{{ route('login.process') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label">Email </label>
+                            <label class="form-label">Email atau Username</label>
                             <div class="input-group">
-                                <input type="email" class="form-control" placeholder="email@example.com"
-                                    name="email">
+                                <input type="text" class="form-control" placeholder="email@example.com / username"
+                                    name="login">
                                 <span class="input-group-text">
                                     <i class="fas fa-envelope"></i>
                                 </span>
@@ -272,7 +272,7 @@
     <script src="{{ asset('assetss/vendor/isotope-layout/isotope.pkgd.min.js') }}"></script>
     <script src="{{ asset('assetss/vendor/swiper/swiper-bundle.min.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-    
+
     <!-- Main JS File -->
     <script src="{{ asset('assetss/js/main.js') }}"></script>
     <script src="{{ asset('/ckeditor/ckeditor.js') }}"></script>

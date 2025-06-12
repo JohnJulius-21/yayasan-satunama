@@ -242,7 +242,7 @@ class FasilitatorController extends Controller
                 'x' => $request->x,
                 'instagram' => $request->instagram,
                 'linkedin' => $request->linkedin,
-                'body[]' => array_filter($request->body)
+                'body' => json_encode(array_filter($request->body)),
             ]);
 
             // Upload images ke Google Drive dan simpan ke database

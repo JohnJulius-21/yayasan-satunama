@@ -67,10 +67,10 @@ class AuthController extends Controller
     // Process the login request
     public function loginProcess(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('login', 'password');
 
         $validator = Validator::make($credentials, [
-            'email' => 'required|email',
+            'login' => 'required|string',
             'password' => 'required|min:6',
         ]);
 
@@ -78,21 +78,28 @@ class AuthController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        $user = User::where('email', $request->email)->first();
+        // Cek apakah input adalah email atau username
+        $login_type = filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        // Cek user berdasarkan email atau username
+        $user = User::where($login_type, $request->login)->first();
         if (!$user) {
             return back()->with('error', 'Kamu belum terdaftar, ayo daftar dulu.')->withInput();
         }
+
         if ($user->roles !== 'peserta') {
             return back()->with('error', 'Anda tidak memiliki akses, silakan login sebagai admin.')->withInput();
         }
 
-        if (Auth::attempt($credentials)) {
+        // Lakukan login
+        if (Auth::attempt([$login_type => $request->login, 'password' => $request->password])) {
             return redirect($request->input('redirect_to', route('beranda')))
                 ->with('success', 'Login berhasil!');
         }
 
-        return back()->with('error', 'Email atau Password salah!')->withInput();
+        return back()->with('error', 'Email/Username atau Password salah!')->withInput();
     }
+
 
 
 

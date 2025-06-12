@@ -13,9 +13,9 @@ class fasilitator extends Model
 
     protected $primaryKey = 'id_fasilitator';
 
-    protected $casts = [
-        'body' => 'array',
-    ];
+    // protected $casts = [
+    //     'body' => 'array',
+    // ];
 
     protected $fillable = [
         'nama_fasilitator',
