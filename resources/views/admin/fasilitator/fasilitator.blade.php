@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="{{ asset('images/stc.png') }}">
-    <title>STC - Formulir Fasilitator</title>
+    <title>STC - Form Expert</title>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
 </head>
@@ -17,7 +17,7 @@
         <div class="py-8 lg:py-16 px-4 mx-auto max-w-screen-md">
             <img src="{{ asset('images/stc.png') }}" alt="" class="h-14 mx-auto mb-8">
             <h5 class="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-dark">Form
-                Fasilitator
+                Expert
             </h5>
             <p class="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">Bantu kami dalam
                 mengisi data diri anda yang akan digunakan untuk kepentingan pelatihan.
@@ -87,12 +87,12 @@
 
                 <div>
                     <label for="id_internal_eksternal"
-                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-dark">Fasilitator Internal atau
-                        Eksternal</label>
+                        class="block mb-2 text-sm font-medium text-gray-900 dark:text-dark">Expert Internal atau
+                        Associate</label>
                     <select id="id_internal_eksternal"
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-green-500 dark:focus:border-green-500"
                         name="id_internal_eksternal">
-                        <option value="">Pilih jenis fasilitator</option>
+                        <option value="">Pilih jenis Expert</option>
                         @foreach ($internal_eksternal as $item)
                             <option value="{{ $item['id_internal_eksternal'] }}"
                                 {{ old('id_internal_eksternal') == $item['id_internal_eksternal'] ? 'selected' : '' }}>
@@ -121,7 +121,7 @@
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900"
                         for="user_avatar">Upload
                         Foto Anda</label>
-                    <small class="text-sm text-gray-500 dark:text-gray-500">Contoh foto fasilitator</small>
+                    <small class="text-sm text-gray-500 dark:text-gray-500">Contoh foto Expert</small>
                     <img class="h-auto max-w-xs rounded-lg mb-1" src="{{ asset('/images/closeup.jpg') }}"
                         alt="image description">
 

@@ -1,23 +1,24 @@
 <?php
 
-use App\Http\Controllers\DiscussionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\UserMiddleware;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CtgaController;
 use App\Http\Controllers\HomeController;
+use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\StudiController;
 use App\Http\Controllers\SurveyController;
+use Yaza\LaravelGoogleDriveStorage\Gdrive;
 use App\Http\Controllers\RegulerController;
 use App\Http\Controllers\EvaluasiController;
+use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\TrainingController;
-use App\Http\Controllers\CtgaController;
+use App\Http\Controllers\DiscussionController;
 use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\FasilitatorController;
 use App\Http\Controllers\CertificationController;
-use Yaza\LaravelGoogleDriveStorage\Gdrive;
-use Illuminate\Support\Facades\Response;
 
 Route::get('/', [HomeController::class, 'index'])->name('beranda');
 Route::get('/tentang-kami', [AboutController::class, 'index'])->name('tentang');
@@ -380,6 +381,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
 
     // Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
+    Route::get('/admin/presensi/reguler', [PresensiController::class, 'indexReguler'])->name('adminPresensiReguler');
+    Route::get('/admin/presensi/generate-presensi/{id}', [PresensiController::class, 'generateQRCode'])->name('generatePresensi');
 });
 
 Route::get('/form-fasilitator', [FasilitatorController::class, 'createFasilitator'])->name('fasilitatorCreate');
