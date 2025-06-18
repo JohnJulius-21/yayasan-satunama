@@ -251,12 +251,14 @@ class FasilitatorController extends Controller
                 $filename = $foto->getClientOriginalName();
                 $path = Storage::disk('google')->putFileAs('', $foto, $filename);
 
-
+                
                 DB::table('fasilitator_foto')->insert([
                     'id_fasilitator' => $fasilitator->id_fasilitator,
                     'photo_url' => $filename, // Simpan hanya nama file di database
                 ]);
             }
+
+            dd($foto);
 
             return redirect()->back()->with('success', 'Data fasilitator berhasil disimpan.');
         } catch (\Exception $e) {

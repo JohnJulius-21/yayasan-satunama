@@ -121,12 +121,18 @@
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900"
                         for="user_avatar">Upload
                         Foto Anda</label>
+                    <small class="text-sm text-gray-500 dark:text-gray-500">Contoh foto fasilitator</small>
+                    <img class="h-auto max-w-xs rounded-lg mb-1" src="{{ asset('/images/closeup.jpg') }}"
+                        alt="image description">
+
+
                     <input
                         class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-900 focus:outline-none dark:bg-gray-100 dark:border-gray-600 dark:placeholder-gray-400"
                         aria-describedby="user_avatar_help" id="user_avatar" type="file" name="foto">
                     <div class="mt-1 text-sm text-gray-500 dark:text-gray-500" id="user_avatar_help">
                         <li class="p-1"><small>Foto tidak boleh lebih dari 2mb</small></li>
                         <li class="p-1"><small>Foto harus berformat jpeg,png atau jpg</small></li>
+                        <li class="p-1"><small>Foto formal dan rapi</small></li>
                     </div>
                 </div>
 
