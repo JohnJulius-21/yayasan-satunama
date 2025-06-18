@@ -36,7 +36,7 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="nik">NIK</label>
                             <input type="text" class="form-control @error('nik') is-invalid @enderror"
                                 placeholder="Masukan NIK" name="nik" value="{{ old('nik') }}" maxlength="16"
@@ -47,7 +47,7 @@
                                     {{ $message }}
                                 </div>
                             @enderror
-                        </div>
+                        </div> --}}
 
                         <div class="form-group">
                             <label for="email_fasilitator">Email</label>
@@ -143,15 +143,60 @@
                             @enderror
                         </div>
 
-                        <div id="keahlian" class="form-group mb-3">
-                            <label for="body" class="form-label">Tambahkan Keahlian</label>
-                            {{-- <input id="body" type="hidden" name="body" value="{{ old('body') }}"> --}}
-                            {{-- <trix-editor class="trix-editor @error('body') is-invalid @enderror" input="body"></trix-editor> --}}
+                        {{-- <div id="keahlian" class="form-group mb-3">
+                            <label for="body" class="form-label">Tambahkan Keahlian</label>\
                             <textarea class="form-control" name="body" id="" value="{{ old('body') }}"></textarea>
                             @error('body')
                                 <div class="invalid-feedback d-block">
                                     {{ $message }}
                                 </div>
+                            @enderror
+                        </div> --}}
+
+
+                        <div class="form-group relative overflow-x-auto">
+                            <label for="asal_lembaga"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-dark">Tambahkan
+                                Keahlian Fasilitator</label>
+                            <table class="table w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3">No</th>
+                                        <th scope="col" class="px-6 py-3">Keahlian</th>
+                                        <th scope="col" class="px-6 py-3 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody2">
+                                    @php
+                                        $oldBody = old('body', [null]);
+                                    @endphp
+                                    @foreach ($oldBody as $index => $value)
+                                        <tr class="mb-2">
+                                            <td class="row-number">{{ $index + 1 }}</td>
+                                            <td class="px-6 py-3">
+                                                <input type="text" name="body[]"
+                                                    class="form-control shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light @error('body.' . $index) border-red-500 @enderror"
+                                                    value="{{ $value }}">
+                                                @error('body.' . $index)
+                                                    <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}
+                                                    </p>
+                                                @enderror
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($index === 0)
+                                                    <a type="button"
+                                                        class="addRow2 font-medium text-green-600 dark:text-green-500 hover:underline text-center" style="color: green">Tambah</a>
+                                                @else
+                                                    <a type="button"
+                                                        class="removeRow font-medium text-red-600 dark:text-red-500 hover:underline text-center" style="color: rgb(230, 35, 35)">Hapus</a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            @error('body')
+                                <div class="mt-1 text-sm text-red-600 dark:text-red-500">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
@@ -206,6 +251,37 @@
                     $('#asal-lembaga input[name="asal_lembaga"]').val('');
                     $('#asal-lembaga input[name="asal_lembaga"]').prop('readonly', false);
                 }
+            });
+
+            function updateRowNumbers() {
+                $('#tableBody2 tr').each(function(index) {
+                    $(this).find('.row-number').text(index + 1);
+                });
+            }
+
+            // Add row for keahlian
+            $(".addRow2").click(function() {
+                let newIndex = $('#tableBody2 tr').length;
+                $("#tableBody2").append(
+                    `<tr class="mb-2">
+            <td class="row-number"></td>
+            <td class="px-6 py-3">
+                <input type="text" name="body[]"
+                    class="form-control shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light"
+                    value="">
+            </td>
+            <td class="text-center">
+                <a type="button" class="removeRow font-medium text-red-600 dark:text-red-500 hover:underline text-center" style="color: rgb(230, 35, 35)">Hapus</a>
+            </td>
+        </tr>`
+                );
+                updateRowNumbers();
+            });
+
+            // Remove row on button click
+            $(document).on("click", ".removeRow", function() {
+                $(this).closest("tr").remove();
+                updateRowNumbers();
             });
         });
     </script>

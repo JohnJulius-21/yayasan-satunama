@@ -37,7 +37,6 @@ class FasilitatorController extends Controller
         // dd($request->all());
         $request->validate([
             'nama_fasilitator' => 'required',
-            'nik' => 'required|numeric|digits:16',
             'email_fasilitator' => 'required|email:dns',
             'nomor_telepon' => 'required|numeric|digits:12',
             'alamat' => 'required',
@@ -45,14 +44,11 @@ class FasilitatorController extends Controller
             'gender' => 'required',
             'asal_lembaga' => 'required',
             'id_internal_eksternal' => 'required',
-            'body' => 'required',
         ], [
             'nama_fasilitator.required' => 'Field nama fasilitator wajib diisi',
-            'nik.required' => 'Field nik wajib diisi',
             'foto.image' => 'Field foto harus berformat gambar',
             'foto.max' => 'Field foto tidak boleh lebih dari 2mb',
             'nik.numeric' => 'Field nik harus berupa angka',
-            'nik.digits' => 'Field nik harus 16 angka',
             'email_fasilitator.required' => 'Field email wajib diisi',
             'email_fasilitator.email' => 'Field email harus email yang valid',
             'nomor_telepon.required' => 'Field nomor telepon wajib diisi',
@@ -60,19 +56,17 @@ class FasilitatorController extends Controller
             'id_internal_eksternal.required' => 'Field fasilitator internal atau eksternal wajib diisi',
             'alamat.required' => 'Field alamat wajib diisi',
             'gender.required' => 'Field jenis kelamin wajib diisi',
-            'body.required' => 'Field tambahkan keahlian wajib diisi',
             'asal_lembaga.required' => 'Field asal lembaga wajib diisi',
         ]);
         $data = [
             'nama_fasilitator' => $request->nama_fasilitator,
-            'nik' => $request->nik,
             'email_fasilitator' => $request->email_fasilitator,
             'nomor_telepon' => $request->nomor_telepon,
             'alamat' => $request->alamat,
             'jenis_kelamin' => $request->gender,
             'id_internal_eksternal' => $request->id_internal_eksternal,
             'asal_lembaga' => $request->asal_lembaga,
-            'body' => $request->body,
+            'body' => json_encode(array_filter($request->body)),
             'instagram' => $request->instagram,
             'facebook' => $request->facebook,
             'twitter' => $request->twitter,
@@ -120,7 +114,6 @@ class FasilitatorController extends Controller
             'gender' => 'required',
             'asal_lembaga' => 'required',
             'id_internal_eksternal' => 'required',
-            'body' => 'required',
         ], [
             'nama_fasilitator.required' => 'Field nama fasilitator wajib diisi',
             'nik.required' => 'Field nik wajib diisi',
@@ -135,7 +128,6 @@ class FasilitatorController extends Controller
             'id_internal_eksternal.required' => 'Field fasilitator internal atau eksternal wajib diisi',
             'alamat.required' => 'Field alamat wajib diisi',
             'gender.required' => 'Field jenis kelamin wajib diisi',
-            'body.required' => 'Field tambahkan keahlian wajib diisi',
             'asal_lembaga.required' => 'Field asal lembaga wajib diisi',
         ]);
 
@@ -150,7 +142,7 @@ class FasilitatorController extends Controller
             'jenis_kelamin' => $request->gender,
             'id_internal_eksternal' => $request->id_internal_eksternal,
             'asal_lembaga' => $request->asal_lembaga,
-            'body' => $request->body,
+            'body' => json_encode(array_filter($request->body)),
             'instagram' => $request->instagram,
             'facebook' => $request->facebook,
             'twitter' => $request->twitter,
@@ -258,7 +250,7 @@ class FasilitatorController extends Controller
                 ]);
             }
 
-            dd($foto);
+            
 
             return redirect()->back()->with('success', 'Data fasilitator berhasil disimpan.');
         } catch (\Exception $e) {

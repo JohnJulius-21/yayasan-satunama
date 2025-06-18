@@ -22,7 +22,7 @@
             <p class="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">Bantu kami dalam
                 mengisi data diri anda yang akan digunakan untuk kepentingan pelatihan.
             </p>
-            <form action="{{ route('fasilitatorStore') }}" class="space-y-8" method="POST">
+            <form action="{{ route('fasilitatorStore') }}" class="space-y-8" method="POST" enctype="multipart/form-data">
                 @csrf
                 <h3 for="data_diri" class="block mb-4 text-lg font-large text-gray-400 dark:text-dark">Data Diri</h3>
                 <div>
