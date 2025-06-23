@@ -40,15 +40,19 @@
                             <div>
                                 <div class="p-4 inline-block text-center">
                                     <h2>QR Code Presensi: {{ $presensi->judul_presensi }}</h2>
-                                    <p class="text-center mt-2 p-5">
+                                    {{-- <p class="text-center mt-2 p-5">
                                         {!! $presensi->qr_code !!}
-                                    </p>
+                                    </p> --}}
                                 </div>
                                 <div class="text-center mb-4">
                                     {{-- <a href="#" id="download-qr" class="btn btn-success btn-sm mt-2"
                                         download="qr-code.png">Download QR Code</a> --}}
+                                    <!-- Pastikan ada ID ini di HTML -->
+                                    <div id="qr-svg-container">
+                                        {!! $presensi->qr_code !!}
+                                    </div>
 
-                                    <button id="download-qr" class="btn btn-outline-success">Download QR Code</button>
+                                    <button id="download-qr" class="btn btn-outline-success mt-3">Download QR Code</button>
                                 </div>
                                 <h3>Scan QR Code</h3>
 
@@ -56,7 +60,7 @@
                                     <div class="border p-3 rounded">
                                         <div class="d-flex justify-content-between mb-2">
                                             <h5 class="text-success m-0">Code Scanner</h5>
-                                            <span class="text-muted" id="scan-status">Idle</span>
+                                            <span class="text-muted" id="scan-status">Status</span>
                                         </div>
 
                                         <div class="form-group mb-3">
@@ -216,10 +220,50 @@
                     scanStatus.innerText = "Berhasil";
                     document.getElementById("scan-result").innerText = "Hasil: " + qrCodeMessage;
                     document.getElementById("qr-data").value = qrCodeMessage;
-                    document.getElementById("presensi-form").submit();
+
+                    // Kirim pakai fetch agar bisa baca respon JSON
+                    const form = document.getElementById("presensi-form");
+                    const formData = new FormData(form);
+
+                    fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRF-TOKEN': formData.get('_token')
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Presensi Berhasil',
+                                    text: 'Data presensi berhasil dikirim!',
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal',
+                                    text: data.message || 'Presensi gagal!'
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Fetch error:', error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Kesalahan',
+                                text: 'Terjadi kesalahan saat mengirim data.'
+                            });
+                        });
+
                 })
                 .catch(err => {
                     scanStatus.innerText = "Idle";
+
+                    // Tampilkan notifikasi gagal
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal Membaca Gambar',
@@ -228,11 +272,17 @@
                 });
         });
 
-        // Download QR PNG dari SVG
+
+
         document.getElementById('download-qr').addEventListener('click', function(e) {
             e.preventDefault();
 
             const svgElement = document.querySelector('#qr-svg-container svg');
+            if (!svgElement) {
+                Swal.fire('QR Code tidak ditemukan', '', 'error');
+                return;
+            }
+
             const svgData = new XMLSerializer().serializeToString(svgElement);
             const svgBlob = new Blob([svgData], {
                 type: 'image/svg+xml;charset=utf-8'
@@ -244,18 +294,30 @@
                 const canvas = document.createElement('canvas');
                 canvas.width = image.width;
                 canvas.height = image.height;
+
                 const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#FFFFFF'; // latar belakang putih
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(image, 0, 0);
 
                 const pngUrl = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
-                link.download = "qr-code.png";
+                link.download = 'qr-code-pelatihan.png';
                 link.href = pngUrl;
                 link.click();
-                URL.revokeObjectURL(pngUrl);
+
+                // Bersihkan
+                URL.revokeObjectURL(url);
+            };
+            image.onerror = function() {
+                Swal.fire('Gagal memuat gambar dari SVG', '', 'error');
             };
             image.src = url;
         });
+
+
+        // Inisialisasi dropdown kamera
+        // ... (bagian awal script tetap sama)
 
         // Inisialisasi dropdown kamera
         Html5Qrcode.getCameras().then(devices => {
@@ -275,77 +337,31 @@
             // Set default kamera pertama
             selectedCameraId = devices[0].id;
 
-            cameraSelect.addEventListener("change", function() {
-                selectedCameraId = this.value;
+            cameraSelect.addEventListener("change", async function() {
+                const newCameraId = this.value;
 
-                // Stop scanner jika sedang aktif, lalu mulai ulang dengan kamera baru
-                if (scanner._isScanning) {
-                    scanner.stop().then(() => {
-                        scanner.start(
-                            selectedCameraId, {
-                                fps: 10,
-                                qrbox: {
-                                    width: 250,
-                                    height: 250
-                                }
-                            },
-                            qrCodeMessage => {
-                                scanStatus.innerText = "Berhasil";
-                                document.getElementById("scan-result").innerText =
-                                    "Presensi Berhasil Dilakukan";
-                                document.getElementById("qr-data").value = qrCodeMessage;
+                // Jika scanner sedang berjalan, hentikan dulu
+                if (scanner.isScanning) {
+                    try {
+                        await scanner.stop();
+                        scanStatus.innerText = "Idle";
+                    } catch (err) {
+                        console.error("Gagal menghentikan scanner:", err);
+                    }
+                }
 
-                                scanner.stop();
+                // Update kamera yang dipilih
+                selectedCameraId = newCameraId;
 
-                                const form = document.getElementById("presensi-form");
-                                const formData = new FormData(form);
-
-                                fetch(form.action, {
-                                        method: 'POST',
-                                        body: formData,
-                                        headers: {
-                                            'X-CSRF-TOKEN': formData.get('_token')
-                                        }
-                                    })
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        if (data.status === 'success') {
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Presensi Berhasil',
-                                                showConfirmButton: false,
-                                                timer: 2000
-                                            });
-                                        } else {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Gagal',
-                                                text: data.message ||
-                                                    'Presensi gagal!'
-                                            });
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Fetch error:', error);
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Kesalahan',
-                                            text: 'Terjadi kesalahan saat mengirim data.'
-                                        });
-                                    });
-                            },
-                            error => {
-                                // silent
-                            }
-                        );
-                    }).catch(err => {
-                        console.error("Gagal restart scanner:", err);
-                    });
+                // Jika tombol scan sudah ditekan sebelumnya, mulai scan dengan kamera baru
+                if (scanStatus.innerText !== "Idle") {
+                    document.getElementById("start-scan").click();
                 }
             });
-
         }).catch(err => {
             console.error("Gagal mendeteksi kamera:", err);
         });
+
+        // ... (bagian akhir script tetap sama)
     </script>
 @endsection
