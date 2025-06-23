@@ -127,7 +127,7 @@
                                 <td>{{ $item['email_peserta'] }}</td>
                                 <td>{{ $item['jenis_kelamin'] }}</td>
                                 <td>{{ $item['jabatan'] }}</td>
-                                <td>{{ $item['tanggung_jawab'] }}</td>
+                                <td>{!! $item['tanggung_jawab'] !!}</td>
                             </tr>
                         @endforeach
                     </tbody>

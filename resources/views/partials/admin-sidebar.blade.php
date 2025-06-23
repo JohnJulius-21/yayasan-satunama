@@ -19,7 +19,7 @@
                 <a class="nav-link" href="#"> <i class="la la-book"></i> Presensi Pelatihan</a>
                 <ul class="submenu collapse">
                     <li><a class="nav-link" href="{{ route('adminPresensiReguler') }}">Reguler</a></li>
-                    <li><a class="nav-link" href="{{ route('permintaanAdmin') }}">Permintaan</a></li>
+                    <li><a class="nav-link" href="{{ route('adminPresensiPermintaan') }}">Permintaan</a></li>
                     <li><a class="nav-link" href="{{ route('konsultasiAdmin') }}">Konsultasi</a> </li>
                 </ul>
             </li>

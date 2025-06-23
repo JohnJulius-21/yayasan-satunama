@@ -186,14 +186,14 @@
             $('#permintaan').DataTable({
                 lengthChange: true,
                 responsive: true,
+                scrollX: true,
+                scrollY: 300,
                 paging: true,
                 lengthMenu: [
                     [10, 25, 50, -1],
                     [10, 25, 50, 'All']
                 ],
-                rowReorder: true,
                 columnDefs: [{
-                    orderable: false,
                     targets: 3
                 }]
             });
@@ -202,6 +202,8 @@
                 lengthChange: true,
                 responsive: true,
                 paging: true,
+                scrollX: true,
+                scrollY: 300,
                 lengthMenu: [
                     [10, 25, 50, -1],
                     [10, 25, 50, 'All']

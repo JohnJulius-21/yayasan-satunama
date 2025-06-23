@@ -1,8 +1,22 @@
 @extends('layouts.admin')
 
 @section('content')
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" style="color: rgb(2, 160, 2) !important;">
+                <a href="{{ route('adminPresensiReguler') }}" style="color: green !important;">Presensi Reguler</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Buat Presensi Pelatihan</li>
+        </ol>
+    </nav>
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h6 class="h4">Evaluasi Pelatihan Reguler</h6>
+        <h6 class="h4">List Presensi Pelatihan Reguler</h6>
+        {{-- <div class="d-flex justify-content-end">
+            <a href="{{ route('generatePresensi', $reguler->id_reguler) }}" class="btn btn-success"><i style="width:17px"
+                    data-feather="plus"></i>
+                Buat
+                Presensi</a>
+        </div> --}}
     </div>
     @if (session('success'))
         <script>
@@ -76,25 +90,22 @@
                     <table id="reguler" class="table table-bordered display responsive nowrap" width="100%">
                         <thead>
                             <tr>
-                                <th class="col-md-5" scope="col">Nama Pelatihan</th>
-                                <th class="col-md-1" scope="col">Tanggal Pelatihan</th>
-                                <th class="col-md-1" scope="col">Tindakan</th>
+                                <th class="col-md-1" scope="col">No</th>
+                                <th class="col-md-5" scope="col">Nama Peserta</th>
+                                <th class="col-md-1" scope="col">Aksi</th>
+                                {{-- <th class="col-md-1" scope="col">Tindakan</th> --}}
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($reguler as $item)
+                            @foreach ($peserta as $item)
                                 <tr>
-                                    <td>{{ $item['nama_pelatihan'] }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->locale('id')->isoFormat('D MMMM') }}
-                                        -
-                                        {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}
-                                    </td>
+                                    <td>{{ $loop->iteration }}</td>
+                                    <td>{{ $item->nama_peserta }}</td>
                                     <td>
-                                        <a href="{{ route('generatePresensi', $item->id_reguler) }}"
-                                            class="btn btn-primary px-2">Buat Presensi</a>
-                                        {{-- <button class="btn btn-danger btn-delete" data-action="">
-                                            <i style="width:17px" class="la la-trash"></i>
-                                        </button> --}}
+                                        <span
+                                            class="text-white badge bg-{{ $item->status_presensi === 'Sudah Presensi' ? 'success' : 'secondary' }}">
+                                            {{ $item->status_presensi }}
+                                        </span>
                                     </td>
                                 </tr>
                             @endforeach
