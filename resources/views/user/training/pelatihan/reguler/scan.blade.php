@@ -59,6 +59,11 @@
                                             <span class="text-muted" id="scan-status">Idle</span>
                                         </div>
 
+                                        <div class="form-group mb-3">
+                                            <label for="camera-select">Pilih Kamera:</label>
+                                            <select id="camera-select" class="form-control"></select>
+                                        </div>
+
                                         <div id="reader" class="bg-light mx-auto"
                                             style="width: 100%; max-width: 300px; height: auto;"></div>
 
@@ -108,11 +113,13 @@
         const scanner = new Html5Qrcode("reader");
         const scanStatus = document.getElementById("scan-status");
 
+        let selectedCameraId = null;
         document.getElementById("start-scan").addEventListener("click", function() {
             scanStatus.innerText = "Scanning...";
             Html5Qrcode.getCameras().then(devices => {
                 if (devices && devices.length) {
-                    const cameraId = devices[0].id;
+                    const cameraId = selectedCameraId || devices[0].id;
+
 
                     scanner.start(
                         cameraId, {
@@ -124,7 +131,8 @@
                         },
                         qrCodeMessage => {
                             scanStatus.innerText = "Berhasil";
-                            document.getElementById("scan-result").innerText = "Presensi Berhasil Dilakukan";
+                            document.getElementById("scan-result").innerText =
+                                "Presensi Berhasil Dilakukan";
                             document.getElementById("qr-data").value = qrCodeMessage;
 
                             scanner.stop();
@@ -247,6 +255,97 @@
                 URL.revokeObjectURL(pngUrl);
             };
             image.src = url;
+        });
+
+        // Inisialisasi dropdown kamera
+        Html5Qrcode.getCameras().then(devices => {
+            const cameraSelect = document.getElementById("camera-select");
+            if (devices.length === 0) {
+                cameraSelect.innerHTML = '<option disabled>Tidak ada kamera terdeteksi</option>';
+                return;
+            }
+
+            devices.forEach((device, index) => {
+                const option = document.createElement("option");
+                option.value = device.id;
+                option.text = device.label || `Kamera ${index + 1}`;
+                cameraSelect.appendChild(option);
+            });
+
+            // Set default kamera pertama
+            selectedCameraId = devices[0].id;
+
+            cameraSelect.addEventListener("change", function() {
+                selectedCameraId = this.value;
+
+                // Stop scanner jika sedang aktif, lalu mulai ulang dengan kamera baru
+                if (scanner._isScanning) {
+                    scanner.stop().then(() => {
+                        scanner.start(
+                            selectedCameraId, {
+                                fps: 10,
+                                qrbox: {
+                                    width: 250,
+                                    height: 250
+                                }
+                            },
+                            qrCodeMessage => {
+                                scanStatus.innerText = "Berhasil";
+                                document.getElementById("scan-result").innerText =
+                                    "Presensi Berhasil Dilakukan";
+                                document.getElementById("qr-data").value = qrCodeMessage;
+
+                                scanner.stop();
+
+                                const form = document.getElementById("presensi-form");
+                                const formData = new FormData(form);
+
+                                fetch(form.action, {
+                                        method: 'POST',
+                                        body: formData,
+                                        headers: {
+                                            'X-CSRF-TOKEN': formData.get('_token')
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.status === 'success') {
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Presensi Berhasil',
+                                                showConfirmButton: false,
+                                                timer: 2000
+                                            });
+                                        } else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal',
+                                                text: data.message ||
+                                                    'Presensi gagal!'
+                                            });
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error('Fetch error:', error);
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Kesalahan',
+                                            text: 'Terjadi kesalahan saat mengirim data.'
+                                        });
+                                    });
+                            },
+                            error => {
+                                // silent
+                            }
+                        );
+                    }).catch(err => {
+                        console.error("Gagal restart scanner:", err);
+                    });
+                }
+            });
+
+        }).catch(err => {
+            console.error("Gagal mendeteksi kamera:", err);
         });
     </script>
 @endsection
