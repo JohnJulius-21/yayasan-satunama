@@ -34,6 +34,7 @@ use App\Models\hasil_evaluasi_permintaan;
 use App\Models\hasil_studidampak_reguler;
 use App\Models\peserta_pelatihan_reguler;
 use App\Models\presensi_pelatihan_reguler;
+use App\Models\presensi_pelatihan_permintaan;
 use App\Models\form_studidampak_konsultasi;
 use App\Models\form_studidampak_permintaan;
 use App\Models\form_surveykepuasan_reguler;
@@ -427,6 +428,96 @@ class TrainingController extends Controller
         return view('user.training.permintaan.create', compact('mitra', 'tema'), [
             'title' => 'Pelatihan Permintaan',
         ]);
+    }
+
+    public function presensiPermintaan($id)
+    {
+        // Ambil model permintaan dengan relasi lengkap
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+
+        // Ambil presensi terkait dari tabel presensi_permintaan
+        $presensi = DB::table('presensi_permintaan')
+            ->where('id_permintaan', $permintaan->id_pelatihan_permintaan)
+            ->get();
+        // dd($presensi);
+
+        if (!$presensi) {
+            abort(404, 'Presensi tidak ditemukan.');
+        }
+
+        return view('user.training.pelatihan.permintaan.presensi', [
+            'permintaan' => $permintaan,      // ← tetap model, ada hash_id
+            'presensi' => $presensi,    // ← data tambahan
+            'title' => 'Presensi Pelatihan Permintaan',
+        ]);
+    }
+
+    public function scanQRCodePermintaan($id, $id_presensi)
+    {
+        // Ambil model reguler dengan relasi lengkap
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+
+        // Ambil presensi terkait dari tabel presensi_permintaan
+        // Ambil data presensi yang dimaksud
+        $presensi = DB::table('presensi_permintaan')
+            ->where('id_permintaan', $permintaan->id_pelatihan_permintaan)
+            ->where('id_presensi', $id_presensi)
+            ->first();
+        // dd($permintaan);
+
+        return view('user.training.pelatihan.permintaan.scan', [
+            'permintaan' => $permintaan,      // ← tetap model, ada hash_id
+            'presensi' => $presensi,    // ← data tambahan
+            'title' => 'Presensi Pelatihan permintaan',
+        ]);
+    }
+
+
+    public function processQRScanPermintaan(Request $request, $id)
+    {
+        try {
+            $user = auth()->user();
+            $qrData = $request->input('qr_data');
+            $id_presensi_permintaan = $request->input('id_presensi_permintaan');
+
+            // Log::info('Masuk proses QR scan, data:', ['qr_data' => $qrData, 'user_id' => $user->id, 'id_presensi'=>$id_presensi_permintaan]);
+
+            $expectedQRData = route('scanQrPresensiPermintaan', ['id' => $id, 'presensi' => $id_presensi_permintaan]);
+            if ($qrData !== $expectedQRData) {
+                return response()->json(['status' => 'error', 'message' => 'QR Code tidak valid!']);
+            }
+
+            $peserta = peserta_pelatihan_permintaan::where('id_user', $user->id)
+                ->where('id_pelatihan_permintaan', $id)
+                ->first();
+
+            if (!$peserta) {
+                return response()->json(['status' => 'error', 'message' => 'Peserta tidak ditemukan.']);
+            }
+
+            $existing = presensi_pelatihan_permintaan::where('id_permintaan', $id)
+                ->where('id_peserta', $peserta->id_peserta_permintaan)
+                ->where('id_presensi_permintaan', $id_presensi_permintaan) // ⬅️ TAMBAHKAN INI
+                ->first();
+
+
+            if ($existing) {
+                return response()->json(['status' => 'error', 'message' => 'Presensi sudah dilakukan.']);
+            }
+
+            presensi_pelatihan_permintaan::create([
+                'id_permintaan' => $id,
+                'id_presensi_permintaan' => $id_presensi_permintaan,
+                'id_peserta' => $peserta->id_peserta,
+                'tanggal_presensi' => now(),
+                'qr_code' => $qrData,
+            ]);
+
+            return response()->json(['status' => 'success']);
+        } catch (\Exception $e) {
+            Log::error('Presensi gagal: ' . $e->getMessage());
+            return response()->json(['status' => 'error', 'message' => 'Presensi gagal. Cek server log.']);
+        }
     }
 
     public function storePermintaan(Request $request)

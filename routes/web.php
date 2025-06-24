@@ -388,6 +388,10 @@ Route::middleware(['admin'])->group(function () {
     Route::post('/admin/presensi/generate-presensi/{id}', [PresensiController::class, 'store'])->name('savePresensi');
 
     Route::get('/admin/presensi/permintaan', [PresensiController::class, 'indexPermintaan'])->name('adminPresensiPermintaan');
+    Route::get('/admin/presensi/list-permintaan/{id}', [PresensiController::class, 'showPermintaan'])->name('adminShowPresensiPermintaan');
+    Route::get('/admin/presensi/list-peserta-permintaan/{id}', [PresensiController::class, 'showPresensiPesertaPermintaan'])->name('adminShowPresensiPesertaPermintaan');
+    Route::get('/admin/presensi/generate-presensi-permintaan/{id}', [PresensiController::class, 'generateQRCodePermintaan'])->name('generatePresensiPermintaan');
+    Route::post('/admin/presensi/generate-presensi-permintaan/{id}', [PresensiController::class, 'storePermintaan'])->name('savePresensiPermintaan');
 });
 
 Route::get('/form-fasilitator', [FasilitatorController::class, 'createFasilitator'])->name('fasilitatorCreate');
@@ -396,3 +400,7 @@ Route::post('/form-fasilitator/store', [FasilitatorController::class, 'storeFasi
 Route::get('/pelatihan-saya/presensi/{id}', [TrainingController::class, 'presensiReguler'])->name('presensi.reguler');
 Route::get('/scan-qr-presensi/{id}/{presensi}', [TrainingController::class, 'scanQRCode'])->name('scanQrPresensi');
 Route::post('/presensi/scan/{id}', [TrainingController::class, 'processQRScan'])->name('presensi.process');
+
+Route::get('/pelatihan-saya/presensi/permintaan/{id}', [TrainingController::class, 'presensiPermintaan'])->name('presensi.permintaan');
+Route::get('/scan-qr-presensi/permintaan/{id}/{presensi}', [TrainingController::class, 'scanQRCodePermintaan'])->name('scanQrPresensiPermintaan');
+Route::post('/presensi/scan/permintaan/{id}', [TrainingController::class, 'processQRScanPermintaan'])->name('presensi.process.permintaan');

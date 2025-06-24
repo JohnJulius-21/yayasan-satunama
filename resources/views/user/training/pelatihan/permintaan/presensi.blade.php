@@ -3,7 +3,7 @@
 @section('content')
     <div>
         <div class="p-4 border rounded-lg inline-block text-center">
-            <h2>QR Code Presensi: {{ $reguler->judul_presensi }}</h2>
+            <h2>QR Code Presensi: {{ $permintaan->judul_presensi }}</h2>
             <p class="mt-2">
                 {!! $reguler->qr_code !!}
         </div>
@@ -18,9 +18,9 @@
             <h1 class="mb-2 mb-lg-0">{{ $permintaan->nama_pelatihan }}</h1>
             <nav class="breadcrumbs">
                 <ol>
-                    <li><a href="{{ route('permintaan.pelatihan') }}">Pelatihan Saya</a></li>
+                    <li><a href="{{ route('permintaan.pelatihan.show') }}">Pelatihan Saya</a></li>
                     <li><a
-                            href="{{ route('permintaan.pelatihan.list', $reguler->nama_pelatihan) }}">{{ $reguler->nama_pelatihan }}</a>
+                            href="{{ route('permintaan.pelatihan.list', $permintaan->nama_pelatihan) }}">{{ $permintaan->nama_pelatihan }}</a>
                     </li>
                     <li class="current">Presensi </li>
                 </ol>
@@ -32,7 +32,7 @@
         <div class="container" data-aos="fade-up" data-aos-delay="100">
             <div class="row gy-4">
                 <div class="col-lg-3">
-                    @include('partials.user-routes')
+                    @include('partials.user-routes-permintaan')
                 </div>
                 <div class="col-lg-9">
                     <div class="php-email-form">
@@ -51,7 +51,7 @@
                                                 <tr>
                                                     <td>{{ $key + 1 }}</td>
                                                     <td>{{ $p->judul_presensi }}</td>
-                                                    <td><a href="{{ route('scanQrPresensi', ['id' => $reguler->id_reguler, 'presensi' => $p->id_presensi]) }}">Lihat
+                                                    <td><a href="{{ route('scanQrPresensiPermintaan', ['id' => $permintaan->id_pelatihan_permintaan, 'presensi' => $p->id_presensi]) }}">Lihat
                                                             Presensi</a></td>
                                                 </tr>
                                             @endforeach
