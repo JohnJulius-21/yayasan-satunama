@@ -43,19 +43,26 @@ class PresensiController extends Controller
             ->where('id_reguler', $presensi->id_reguler)
             ->get();
 
-        // Ambil ID peserta yang sudah hadir
-        $hadirIds = DB::table('presensi_pelatihan_reguler')
+        // Ambil daftar presensi yang sesuai
+        $presensiData = DB::table('presensi_pelatihan_reguler')
             ->where('id_presensi_reguler', $id_presensi)
-            ->pluck('id_peserta')
-            ->toArray();
+            ->get()
+            ->keyBy('id_peserta'); // Kunci berdasarkan ID peserta
 
-        // Tandai status presensi pada setiap peserta
+        // Tandai status dan tanggal presensi pada setiap peserta
         foreach ($peserta as $p) {
-            $p->status_presensi = in_array($p->id_peserta_reguler, $hadirIds) ? 'Sudah Presensi' : 'Belum Presensi';
+            if (isset($presensiData[$p->id_peserta_reguler])) {
+                $p->status_presensi = 'Sudah Presensi';
+                $p->tanggal_presensi = $presensiData[$p->id_peserta_reguler]->tanggal_presensi;
+            } else {
+                $p->status_presensi = 'Belum Presensi';
+                $p->tanggal_presensi = null;
+            }
         }
 
         return view('admin.presensi.reguler.show-peserta', compact('presensi', 'peserta'));
     }
+
 
 
     public function generateQRCode($id)

@@ -92,7 +92,8 @@
                             <tr>
                                 <th class="col-md-1" scope="col">No</th>
                                 <th class="col-md-5" scope="col">Nama Peserta</th>
-                                <th class="col-md-1" scope="col">Aksi</th>
+                                <th class="col-md-5" scope="col">Tanggal dan Waktu Presensi</th>
+                                <th class="col-md-1" scope="col">Status Presensi</th>
                                 {{-- <th class="col-md-1" scope="col">Tindakan</th> --}}
                             </tr>
                         </thead>
@@ -101,6 +102,8 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->nama_peserta }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_presensi)->locale('id')->isoFormat('D-MM-Y [-] HH:mm:m') }}
+                                    </td>
                                     <td>
                                         <span
                                             class="text-white badge bg-{{ $item->status_presensi === 'Sudah Presensi' ? 'success' : 'secondary' }}">
@@ -121,14 +124,30 @@
         href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.css"
         rel="stylesheet"> --}}
 
-    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.css" rel="stylesheet">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.css"
+        rel="stylesheet">
 
-    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
+    <script
+        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.js">
+    </script>
 
     <script>
         $(document).ready(function() {
             // Inisialisasi DataTable
             $('#reguler').DataTable({
+                layout: {
+                    topStart: {
+                        buttons: [{
+                            extend: 'pdf',
+                            title: 'Data Presensi Peserta Pelatihan {{ $presensi->judul_presensi }}',
+                        }]
+
+                    }
+                },
                 lengthChange: true,
                 responsive: true,
                 paging: true,
