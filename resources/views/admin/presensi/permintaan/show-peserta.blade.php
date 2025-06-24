@@ -102,8 +102,14 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->nama_peserta }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_presensi)->locale('id')->isoFormat('D-MM-Y [-] HH:mm:m') }}
+                                    <td>
+                                        @if ($item->tanggal_presensi)
+                                            {{ \Carbon\Carbon::parse($item->tanggal_presensi)->locale('id')->isoFormat('D-MM-Y [-] HH:mm') }}
+                                        @else
+                                            -
+                                        @endif
                                     </td>
+
                                     <td>
                                         <span
                                             class="text-white badge bg-{{ $item->status_presensi === 'Sudah Presensi' ? 'success' : 'secondary' }}">
