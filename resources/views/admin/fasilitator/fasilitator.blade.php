@@ -199,10 +199,10 @@
                 <div class="form-group">
                     <label for="x"><i style="width:17px"
                             class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-900"></i>
-                        Twitter</label>
+                        X</label>
                     <input type="text"
                         class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full p-2.5 dark:bg-gray-50 dark:border-gray-600 dark:placeholder-gray-400 dark:text-dark dark:focus:ring-green-500 dark:focus:border-green-500 dark:shadow-sm-light"
-                        placeholder="Masukan url twitter" name="x" value="{{ old('x') }}">
+                        placeholder="Masukan url X" name="x" value="{{ old('x') }}">
 
                 </div>
                 <div class="form-group">

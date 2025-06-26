@@ -59,7 +59,7 @@
                                 <div class="container mt-4">
                                     <div class="border p-3 rounded">
                                         <div class="d-flex justify-content-between mb-2">
-                                            <h5 class="text-success m-0">Code Scanner</h5>
+                                            <h5 class="text-success m-0">Scan Presensi</h5>
                                             <span class="text-muted" id="scan-status">Status</span>
                                         </div>
 

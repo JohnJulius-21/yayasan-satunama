@@ -495,15 +495,23 @@ class TrainingController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Peserta tidak ditemukan.']);
             }
 
+            Log::info('ID Peserta Cek:', [
+                'id_peserta' => $peserta->id_peserta,
+                'id_presensi_permintaan' => $id_presensi_permintaan,
+            ]);
+
             $existing = presensi_pelatihan_permintaan::where('id_permintaan', $id)
-                ->where('id_peserta', $peserta->id_peserta_permintaan)
-                ->where('id_presensi_permintaan', $id_presensi_permintaan) // ⬅️ TAMBAHKAN INI
+                ->where('id_peserta', $peserta->id_peserta)
+                ->where('id_presensi_permintaan', $id_presensi_permintaan)
                 ->first();
+
 
 
             if ($existing) {
                 return response()->json(['status' => 'error', 'message' => 'Presensi sudah dilakukan.']);
             }
+
+            // dd($existing);
 
             presensi_pelatihan_permintaan::create([
                 'id_permintaan' => $id,
