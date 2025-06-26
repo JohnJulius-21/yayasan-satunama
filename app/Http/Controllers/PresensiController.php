@@ -130,7 +130,7 @@ class PresensiController extends Controller
                 return (array) $item;
             });
 
-        // dd($permintaan);
+        // dd($presensi);
 
         return view('admin.presensi.permintaan.show', compact('permintaan', 'presensi'));
     }

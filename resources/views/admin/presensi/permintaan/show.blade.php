@@ -12,8 +12,8 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
         <h6 class="h4">List Presensi Pelatihan Permintaan</h6>
         <div class="d-flex justify-content-end">
-            <a href="{{ route('generatePresensiPermintaan', $permintaan->id_pelatihan_permintaan) }}" class="btn btn-success"><i style="width:17px"
-                    data-feather="plus"></i>
+            <a href="{{ route('generatePresensiPermintaan', $permintaan->id_pelatihan_permintaan) }}"
+                class="btn btn-success"><i style="width:17px" data-feather="plus"></i>
                 Buat
                 Presensi</a>
         </div>
@@ -106,10 +106,16 @@
                                         {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}
                                     </td> --}}
                                     <td>
-                                        <a href="{{ route('adminShowPresensiPesertaPermintaan', $item['id_presensi']) }}" class="btn btn-primary px-2">Daftar Peserta</a>
+                                        <a href="{{ route('adminShowPresensiPesertaPermintaan', $item['id_presensi']) }}"
+                                            class="btn btn-primary px-2">Daftar Peserta</a>
                                         {{-- <button class="btn btn-danger btn-delete" data-action="">
                                             <i style="width:17px" class="la la-trash"></i>
                                         </button> --}}
+                                        <button class="btn btn-outline-success btn-download-qr px-2"
+                                            data-qr="{{ base64_encode($item['qr_code']) }}">
+                                            Download QR Code
+                                        </button>
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -128,7 +134,7 @@
     <link href="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.css" rel="stylesheet">
 
     <script src="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.js"></script>
-
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script>
         $(document).ready(function() {
             // Inisialisasi DataTable
@@ -145,6 +151,51 @@
                     orderable: false,
                     targets: 2
                 }]
+            });
+        });
+
+        document.querySelectorAll('.btn-download-qr').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const encodedSvg = this.getAttribute('data-qr');
+                if (!encodedSvg) {
+                    Swal.fire('QR Code tidak tersedia', '', 'error');
+                    return;
+                }
+
+                const svgString = atob(encodedSvg); // Decode base64 ke string XML SVG
+                const blob = new Blob([svgString], {
+                    type: 'image/svg+xml'
+                });
+                const url = URL.createObjectURL(blob);
+
+                const image = new Image();
+                image.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff'; // background putih
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(image, 0, 0);
+
+                    const pngUrl = canvas.toDataURL('image/png');
+
+                    const link = document.createElement('a');
+                    link.href = pngUrl;
+                    link.download = 'qr-code-presensi.png';
+                    link.click();
+
+                    URL.revokeObjectURL(url);
+                };
+
+                image.onerror = function() {
+                    Swal.fire('Gagal memuat QR Code', '', 'error');
+                };
+
+                image.src = url;
             });
         });
     </script>
