@@ -71,9 +71,43 @@
         </div>
     </div>
 
-
-
-
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <div class="d-flex justify-content-start">
+                <p class="m-0 font-weight-bold text-success">Tabel Peserta</p>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="peserta" class="table table-bordered display responsive nowrap" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Nama Peserta</th>
+                            <th>Email Peserta</th>
+                            {{-- <th>Tindakan</th> --}}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($peserta as $item)
+                            <tr>
+                                <td>{{ $item->nama_peserta }}</td>
+                                <td>{{ $item->email_peserta }}</td>
+                                {{-- <td>
+                                    <button class="btn btn-warning btn-edit" data-id="{{ $item->id_peserta }}"
+                                        data-nama="{{ $item->nama_peserta }}" data-email="{{ $item->email_peserta }}">
+                                        <i style="width:17px" class="la la-edit"></i>
+                                    </button>
+                                    <button class="btn btn-danger btn-delete" data-id="{{ $item->id_peserta }}">
+                                        <i style="width:17px" class="la la-trash"></i>
+                                    </button>
+                                </td>
+                            </tr> --}}
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <!-- Sertakan jQuery dan DataTables JS -->
     <link href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" rel="stylesheet"
@@ -117,6 +151,42 @@
         $(document).ready(function() {
             // Inisialisasi DataTable
             $('#permintaan').DataTable({
+                // dom: 'Bfrtip',
+                layout: {
+                    topStart: {
+                        buttons: [{
+                                extend: 'pdfHtml5',
+                                orientation: 'potrait',
+                                pageSize: 'LEGAL',
+                                title: 'Data Detail permintaan',
+                            },
+                            'spacer',
+                            {
+                                extend: 'excel',
+                                title: 'Data Detail permintaan',
+                            }
+                        ]
+
+                    }
+                },
+                // layout: {
+                //     top1: 'searchBuilder'
+                // },
+                lengthChange: false,
+                responsive: true,
+                // fixedColumns: {
+                //     start: 1
+                // },
+                paging: true,
+                select: true,
+                scrollX: true,
+                scrollY: 200,
+                lengthMenu: [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, 'All']
+                ]
+            });
+            $('#peserta').DataTable({
                 // dom: 'Bfrtip',
                 layout: {
                     topStart: {

@@ -172,9 +172,10 @@ class PermintaanController extends Controller
         // dd($id);
         $permintaan = permintaan::where('id_permintaan', $id)->get();
         $permintaan_pelatihan = permintaan_pelatihan::with('tema')->where('id_pelatihan_permintaan', $id)->get();
-        // dd($permintaan_pelatihan);
+        $peserta = peserta_pelatihan_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $id)->get();
+        // dd($peserta);
         // $showButtons = $permintaan_pelatihan->isEmpty(); // Check if $permintaan is empty
-        return view('admin.permintaan.detail', compact('permintaan', 'permintaan_pelatihan'));
+        return view('admin.permintaan.detail', compact('permintaan', 'permintaan_pelatihan','peserta'));
     }
 
     public function edit($id)
