@@ -40,68 +40,89 @@
                             <div>
                                 <div class="p-4 inline-block text-center">
                                     <h2>QR Code Presensi: {{ $presensi->judul_presensi }}</h2>
-                                    {{-- <p class="text-center mt-2 p-5">
-                                        {!! $presensi->qr_code !!}
-                                    </p> --}}
                                 </div>
-                                <div class="text-center mb-4">
-                                    {{-- <a href="#" id="download-qr" class="btn btn-success btn-sm mt-2"
-                                        download="qr-code.png">Download QR Code</a> --}}
-                                    <!-- Pastikan ada ID ini di HTML -->
-                                    <div id="qr-svg-container">
-                                        {!! $presensi->qr_code !!}
+
+                                @if ($sudahPresensi)
+                                    {{-- Tampilkan pesan jika sudah presensi --}}
+                                    <div class="alert alert-success text-center" role="alert">
+                                        <i class="fas fa-check-circle"></i>
+                                        <h4 class="alert-heading">Presensi Berhasil!</h4>
+                                        <p class="mb-0">Anda sudah melakukan presensi untuk sesi ini.</p>
+                                    </div>
+                                @else
+                                    {{-- Tampilkan QR Code dan scanner jika belum presensi --}}
+                                    <div class="text-center mb-4">
+                                        <!-- Pastikan ada ID ini di HTML -->
+                                        <div id="qr-svg-container">
+                                            {!! $presensi->qr_code !!}
+                                        </div>
+                                        <button id="download-qr" class="btn btn-outline-success mt-3">Download QR
+                                            Code</button>
                                     </div>
 
-                                    <button id="download-qr" class="btn btn-outline-success mt-3">Download QR Code</button>
-                                </div>
-                                <h3>Scan QR Code</h3>
+                                    <h3>Scan QR Code</h3>
 
-                                <div class="container mt-4">
-                                    <div class="border p-3 rounded">
-                                        <div class="d-flex justify-content-between mb-2">
-                                            <h5 class="text-success m-0">Scan Presensi</h5>
-                                            <span class="text-muted" id="scan-status">Status</span>
+                                    <div class="container mt-4">
+                                        <div class="border p-3 rounded">
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <h5 class="text-success m-0">Scan Presensi</h5>
+                                                <span class="text-muted" id="scan-status">Status</span>
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label for="camera-select">Pilih Kamera:</label>
+                                                <select id="camera-select" class="form-control"></select>
+                                            </div>
+
+                                            <div id="reader" class="bg-light mx-auto"
+                                                style="width: 100%; max-width: 300px; height: auto;"></div>
+
+                                            @guest
+                                                {{-- Jika belum login, tampilkan tombol yang memicu modal login --}}
+                                                <div class="text-center mt-3">
+                                                    <button class="btn btn-success" data-bs-toggle="modal"
+                                                        data-bs-target="#loginModal">
+                                                        Masuk untuk Presensi
+                                                    </button>
+                                                </div>
+                                            @else
+                                                {{-- Tampilkan form presensi jika sudah login --}}
+                                                <div class="mt-3 d-grid">
+                                                    <button id="start-scan" class="btn btn-outline-success">Mulai Scan</button>
+                                                </div>
+
+                                                <p class="text-center mt-2">
+                                                    <a href="#" id="upload-image-link"
+                                                        class="text-decoration-underline text-success small">
+                                                        Scan dengan Gambar
+                                                    </a>
+                                                </p>
+                                            @endguest
+
+
+
+                                            <input type="file" id="qr-image-file" accept="image/*" class="d-none">
                                         </div>
 
-                                        <div class="form-group mb-3">
-                                            <label for="camera-select">Pilih Kamera:</label>
-                                            <select id="camera-select" class="form-control"></select>
-                                        </div>
+                                        <p id="scan-result" class="text-center mt-3 text-success fw-semibold"></p>
 
-                                        <div id="reader" class="bg-light mx-auto"
-                                            style="width: 100%; max-width: 300px; height: auto;"></div>
-
-
-                                        <div class="mt-3 d-grid">
-                                            <button id="start-scan" class="btn btn-outline-success">Mulai Scan</button>
-                                        </div>
-
-                                        <p class="text-center mt-2">
-                                            <a href="#" id="upload-image-link"
-                                                class="text-decoration-underline text-success small">
-                                                Scan dengan Gambar
-                                            </a>
-                                        </p>
-
-                                        <input type="file" id="qr-image-file" accept="image/*" class="d-none">
+                                        <form id="presensi-form" method="POST"
+                                            action="{{ route('presensi.process.permintaan', $permintaan->id_pelatihan_permintaan) }}"
+                                            class="d-none">
+                                            @csrf
+                                            <input type="hidden" name="qr_data" id="qr-data">
+                                            <input type="hidden" name="id_presensi_permintaan"
+                                                value="{{ $presensi->id_presensi }}">
+                                        </form>
                                     </div>
-
-                                    <p id="scan-result" class="text-center mt-3 text-success fw-semibold"></p>
-
-                                    <form id="presensi-form" method="POST"
-                                        action="{{ route('presensi.process.permintaan', $permintaan->id_pelatihan_permintaan) }}" class="d-none">
-                                        @csrf
-                                        <input type="hidden" name="qr_data" id="qr-data">
-                                        <input type="hidden" name="id_presensi_permintaan"
-                                            value="{{ $presensi->id_presensi }}">
-                                    </form>
-                                </div>
-                            @else
-                                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                                    <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image"
-                                        style="max-width:400px; height:auto">
-                                    <h5 class="text-muted">Belum ada Presensi yang dibuat.</h5>
-                                </div>
+                                @endif
+                            </div>
+                        @else
+                            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                                <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image"
+                                    style="max-width:400px; height:auto">
+                                <h5 class="text-muted">Belum ada Presensi yang dibuat.</h5>
+                            </div>
                         @endif
                     </div><!-- End Contact Form -->
                 </div><!-- End Contact Form -->

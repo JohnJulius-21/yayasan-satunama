@@ -237,20 +237,19 @@ class FasilitatorController extends Controller
                 'body' => json_encode(array_filter($request->body)),
             ]);
 
-            // Upload images ke Google Drive dan simpan ke database
             if ($request->hasFile('foto')) {
                 $foto = $request->file('foto');
-                $filename = $foto->getClientOriginalName();
-                $path = Storage::disk('google')->putFileAs('', $foto, $filename);
+                $filename = time() . '_' . $foto->getClientOriginalName(); // Buat nama unik
+                $path = $foto->storeAs('public/fasilitator_foto', $filename); // Simpan ke local storage
 
-                
                 DB::table('fasilitator_foto')->insert([
                     'id_fasilitator' => $fasilitator->id_fasilitator,
-                    'photo_url' => $filename, // Simpan hanya nama file di database
+                    'photo_url' => $filename, // Simpan nama file
                 ]);
             }
 
-            
+
+
 
             return redirect()->back()->with('success', 'Data fasilitator berhasil disimpan.');
         } catch (\Exception $e) {

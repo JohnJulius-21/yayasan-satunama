@@ -458,16 +458,27 @@ class TrainingController extends Controller
         $permintaan = permintaan_pelatihan::findOrFail($id);
 
         // Ambil presensi terkait dari tabel presensi_permintaan
-        // Ambil data presensi yang dimaksud
         $presensi = DB::table('presensi_permintaan')
             ->where('id_permintaan', $permintaan->id_pelatihan_permintaan)
             ->where('id_presensi', $id_presensi)
             ->first();
-        // dd($permintaan);
+
+        $sudahPresensi = false;
+        if ($presensi && auth()->check()) {
+            // Cek di tabel presensi_pelatihan_permintaan dengan join ke peserta_pelatihan_permintaan
+            $sudahPresensi = DB::table('presensi_pelatihan_permintaan as ppp')
+                ->join('peserta_pelatihan_permintaan as ppm', 'ppp.id_peserta', '=', 'ppm.id_peserta')
+                ->where('ppp.id_presensi', $presensi->id_presensi)
+                ->where('ppm.id_user', auth()->user()->id)
+                ->exists();
+        }
+
+        // dd($sudahPresensi);
 
         return view('user.training.pelatihan.permintaan.scan', [
-            'permintaan' => $permintaan,      // ← tetap model, ada hash_id
-            'presensi' => $presensi,    // ← data tambahan
+            'permintaan' => $permintaan,
+            'presensi' => $presensi,
+            'sudahPresensi' => $sudahPresensi, // Kirim status presensi
             'title' => 'Presensi Pelatihan permintaan',
         ]);
     }
