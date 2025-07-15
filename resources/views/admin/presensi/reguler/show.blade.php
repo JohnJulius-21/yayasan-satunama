@@ -106,10 +106,15 @@
                                         {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}
                                     </td> --}}
                                     <td>
-                                        <a href="{{ route('adminShowPresensiPesertaReguler', $item['id_presensi']) }}" class="btn btn-primary px-2">Daftar Peserta</a>
+                                        <a href="{{ route('adminShowPresensiPesertaReguler', $item['id_presensi']) }}"
+                                            class="btn btn-primary px-2">Daftar Peserta</a>
                                         {{-- <button class="btn btn-danger btn-delete" data-action="">
                                             <i style="width:17px" class="la la-trash"></i>
                                         </button> --}}
+                                        <button class="btn btn-outline-success btn-download-qr px-2"
+                                            data-qr="{{ base64_encode($item['qr_code']) }}">
+                                            Download QR Code
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -145,6 +150,50 @@
                     orderable: false,
                     targets: 2
                 }]
+            });
+        });
+        document.querySelectorAll('.btn-download-qr').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const encodedSvg = this.getAttribute('data-qr');
+                if (!encodedSvg) {
+                    Swal.fire('QR Code tidak tersedia', '', 'error');
+                    return;
+                }
+
+                const svgString = atob(encodedSvg); // Decode base64 ke string XML SVG
+                const blob = new Blob([svgString], {
+                    type: 'image/svg+xml'
+                });
+                const url = URL.createObjectURL(blob);
+
+                const image = new Image();
+                image.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff'; // background putih
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(image, 0, 0);
+
+                    const pngUrl = canvas.toDataURL('image/png');
+
+                    const link = document.createElement('a');
+                    link.href = pngUrl;
+                    link.download = 'qr-code-presensi.png';
+                    link.click();
+
+                    URL.revokeObjectURL(url);
+                };
+
+                image.onerror = function() {
+                    Swal.fire('Gagal memuat QR Code', '', 'error');
+                };
+
+                image.src = url;
             });
         });
     </script>
