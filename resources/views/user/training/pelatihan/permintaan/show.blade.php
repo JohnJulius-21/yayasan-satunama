@@ -29,8 +29,13 @@
                                 {{ $fasilitator->nama_fasilitator }}{{ !$loop->last ? ',' : '' }}
                             @endforeach
                         </p>
-                        <p><strong>Deskripsi Pelatihan :</strong> {{ strip_tags($permintaan->deskripsi_pelatihan) }}</p>
-
+                        @if (!empty($permintaan->pengumuman))
+                            <p><strong>Pengumuman Pelatihan :</strong>
+                                {!! \Illuminate\Support\Str::words($permintaan->pengumuman, 1000, '...') !!}
+                            </p>
+                        @else
+                            <p>Belum ada pengumuman untuk pelatihan ini</p>
+                        @endif
 
                     </div>
                 </div><!-- End Contact Form -->
