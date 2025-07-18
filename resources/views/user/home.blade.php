@@ -344,8 +344,74 @@
         </div>
 
     </section><!-- /Portfolio Section -->
-{{-- 
-    <!-- Stats Section -->
+
+
+
+    <!-- Facilitator Section -->
+    <section id="fasilitator" class="facilitators-section py-5 bg-light">
+        <div class="container text-center">
+            <h2 class="mb-4">Fasilitator Kami</h2>
+            <div id="facilitatorCarousel" class="carousel slide" data-bs-ride="carousel">
+
+
+                <!-- Carousel items -->
+                <div class="carousel-inner">
+                    @foreach ($fasilitator->chunk(3) as $index => $chunk)
+                        <div class="carousel-item {{ $index == 0 ? 'active' : '' }}">
+                            <div class="row justify-content-center">
+                                @foreach ($chunk as $f)
+                                    <div class="col-md-3 mb-3">
+                                        <div class="card shadow-sm h-100 animate-card">
+                                            <img src="{{ !empty($f->photo_url) ? asset('storage/public/fasilitator_foto/' . $f->photo_url) : asset('images/lab.png') }}"
+                                            class="card-img-top img-fluid rounded mx-auto d-block"
+                                            alt="{{ $f->nama_fasilitator }}"
+                                            style="height: 220px; width: 280px; object-fit: cover; object-position: top;">
+                                        
+                                            <div class="card-body">
+                                                <h5 class="card-title text-success">{{ $f->nama_fasilitator }}</h5>
+                                                <p class="card-text">
+                                                    {{ \Illuminate\Support\Str::words(strip_tags($f->asal_lembaga), 20, '...') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                    @foreach ($fasilitator->chunk(3) as $index => $chunk)
+                        <button type="button" data-bs-target="#facilitatorCarousel"
+                            data-bs-slide-to="{{ $index }}" class="{{ $index == 0 ? 'active' : '' }}"
+                            aria-current="{{ $index == 0 ? 'true' : 'false' }}"
+                            aria-label="Slide {{ $index + 1 }}"></button>
+                    @endforeach
+                </div>
+
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#facilitatorCarousel"
+                    data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Sebelumnya</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#facilitatorCarousel"
+                    data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Berikutnya</span>
+                </button>
+            </div>
+
+
+        </div>
+    </section>
+
+
+
+
+    {{-- <!-- Stats Section -->
     <section id="stats" class="stats section">
         <div class="container section-title" data-aos="fade-up">
             <span>Dampak Kami</span>
@@ -437,7 +503,75 @@
             z-index: 2;
             /* Ensure text is above the overlay */
         }
+
+        .facilitators-section h2 {
+            font-weight: 700;
+            color: #1b5e20;
+        }
+
+        .facilitators-section .card {
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .facilitators-section .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .carousel-indicators {
+            position: relative !important;
+            /* agar tidak absolute */
+            /* margin-top: 3rem; */
+            /* atau sesuaikan */
+        }
+
+
+        .carousel-indicators [data-bs-target] {
+            background-color: #438848;
+
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #1b5e20;
+            /* Hijau tua */
+            border-radius: 50%;
+            background-size: 100% 100%;
+            background-image: none;
+            /* Hapus ikon default */
+            width: 2.5rem;
+            height: 2.5rem;
+            display: inline-block;
+            position: relative;
+        }
+
+        .carousel-control-prev-icon::after,
+        .carousel-control-next-icon::after {
+            content: '';
+            display: block;
+            width: 0.6rem;
+            height: 0.6rem;
+            border: solid white;
+            border-width: 0 3px 3px 0;
+            padding: 5px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .carousel-control-prev-icon::after {
+            transform: translate(-50%, -50%) rotate(135deg);
+            /* Panah kiri */
+        }
+
+        .carousel-control-next-icon::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+            /* Panah kanan */
+        }
     </style>
+
     <!-- Parallax Section -->
     <div class="parallax">
         <div class="parallax-text">
