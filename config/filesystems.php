@@ -63,6 +63,11 @@ return [
             'clientSecret' => env('GOOGLE_DRIVE_CLIENT_SECRET'),
             'refreshToken' => env('GOOGLE_DRIVE_REFRESH_TOKEN'),
             'folder' => env('GOOGLE_DRIVE_FOLDER'),
+            'type' => env('GOOGLE_DRIVE_TYPE', 'service_account'),
+            'project_id' => env('GOOGLE_DRIVE_PROJECT_ID'),
+            'private_key_id' => env('GOOGLE_DRIVE_PRIVATE_KEY_ID'),
+            'private_key' => env('GOOGLE_DRIVE_PRIVATE_KEY'),
+            'client_email' => env('GOOGLE_DRIVE_CLIENT_EMAIL'),
         ]
     ],
 
