@@ -224,6 +224,11 @@ class TrainingController extends Controller
 
     public function createReguler(string $hash, Request $request)
     {
+
+        if (!Auth::check()) {
+            return redirect('/'); // redirect ke beranda jika belum login
+        }
+        
         $id = $this->decodeHash($hash);
         $user = auth()->user();
         $reguler = reguler::findOrFail($id);
