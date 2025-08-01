@@ -127,7 +127,7 @@ Route::middleware(['peserta'])->group(function () {
     // Route::get('/pelatihan-saya/konsultasi/show', [TrainingController::class, 'konsultasiShow'])
     //     ->name('konsultasi.pelatihan.show');
 
-    Route::get('/pelatihan/ctga', [CtgaController::class, 'index'])
+    Route::get('/ctga', [CtgaController::class, 'index'])
         ->name('ctga');
 
     Route::get('/ruang-diskusi/buat-ruang-diskusi', [DiscussionController::class, 'createUser'])->middleware('peserta')->name('userForumCreate');

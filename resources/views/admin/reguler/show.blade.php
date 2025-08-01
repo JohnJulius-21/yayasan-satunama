@@ -217,18 +217,17 @@
                             {{-- negara --}}
                             <div class="col-md-6 mb-3">
                                 <label for="negara" class="form-label">Negara</label>
-                                <select
-                                    class="form-control select2 select-negara @error("id_negara") is-invalid @enderror"
+                                <select class="form-control select2 select-negara @error('id_negara') is-invalid @enderror"
                                     name="id_negara">
                                     <option value="">Pilih Negara</option>
                                     @foreach ($negara as $item)
                                         <option value="{{ $item->id }}"
-                                            {{ old("id_negara") == $item->id ? 'selected' : '' }}>
+                                            {{ old('id_negara') == $item->id ? 'selected' : '' }}>
                                             {{ $item->nama_negara }}
                                         </option>
                                     @endforeach
                                 </select>
-                                @error("id_negara")
+                                @error('id_negara')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -236,11 +235,11 @@
                             <div class="col-md-6 mb-3">
                                 <label for="provinsi" class="form-label">Provinsi</label>
                                 <select
-                                    class="form-control select2 select-provinsi @error("id_provinsi") is-invalid @enderror"
+                                    class="form-control select2 select-provinsi @error('id_provinsi') is-invalid @enderror"
                                     name="id_provinsi">
                                     <option value="">Pilih Provinsi</option>
                                 </select>
-                                @error("id_provinsi")
+                                @error('id_provinsi')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -248,11 +247,11 @@
                             <div class="col-md-6 mb-3">
                                 <label for="kabupaten" class="form-label">Kabupaten</label>
                                 <select
-                                    class="form-control select2 select-kabupaten @error("id_kabupaten") is-invalid @enderror"
+                                    class="form-control select2 select-kabupaten @error('id_kabupaten') is-invalid @enderror"
                                     name="id_kabupaten">
                                     <option value="">Pilih Kota</option>
                                 </select>
-                                @error("id_kabupaten")
+                                @error('id_kabupaten')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -305,28 +304,39 @@
 
     <!-- Sertakan jQuery dan DataTables JS -->
     <!-- DataTables CSS -->
-    <link href="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.css" rel="stylesheet">
+    <link
+        href="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.css"
+        rel="stylesheet">
 
-    <script src="https://cdn.datatables.net/v/bs5/dt-2.0.1/b-3.0.0/sl-2.0.0/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.0/js/buttons.print.min.js"></script>
+    <script
+        src="https://cdn.datatables.net/v/bs5/jszip-3.10.1/dt-2.0.0/b-3.0.0/b-html5-3.0.0/fc-5.0.0/fh-4.0.0/r-3.0.0/sc-2.4.0/sp-2.3.0/datatables.min.js">
+    </script>
 
 
     <script>
         $(document).ready(function() {
             $('#pesertaReguler').DataTable({
+                layout: {
+                    topStart: {
+                        buttons: [{
+                            extend: 'excel',
+                            title: 'Data Peserta Pelatihan',
+                        }]
+
+                    }
+                },
                 lengthChange: false,
-                responsive: true,
                 paging: true,
-                scrollX: true,
+                select: true,
+                // scrollX: 1200,
                 scrollY: 300,
-                autoWidth: false,
                 lengthMenu: [
                     [10, 25, 50, -1],
                     [10, 25, 50, 'All']
-                ],
-                columnDefs: [{
-                    orderable: false,
-                    targets: 3
-                }]
+                ]
             });
 
             $('#daftar_hadir').DataTable({
