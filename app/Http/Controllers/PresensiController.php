@@ -110,6 +110,22 @@ class PresensiController extends Controller
         return redirect()->route('adminShowPresensiReguler', $reguler->id_reguler)->with('success', 'Presensi berhasil disimpan');
     }
 
+    public function destroyReguler($id)
+    {
+        // Cari data reguler berdasarkan ID
+        $reguler = presensi_reguler::findOrFail($id);
+
+        // Hapus data
+        $reguler->delete();
+
+        // Redirect ke halaman daftar reguler dengan pesan sukses
+        return redirect()
+            ->route('adminShowPresensiReguler', ['id' => $reguler->id_reguler])
+            ->with('success', 'Data presensi reguler berhasil dihapus');
+
+    }
+
+
     // permintaan
 
     public function indexPermintaan()
@@ -202,7 +218,7 @@ class PresensiController extends Controller
         ]);
 
         $qrCodeSvg = QrCode::size(200)->generate($qrData);
-        
+
         // Step 3: Update presensi dengan qr_code
         $presensi->qr_code = $qrCodeSvg;
         $presensi->update();

@@ -383,6 +383,7 @@ Route::middleware(['admin'])->group(function () {
     // Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
     Route::get('/admin/presensi/reguler', [PresensiController::class, 'indexReguler'])->name('adminPresensiReguler');
     Route::get('/admin/presensi/list-reguler/{id}', [PresensiController::class, 'showReguler'])->name('adminShowPresensiReguler');
+    Route::delete('/admin/presensi/delete/{id}', [PresensiController::class, 'destroyReguler'])->name('adminDestroyPresensiReguler');
     Route::get('/admin/presensi/list-peserta-reguler/{id}', [PresensiController::class, 'showPresensiPesertaReguler'])->name('adminShowPresensiPesertaReguler');
     Route::get('/admin/presensi/generate-presensi/{id}', [PresensiController::class, 'generateQRCode'])->name('generatePresensi');
     Route::post('/admin/presensi/generate-presensi/{id}', [PresensiController::class, 'store'])->name('savePresensi');

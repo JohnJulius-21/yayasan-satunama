@@ -87,7 +87,7 @@
 
             <div class="card-body">
                 <div class="table-responsive-md">
-                    <table id="reguler" class="table table-bordered display responsive nowrap" width="100%">
+                    <table id="reguler" class="table table-bordered display responsive" width="100%">
                         <thead>
                             <tr>
                                 <th class="col-md-1" scope="col">No</th>
@@ -107,14 +107,21 @@
                                     </td> --}}
                                     <td>
                                         <a href="{{ route('adminShowPresensiPesertaReguler', $item['id_presensi']) }}"
-                                            class="btn btn-primary px-2">Daftar Peserta</a>
+                                            class="btn btn-primary px-2 py-2">Daftar Peserta</a>
                                         {{-- <button class="btn btn-danger btn-delete" data-action="">
                                             <i style="width:17px" class="la la-trash"></i>
                                         </button> --}}
-                                        <button class="btn btn-outline-success btn-download-qr px-2"
+                                        <button class="btn btn-outline-success btn-download-qr px-2 py-2"
                                             data-qr="{{ base64_encode($item['qr_code']) }}">
                                             Download QR Code
                                         </button>
+                                        <form action="{{ route('adminDestroyPresensiReguler', $item['id_presensi']) }}"
+                                            method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger px-2 py-2">Hapus</button>
+                                        </form>
+
                                     </td>
                                 </tr>
                             @endforeach
