@@ -87,13 +87,16 @@
 
             <div class="card-body">
                 <div class="table-responsive-md">
-                    <table id="reguler" class="table table-bordered display responsive nowrap" width="100%">
+                    <table id="reguler" class="table table-bordered display" width="100%">
                         <thead>
                             <tr>
-                                <th class="col-md-1" scope="col">No</th>
-                                <th class="col-md-5" scope="col">Nama Peserta</th>
-                                <th class="col-md-5" scope="col">Tanggal dan Waktu Presensi</th>
-                                <th class="col-md-1" scope="col">Status Presensi</th>
+                                <th>No</th>
+                                <th>Nama Peserta</th>
+                                <th>Email Peserta</th>
+                                <th>No Hp Peserta</th>
+                                <th>Nama Organisasi</th>
+                                <th>Tanggal dan Waktu Presensi</th>
+                                <th>Status Presensi</th>
                                 {{-- <th class="col-md-1" scope="col">Tindakan</th> --}}
                             </tr>
                         </thead>
@@ -102,6 +105,9 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->nama_peserta }}</td>
+                                    <td>{{ $item->email_peserta }}</td>
+                                    <td>{{ $item->no_hp }}</td>
+                                    <td>{{ $item->nama_organisasi }}</td>
                                     <td>
                                         @if ($item->tanggal_presensi)
                                             {{ \Carbon\Carbon::parse($item->tanggal_presensi)->locale('id')->isoFormat('D-MM-Y [-] HH:mm') }}
@@ -154,17 +160,17 @@
                     }
                 },
                 lengthChange: true,
-                responsive: true,
+                // responsive: true,
                 paging: true,
                 lengthMenu: [
                     [10, 25, 50, -1],
                     [10, 25, 50, 'All']
                 ],
-                rowReorder: true,
-                columnDefs: [{
-                    orderable: false,
-                    targets: 2
-                }]
+                // rowReorder: true,
+                // columnDefs: [{
+                //     orderable: false,
+                //     targets: 6
+                // }]
             });
         });
     </script>
