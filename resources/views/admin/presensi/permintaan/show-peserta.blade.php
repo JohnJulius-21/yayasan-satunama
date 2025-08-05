@@ -93,7 +93,7 @@
                                 <th>No</th>
                                 <th>Nama Peserta</th>
                                 <th>Email Peserta</th>
-                                <th>No Hp Peserta</th>
+                                {{-- <th>No Hp Peserta</th> --}}
                                 {{-- <th>Nama Organisasi</th> --}}
                                 <th>Tanggal dan Waktu Presensi</th>
                                 <th>Status Presensi</th>
@@ -106,7 +106,7 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->nama_peserta }}</td>
                                     <td>{{ $item->email_peserta }}</td>
-                                    <td>{{ $item->no_hp }}</td>
+                                    {{-- <td>{{ $item->no_hp }}</td> --}}
                                     {{-- <td>{{ $item->nama_organisasi }}</td> --}}
                                     <td>
                                         @if ($item->tanggal_presensi)

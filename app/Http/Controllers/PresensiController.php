@@ -141,14 +141,8 @@ class PresensiController extends Controller
 
         // Ambil semua peserta pelatihan berdasarkan id_permintaan
         $peserta = DB::table('peserta_pelatihan_permintaan')
-            ->join('users', 'users.id', '=', 'peserta_pelatihan_permintaan.id_user')
-            ->where('peserta_pelatihan_permintaan.id_pelatihan_permintaan', $presensi->id_permintaan)
-            ->select(
-                'peserta_pelatihan_permintaan.*',
-                'users.no_hp'
-            )
+            ->where('id_pelatihan_permintaan', $presensi->id_permintaan)
             ->get();
-
 
         // Ambil daftar presensi yang sesuai
         $presensiData = DB::table('presensi_pelatihan_permintaan')
@@ -208,7 +202,7 @@ class PresensiController extends Controller
         ]);
 
         $qrCodeSvg = QrCode::size(200)->generate($qrData);
-
+        
         // Step 3: Update presensi dengan qr_code
         $presensi->qr_code = $qrCodeSvg;
         $presensi->update();
