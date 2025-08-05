@@ -85,9 +85,9 @@
                             @foreach ($reguler as $item)
                                 <tr>
                                     <td>{{ $item['nama_pelatihan'] }}</td>
-                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_pendaftaran)->locale('id')->isoFormat('D MMMM') }}
+                                    <td>{{ \Carbon\Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
                                         -
-                                        {{ \Carbon\Carbon::parse($item->tanggal_batas_pendaftaran)->locale('id')->isoFormat('D MMMM Y') }}
+                                        {{ \Carbon\Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}
                                     </td>
                                     <td>
                                         <a href="{{ route('adminShowPresensiReguler', $item->id_reguler) }}"
