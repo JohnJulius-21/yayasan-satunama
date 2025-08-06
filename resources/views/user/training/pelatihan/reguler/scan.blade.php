@@ -1,15 +1,3 @@
-{{-- @extends('layouts.user')
-
-@section('content')
-    <div>
-        <div class="p-4 border rounded-lg inline-block text-center">
-            <h2>QR Code Presensi: {{ $reguler->judul_presensi }}</h2>
-            <p class="mt-2">
-                {!! $reguler->qr_code !!}
-        </div>
-    </div>
-@endsection --}}
-
 @extends('layouts.user')
 
 @section('content')
@@ -40,20 +28,15 @@
                             <div>
                                 <div class="p-4 inline-block text-center">
                                     <h2>QR Code Presensi: {{ $presensi->judul_presensi }}</h2>
-                                    {{-- <p class="text-center mt-2 p-5">
-                                        {!! $presensi->qr_code !!}
-                                    </p> --}}
                                 </div>
                                 <div class="text-center mb-4">
-                                    {{-- <a href="#" id="download-qr" class="btn btn-success btn-sm mt-2"
-                                        download="qr-code.png">Download QR Code</a> --}}
-                                    <!-- Pastikan ada ID ini di HTML -->
+                                    <!-- QR Code Display -->
                                     <div id="qr-svg-container">
                                         {!! $presensi->qr_code !!}
                                     </div>
-
                                     <button id="download-qr" class="btn btn-outline-success mt-3">Download QR Code</button>
                                 </div>
+
                                 <h3>Scan QR Code</h3>
 
                                 <div class="container mt-4">
@@ -63,45 +46,87 @@
                                             <span class="text-muted" id="scan-status">Status</span>
                                         </div>
 
-                                        <div class="form-group mb-3">
-                                            <label for="camera-select">Pilih Kamera:</label>
-                                            <select id="camera-select" class="form-control"></select>
-                                        </div>
+                                        @if (!$isLoggedIn)
+                                            {{-- Jika belum login --}}
+                                            <script>
+                                                document.addEventListener('DOMContentLoaded', function() {
+                                                    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+                                                    loginModal.show();
+                                                });
+                                            </script>
 
-                                        <div id="reader" class="bg-light mx-auto"
-                                            style="width: 100%; max-width: 300px; height: auto;"></div>
+                                            <div class="text-center">
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle"></i>
+                                                    Silakan login terlebih dahulu untuk melakukan presensi.
+                                                </div>
+                                                <button class="btn btn-success" data-bs-toggle="modal"
+                                                    data-bs-target="#loginModal">
+                                                    Masuk untuk Presensi
+                                                </button>
+                                            </div>
+                                            {{-- Jika login tapi bukan peserta --}}
+                                            {{-- @elseif (!$peserta)
+                                            <div class="text-center">
+                                                <div class="alert alert-warning">
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    Anda belum terdaftar sebagai peserta pelatihan ini.
+                                                </div>
+                                            </div> --}}
+                                        @elseif ($sudahPresensi)
+                                            {{-- Jika sudah presensi --}}
+                                            <div class="text-center">
+                                                <div class="alert alert-success">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    Anda sudah melakukan presensi untuk sesi ini.
+                                                </div>
+                                            </div>
+                                        @else
+                                            {{-- Jika bisa melakukan presensi --}}
+                                            <div class="form-group mb-3">
+                                                <label for="camera-select">Pilih Kamera:</label>
+                                                <select id="camera-select" class="form-control"></select>
+                                            </div>
 
+                                            <div id="reader" class="bg-light mx-auto"
+                                                style="width: 100%; max-width: 300px; height: auto;"></div>
 
-                                        <div class="mt-3 d-grid">
-                                            <button id="start-scan" class="btn btn-outline-success">Mulai Scan</button>
-                                        </div>
+                                            <div class="mt-3 d-grid">
+                                                <button id="start-scan" class="btn btn-outline-success">Mulai Scan</button>
+                                            </div>
 
-                                        <p class="text-center mt-2">
-                                            <a href="#" id="upload-image-link"
-                                                class="text-decoration-underline text-success small">
-                                                Scan dengan Gambar
-                                            </a>
-                                        </p>
+                                            <p class="text-center mt-2">
+                                                <a href="#" id="upload-image-link"
+                                                    class="text-decoration-underline text-success small">
+                                                    Scan dengan Gambar
+                                                </a>
+                                            </p>
 
-                                        <input type="file" id="qr-image-file" accept="image/*" class="d-none">
+                                            <input type="file" id="qr-image-file" accept="image/*" class="d-none">
+                                        @endif
                                     </div>
 
                                     <p id="scan-result" class="text-center mt-3 text-success fw-semibold"></p>
 
-                                    <form id="presensi-form" method="POST"
-                                        action="{{ route('presensi.process', $reguler->id_reguler) }}" class="d-none">
-                                        @csrf
-                                        <input type="hidden" name="qr_data" id="qr-data">
-                                        <input type="hidden" name="id_presensi_reguler"
-                                            value="{{ $presensi->id_presensi }}">
-                                    </form>
+                                    {{-- @if ($isLoggedIn && $peserta && !$sudahPresensi) --}}
+                                        <form id="presensi-form" method="POST"
+                                            action="{{ route('presensi.process', $reguler->id_reguler) }}" class="d-none">
+                                            @csrf
+                                            <input type="hidden" name="qr_data" id="qr-data">
+                                            <input type="hidden" name="id_presensi_reguler"
+                                                value="{{ $presensi->id_presensi }}">
+                                            <input type="hidden" name="id_presensi" value="{{ $id_presensi }}">
+                                        </form>
+                                    {{-- @endif --}}
                                 </div>
-                            @else
-                                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                                    <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image"
-                                        style="max-width:400px; height:auto">
-                                    <h5 class="text-muted">Belum ada Presensi yang dibuat.</h5>
-                                </div>
+                            </div>
+                        @else
+                            {{-- Jika tidak ada presensi --}}
+                            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                                <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image"
+                                    style="max-width:400px; height:auto">
+                                <h5 class="text-muted">Belum ada Presensi yang dibuat.</h5>
+                            </div>
                         @endif
                     </div><!-- End Contact Form -->
                 </div><!-- End Contact Form -->
@@ -112,19 +137,18 @@
     {{-- Langsung tempelkan script di bawah content --}}
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    
     <script>
         const scanner = new Html5Qrcode("reader");
         const scanStatus = document.getElementById("scan-status");
-
+    
         let selectedCameraId = null;
         document.getElementById("start-scan").addEventListener("click", function() {
             scanStatus.innerText = "Scanning...";
             Html5Qrcode.getCameras().then(devices => {
                 if (devices && devices.length) {
                     const cameraId = selectedCameraId || devices[0].id;
-
-
+    
                     scanner.start(
                         cameraId, {
                             fps: 10,
@@ -135,30 +159,54 @@
                         },
                         qrCodeMessage => {
                             scanStatus.innerText = "Berhasil";
-                            document.getElementById("scan-result").innerText =
-                                "Presensi Berhasil Dilakukan";
+                            document.getElementById("scan-result").innerText = "Presensi Berhasil Dilakukan";
                             document.getElementById("qr-data").value = qrCodeMessage;
-
+    
                             scanner.stop();
-
+    
                             const form = document.getElementById("presensi-form");
                             const formData = new FormData(form);
-
+    
+                            // Debug: Log data yang akan dikirim
+                            console.log('Mengirim data presensi:', {
+                                action: form.action,
+                                qr_data: qrCodeMessage,
+                                csrf: formData.get('_token')
+                            });
+    
                             fetch(form.action, {
                                     method: 'POST',
                                     body: formData,
                                     headers: {
-                                        'X-CSRF-TOKEN': formData.get('_token')
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                        'Accept': 'application/json'
                                     }
                                 })
-                                .then(response => response.json())
+                                .then(response => {
+                                    console.log('Response status:', response.status);
+                                    console.log('Response headers:', response.headers);
+                                    
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+                                    
+                                    return response.json();
+                                })
                                 .then(data => {
+                                    console.log('Response data:', data);
+                                    
                                     if (data.status === 'success') {
                                         Swal.fire({
                                             icon: 'success',
                                             title: 'Presensi Berhasil',
-                                            showConfirmButton: false,
-                                            timer: 2000
+                                            text: 'Data presensi berhasil disimpan!',
+                                            showConfirmButton: true,
+                                            confirmButtonText: 'OK'
+                                        }).then((result) => {
+                                            if (result.isConfirmed || result.isDismissed) {
+                                                // Reload halaman untuk menampilkan status "sudah presensi"
+                                                window.location.reload();
+                                            }
                                         });
                                     } else {
                                         Swal.fire({
@@ -173,7 +221,7 @@
                                     Swal.fire({
                                         icon: 'error',
                                         title: 'Kesalahan',
-                                        text: 'Terjadi kesalahan saat mengirim data.'
+                                        text: 'Terjadi kesalahan saat mengirim data: ' + error.message
                                     });
                                 });
                         },
@@ -203,44 +251,66 @@
                 });
             });
         });
-
+    
         // Scan dari file gambar
         document.getElementById("upload-image-link").addEventListener("click", () => {
             document.getElementById("qr-image-file").click();
         });
-
+    
         document.getElementById("qr-image-file").addEventListener("change", function(e) {
             const file = e.target.files[0];
             if (!file) return;
-
+    
             scanStatus.innerText = "Processing Image...";
-
+    
             scanner.scanFile(file, true)
                 .then(qrCodeMessage => {
                     scanStatus.innerText = "Berhasil";
                     document.getElementById("scan-result").innerText = "Hasil: " + qrCodeMessage;
                     document.getElementById("qr-data").value = qrCodeMessage;
-
-                    // Kirim pakai fetch agar bisa baca respon JSON
+    
                     const form = document.getElementById("presensi-form");
                     const formData = new FormData(form);
-
+    
+                    // Debug: Log data yang akan dikirim
+                    console.log('Mengirim data presensi dari gambar:', {
+                        action: form.action,
+                        qr_data: qrCodeMessage,
+                        csrf: formData.get('_token')
+                    });
+    
                     fetch(form.action, {
                             method: 'POST',
                             body: formData,
                             headers: {
-                                'X-CSRF-TOKEN': formData.get('_token')
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'Accept': 'application/json'
                             }
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            console.log('Response status:', response.status);
+                            
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            
+                            return response.json();
+                        })
                         .then(data => {
+                            console.log('Response data:', data);
+                            
                             if (data.status === 'success') {
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Presensi Berhasil',
-                                    text: 'Data presensi berhasil dikirim!',
-                                    showConfirmButton: false,
-                                    timer: 2000
+                                    text: 'Data presensi berhasil disimpan!',
+                                    showConfirmButton: true,
+                                    confirmButtonText: 'OK'
+                                }).then((result) => {
+                                    if (result.isConfirmed || result.isDismissed) {
+                                        // Reload halaman untuk menampilkan status "sudah presensi"
+                                        window.location.reload();
+                                    }
                                 });
                             } else {
                                 Swal.fire({
@@ -255,15 +325,12 @@
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Kesalahan',
-                                text: 'Terjadi kesalahan saat mengirim data.'
+                                text: 'Terjadi kesalahan saat mengirim data: ' + error.message
                             });
                         });
-
                 })
                 .catch(err => {
                     scanStatus.innerText = "Idle";
-
-                    // Tampilkan notifikasi gagal
                     Swal.fire({
                         icon: 'error',
                         title: 'Gagal Membaca Gambar',
@@ -271,42 +338,39 @@
                     });
                 });
         });
-
-
-
+    
         document.getElementById('download-qr').addEventListener('click', function(e) {
             e.preventDefault();
-
+    
             const svgElement = document.querySelector('#qr-svg-container svg');
             if (!svgElement) {
                 Swal.fire('QR Code tidak ditemukan', '', 'error');
                 return;
             }
-
+    
             const svgData = new XMLSerializer().serializeToString(svgElement);
             const svgBlob = new Blob([svgData], {
                 type: 'image/svg+xml;charset=utf-8'
             });
             const url = URL.createObjectURL(svgBlob);
-
+    
             const image = new Image();
             image.onload = function() {
                 const canvas = document.createElement('canvas');
                 canvas.width = image.width;
                 canvas.height = image.height;
-
+    
                 const ctx = canvas.getContext('2d');
-                ctx.fillStyle = '#FFFFFF'; // latar belakang putih
+                ctx.fillStyle = '#FFFFFF';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(image, 0, 0);
-
+    
                 const pngUrl = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
                 link.download = 'qr-code-pelatihan.png';
                 link.href = pngUrl;
                 link.click();
-
-                // Bersihkan
+    
                 URL.revokeObjectURL(url);
             };
             image.onerror = function() {
@@ -314,11 +378,7 @@
             };
             image.src = url;
         });
-
-
-        // Inisialisasi dropdown kamera
-        // ... (bagian awal script tetap sama)
-
+    
         // Inisialisasi dropdown kamera
         Html5Qrcode.getCameras().then(devices => {
             const cameraSelect = document.getElementById("camera-select");
@@ -326,21 +386,19 @@
                 cameraSelect.innerHTML = '<option disabled>Tidak ada kamera terdeteksi</option>';
                 return;
             }
-
+    
             devices.forEach((device, index) => {
                 const option = document.createElement("option");
                 option.value = device.id;
                 option.text = device.label || `Kamera ${index + 1}`;
                 cameraSelect.appendChild(option);
             });
-
-            // Set default kamera pertama
+    
             selectedCameraId = devices[0].id;
-
+    
             cameraSelect.addEventListener("change", async function() {
                 const newCameraId = this.value;
-
-                // Jika scanner sedang berjalan, hentikan dulu
+    
                 if (scanner.isScanning) {
                     try {
                         await scanner.stop();
@@ -349,11 +407,9 @@
                         console.error("Gagal menghentikan scanner:", err);
                     }
                 }
-
-                // Update kamera yang dipilih
+    
                 selectedCameraId = newCameraId;
-
-                // Jika tombol scan sudah ditekan sebelumnya, mulai scan dengan kamera baru
+    
                 if (scanStatus.innerText !== "Idle") {
                     document.getElementById("start-scan").click();
                 }
@@ -361,7 +417,5 @@
         }).catch(err => {
             console.error("Gagal mendeteksi kamera:", err);
         });
-
-        // ... (bagian akhir script tetap sama)
     </script>
 @endsection

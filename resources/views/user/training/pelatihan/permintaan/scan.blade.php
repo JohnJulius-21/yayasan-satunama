@@ -1,16 +1,4 @@
-{{-- @extends('layouts.user')
-
-@section('content')
-    <div>
-        <div class="p-4 border rounded-lg inline-block text-center">
-            <h2>QR Code Presensi: {{ $reguler->judul_presensi }}</h2>
-            <p class="mt-2">
-                {!! $reguler->qr_code !!}
-        </div>
-    </div>
-@endsection --}}
-
-@extends('layouts.user')
+{@extends('layouts.user')
 
 @section('content')
     <div class="page-title">
@@ -124,7 +112,7 @@
                                 <h5 class="text-muted">Belum ada Presensi yang dibuat.</h5>
                             </div>
                         @endif
-                    </div><!-- End Contact Form -->
+                    </div>ZZ
                 </div><!-- End Contact Form -->
             </div>
         </div>

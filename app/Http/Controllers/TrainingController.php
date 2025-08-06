@@ -228,7 +228,7 @@ class TrainingController extends Controller
         if (!Auth::check()) {
             return redirect('/'); // redirect ke beranda jika belum login
         }
-        
+
         $id = $this->decodeHash($hash);
         $user = auth()->user();
         $reguler = reguler::findOrFail($id);
@@ -359,19 +359,58 @@ class TrainingController extends Controller
         // Ambil model reguler dengan relasi lengkap
         $reguler = reguler::findOrFail($id);
 
-        // Ambil presensi terkait dari tabel presensi_reguler
         // Ambil data presensi yang dimaksud
         $presensi = DB::table('presensi_reguler')
             ->where('id_reguler', $id)
             ->where('id_presensi', $id_presensi)
             ->first();
 
+        $isLoggedIn = auth()->check();
+        $sudahPresensi = false;
+        $peserta = null;
+
+        if ($presensi && $isLoggedIn) {
+            // Ambil data peserta
+            $peserta = DB::table('peserta_pelatihan_reguler')
+                ->where('id_user', auth()->user()->id)
+                ->where('id_reguler', $id)
+                ->first();
+
+            if ($peserta) {
+                // Debug dulu untuk memastikan nilai-nilainya
+                // dd([
+                //     'auth_user_id' => auth()->user()->id,
+                //     'presensi_id_presensi' => $presensi->id_presensi,
+                //     'parameter_id_presensi' => $id_presensi,
+                //     'peserta_data' => $peserta,
+                //     'peserta_id' => $peserta->id_peserta_reguler,
+                //     'query_check' => [
+                //         'id_presensi' => $presensi->id_presensi,
+                //         'id_peserta' => auth()->user()->id
+                //     ]
+                // ]);
+
+                // Cek apakah peserta sudah presensi
+                $sudahPresensi = DB::table('presensi_pelatihan_reguler')
+                    ->where('id_peserta', $peserta->id_peserta_reguler)
+                    ->exists();
+            }
+        }
+
+        // dd($sudahPresensi);
+
         return view('user.training.pelatihan.reguler.scan', [
-            'reguler' => $reguler,      // ← tetap model, ada hash_id
-            'presensi' => $presensi,    // ← data tambahan
+            'reguler' => $reguler,
+            'presensi' => $presensi,
+            'peserta' => $peserta,
+            'sudahPresensi' => $sudahPresensi,
+            'isLoggedIn' => $isLoggedIn,
+            'id_presensi' => $id_presensi, // Tambahkan ini
             'title' => 'Presensi Pelatihan Reguler',
         ]);
     }
+
+
 
 
     public function processQRScan(Request $request, $id)
@@ -381,9 +420,23 @@ class TrainingController extends Controller
             $qrData = $request->input('qr_data');
             $id_presensi_reguler = $request->input('id_presensi_reguler');
 
-            // Log::info('Masuk proses QR scan, data:', ['qr_data' => $qrData, 'user_id' => $user->id]);
+            // DEBUG LOG
+            Log::info('Process QR Scan Debug:', [
+                'user_id' => $user->id,
+                'id_reguler' => $id,
+                'qr_data' => $qrData,
+                'id_presensi_reguler' => $id_presensi_reguler,
+            ]);
 
             $expectedQRData = route('scanQrPresensi', ['id' => $id, 'presensi' => $id_presensi_reguler]);
+
+            // DEBUG LOG
+            Log::info('QR Validation:', [
+                'expected' => $expectedQRData,
+                'received' => $qrData,
+                'match' => $qrData === $expectedQRData
+            ]);
+
             if ($qrData !== $expectedQRData) {
                 return response()->json(['status' => 'error', 'message' => 'QR Code tidak valid!']);
             }
@@ -393,20 +446,30 @@ class TrainingController extends Controller
                 ->first();
 
             if (!$peserta) {
-                return response()->json(['status' => 'error', 'message' => 'Peserta tidak ditemukan.']);
+                return response()->json(['status' => 'error', 'message' => 'Anda tidak terdaftar dalam pelatihan ini !!.']);
             }
+
+            // DEBUG LOG
+            Log::info('Peserta found:', [
+                'id_peserta_reguler' => $peserta->id_peserta_reguler,
+                'id_user' => $peserta->id_user
+            ]);
 
             $existing = presensi_pelatihan_reguler::where('id_reguler', $id)
                 ->where('id_peserta', $peserta->id_peserta_reguler)
-                ->where('id_presensi_reguler', $id_presensi_reguler) // ⬅️ TAMBAHKAN INI
+                ->where('id_presensi_reguler', $id_presensi_reguler)
                 ->first();
 
+            // DEBUG LOG  
+            Log::info('Existing presensi check:', [
+                'existing' => $existing ? 'found' : 'not found'
+            ]);
 
             if ($existing) {
                 return response()->json(['status' => 'error', 'message' => 'Presensi sudah dilakukan.']);
             }
 
-            presensi_pelatihan_reguler::create([
+            $presensi = presensi_pelatihan_reguler::create([
                 'id_reguler' => $id,
                 'id_presensi_reguler' => $id_presensi_reguler,
                 'id_peserta' => $peserta->id_peserta_reguler,
@@ -414,10 +477,18 @@ class TrainingController extends Controller
                 'qr_code' => $qrData,
             ]);
 
-            return response()->json(['status' => 'success']);
+            // DEBUG LOG
+            Log::info('Presensi created:', [
+                'id_presensi' => $presensi->id_presensi ?? 'no id',
+                'success' => true
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => 'Presensi berhasil disimpan!']);
+
         } catch (\Exception $e) {
             Log::error('Presensi gagal: ' . $e->getMessage());
-            return response()->json(['status' => 'error', 'message' => 'Presensi gagal. Cek server log.']);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return response()->json(['status' => 'error', 'message' => 'Presensi gagal: ' . $e->getMessage()]);
         }
     }
 
