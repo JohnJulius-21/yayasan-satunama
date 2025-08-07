@@ -90,9 +90,9 @@
                     <table id="reguler" class="table table-bordered display responsive" width="100%">
                         <thead>
                             <tr>
-                                <th class="col-md-1" scope="col">No</th>
-                                <th class="col-md-5" scope="col">Judul Presensi</th>
-                                <th class="col-md-1" scope="col">Aksi</th>
+                                <th>No</th>
+                                <th>Judul Presensi</th>
+                                <th>Aksi</th>
                                 {{-- <th class="col-md-1" scope="col">Tindakan</th> --}}
                             </tr>
                         </thead>

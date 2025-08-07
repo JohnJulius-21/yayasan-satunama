@@ -365,6 +365,11 @@ class TrainingController extends Controller
             ->where('id_presensi', $id_presensi)
             ->first();
 
+        $presensiCek = DB::table('presensi_pelatihan_reguler')
+            ->where('id_presensi_reguler', $id_presensi)
+            ->first();
+        // dd($presensiCek);
+
         $isLoggedIn = auth()->check();
         $sudahPresensi = false;
         $peserta = null;
@@ -391,12 +396,18 @@ class TrainingController extends Controller
                 // ]);
 
                 // Cek apakah peserta sudah presensi
-                $sudahPresensi = DB::table('presensi_pelatihan_reguler')
-                    ->where('id_peserta', $peserta->id_peserta_reguler)
-                    ->exists();
+                if ($presensiCek) {
+                    // Cek apakah peserta sudah presensi
+                    $sudahPresensi = DB::table('presensi_pelatihan_reguler')
+                        ->where('id_presensi_reguler', $presensiCek->id_presensi_reguler)
+                        ->where('id_peserta', $peserta->id_peserta_reguler)
+                        ->exists();
+                } else {
+                    // Tangani kondisi jika belum ada data presensiCek
+                    $sudahPresensi = false;
+                }
             }
         }
-
         // dd($sudahPresensi);
 
         return view('user.training.pelatihan.reguler.scan', [
