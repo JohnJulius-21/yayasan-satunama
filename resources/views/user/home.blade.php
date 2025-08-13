@@ -348,7 +348,7 @@
 
 
     <!-- Facilitator Section -->
-    <section id="fasilitator" class="facilitators-section py-5 bg-light">
+    {{-- <section id="fasilitator" class="facilitators-section py-5 bg-light">
         <div class="container text-center">
             <h2 class="mb-4">Fasilitator Kami</h2>
             <div id="facilitatorCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -406,7 +406,7 @@
 
 
         </div>
-    </section>
+    </section> --}}
 
 
 
