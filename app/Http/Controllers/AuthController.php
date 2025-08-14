@@ -3,6 +3,9 @@ namespace App\Http\Controllers;
 
 use Throwable;
 use App\Models\User;
+use App\Models\peserta_pelatihan_reguler;
+use App\Models\peserta_pelatihan_permintaan;
+use App\Models\peserta_pelatihan_konsultasi;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -93,11 +96,39 @@ class AuthController extends Controller
 
         // Lakukan login
         if (Auth::attempt([$login_type => $request->login, 'password' => $request->password])) {
+
+            // Cek apakah user sudah pernah mendaftar pelatihan
+            $hasPelatihan = $this->checkUserPelatihan($user->id);
+
+            if ($hasPelatihan) {
+                // Jika sudah pernah mendaftar, arahkan ke route pelatihan.saya
+                return redirect()->route('reguler.pelatihan');
+            }
+
+            // Jika belum pernah mendaftar, arahkan ke route beranda atau redirect_to
             return redirect($request->input('redirect_to', route('beranda')))
                 ->with('success', 'Login berhasil!');
         }
 
         return back()->with('error', 'Email/Username atau Password salah!')->withInput();
+    }
+
+    /**
+     * Cek apakah user sudah pernah mendaftar pelatihan di salah satu dari 3 jenis pelatihan
+     */
+    private function checkUserPelatihan($userId)
+    {
+        // Cek pelatihan reguler
+        $reguler = peserta_pelatihan_reguler::where('id_user', $userId)->exists();
+
+        // Cek pelatihan permintaan
+        $permintaan = peserta_pelatihan_permintaan::where('id_user', $userId)->exists();
+
+        // Cek pelatihan konsultasi
+        $konsultasi = peserta_pelatihan_konsultasi::where('id_user', $userId)->exists();
+
+        // Return true jika ada minimal 1 pelatihan yang pernah didaftar
+        return ($reguler || $permintaan || $konsultasi);
     }
 
 

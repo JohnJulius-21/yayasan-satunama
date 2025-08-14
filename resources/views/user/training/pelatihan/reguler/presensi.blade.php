@@ -1,75 +1,112 @@
-{{-- @extends('layouts.user')
+@extends('layouts.app_user')
+
+@section('title', 'Presensi')
+@section('page-title', 'Presensi')
+
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+@endpush
 
 @section('content')
-    <div>
-        <div class="p-4 border rounded-lg inline-block text-center">
-            <h2>QR Code Presensi: {{ $reguler->judul_presensi }}</h2>
-            <p class="mt-2">
-                {!! $reguler->qr_code !!}
-        </div>
+    <div class="mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Presensi Pelatihan</h2>
+        <p class="text-gray-600">Riwayat kehadiran Anda dalam pelatihan {{ $reguler->nama_pelatihan }}</p>
     </div>
-@endsection --}}
 
-@extends('layouts.user')
-
-@section('content')
-    <div class="page-title">
-        <div class="container d-lg-flex justify-content-between align-items-center">
-            <h1 class="mb-2 mb-lg-0">{{ $reguler->nama_pelatihan }}</h1>
-            <nav class="breadcrumbs">
-                <ol>
-                    <li><a href="{{ route('reguler.pelatihan') }}">Pelatihan Saya</a></li>
-                    <li><a
-                            href="{{ route('reguler.pelatihan.list', $reguler->nama_pelatihan) }}">{{ $reguler->nama_pelatihan }}</a>
-                    </li>
-                    <li class="current">Presensi </li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-    <section id="contact" class="contact section">
-        <!-- Section Title -->
-        <div class="container" data-aos="fade-up" data-aos-delay="100">
-            <div class="row gy-4">
-                <div class="col-lg-3">
-                    @include('partials.user-routes')
+    <!-- Presensi Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Total Kehadiran</p>
+                    <p class="text-3xl font-bold text-green-600">{{ $persentaseKehadiran }}%</p>
                 </div>
-                <div class="col-lg-9">
-                    <div class="php-email-form">
-                        @if ($presensi)
-                            <div>
-                                <div class="p-4 inline-block">
-                                    <h2>Daftar Presensi</h2>
-                                    <table class="table">
-                                        <thead>
-                                            <th>No</th>
-                                            <th>Judul Presensi</th>
-                                            <th>Aksi</th>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($presensi as $key => $p)
-                                                <tr>
-                                                    <td>{{ $key + 1 }}</td>
-                                                    <td>{{ $p->judul_presensi }}</td>
-                                                    <td><a href="{{ route('scanQrPresensi', ['id' => $reguler->id_reguler, 'presensi' => $p->id_presensi]) }}">Lihat
-                                                            Presensi</a></td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        @else
-                            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                                <img src="{{ asset('images/nopelatihan.png') }}" alt="Hero Image"
-                                    style="max-width:400px; height:auto">
-                                <h5 class="text-muted">Belum ada Presensi yang dibuat.</h5>
-                            </div>
-                        @endif
-                    </div><!-- End Contact Form -->
-                </div><!-- End Contact Form -->
+                <div class="bg-green-100 p-4 rounded-full">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
             </div>
         </div>
-    </section><!-- /Contact Section -->
 
+        <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500 mb-1">Sesi Hadir</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ $sesiHadir }}/{{ $totalSesi }}</p>
+                </div>
+                <div class="bg-blue-100 p-4 rounded-full">
+                    <i class="fas fa-calendar-check text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Presensi Detail -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+
+        @if ($presensiList->isNotEmpty())
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Detail Presensi</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Tanggal</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Sesi</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach ($presensiList as $p)
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {{ \Carbon\Carbon::parse($p->created_at)->locale('id')->isoFormat('DD MMMM YYYY') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $p->judul_presensi }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if ($p->sudahPresensi)
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check mr-1"></i> Hadir
+                                        </span>
+                                    @else
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-times mr-1"></i> Belum Hadir
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500 text-white"
+                                        href="{{ route('scanQrPresensi', ['id' => $reguler->id_reguler, 'presensi' => $p->id_presensi]) }}">
+                                        👁️ Lihat Presensi
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @else
+            <div class="max-w-2xl mx-auto text-center py-16">
+                <div class="mb-6">
+                    <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Presensi Belum Tersedia</h2>
+                    <p class="text-lg text-gray-600">Presensi untuk pelatihan ini belum tersedia.</p>
+                </div>
+            </div>
+        @endif
+
+    </div>
 @endsection

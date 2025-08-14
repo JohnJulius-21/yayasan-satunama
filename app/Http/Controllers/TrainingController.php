@@ -335,24 +335,62 @@ class TrainingController extends Controller
 
     public function presensiReguler($id)
     {
-        // Ambil model reguler dengan relasi lengkap
+        // Ambil model reguler
         $reguler = reguler::findOrFail($id);
 
-        // Ambil presensi terkait dari tabel presensi_reguler
-        $presensi = DB::table('presensi_reguler')
+        // Ambil semua presensi terkait
+        // $presensiList = DB::table('presensi_reguler')
+        //     ->where('id_reguler', $id)
+        //     ->get();
+
+        // if ($presensiList->isEmpty()) {
+        //     abort(404, 'Presensi tidak ditemukan.');
+        // }
+
+        // Ambil data peserta berdasarkan user login
+        $peserta = DB::table('peserta_pelatihan_reguler')
+            ->where('id_user', auth()->user()->id)
+            ->where('id_reguler', $id)
+            ->first();
+
+        if (!$peserta) {
+            abort(404, 'Peserta tidak ditemukan.');
+        }
+
+        $presensiList = DB::table('presensi_reguler')
             ->where('id_reguler', $id)
             ->get();
 
-        if (!$presensi) {
-            abort(404, 'Presensi tidak ditemukan.');
+        if ($presensiList->isNotEmpty()) {
+            $presensiList = $presensiList->map(function ($p) use ($peserta) {
+                $p->sudahPresensi = DB::table('presensi_pelatihan_reguler')
+                    ->where('id_presensi_reguler', $p->id_presensi)
+                    ->where('id_peserta', $peserta->id_peserta_reguler)
+                    ->exists();
+                return $p;
+            });
         }
 
+        // Hitung total sesi
+        $totalSesi = $presensiList->count();
+
+        // Hitung sesi hadir
+        $sesiHadir = $presensiList->where('sudahPresensi', true)->count();
+
+        // Hitung persentase kehadiran
+        $persentaseKehadiran = $totalSesi > 0 ? round(($sesiHadir / $totalSesi) * 100, 2) : 0;
+
         return view('user.training.pelatihan.reguler.presensi', [
-            'reguler' => $reguler,      // ← tetap model, ada hash_id
-            'presensi' => $presensi,    // ← data tambahan
-            'title' => 'Presensi Pelatihan Reguler',
+            'reguler' => $reguler,
+            'presensiList' => $presensiList,
+            'totalSesi' => $totalSesi,
+            'sesiHadir' => $sesiHadir,
+            'persentaseKehadiran' => $persentaseKehadiran,
+            'title' => 'Presensi Pelatihan Reguler'
         ]);
     }
+
+
 
     public function scanQRCode($id, $id_presensi)
     {
@@ -519,53 +557,134 @@ class TrainingController extends Controller
 
     public function presensiPermintaan($id)
     {
+        if (!Auth::check()) {
+            return redirect('/'); // redirect ke beranda jika belum login
+        }
         // Ambil model permintaan dengan relasi lengkap
         $permintaan = permintaan_pelatihan::findOrFail($id);
 
         // Ambil presensi terkait dari tabel presensi_permintaan
-        $presensi = DB::table('presensi_permintaan')
-            ->where('id_permintaan', $permintaan->id_pelatihan_permintaan)
-            ->get();
-        // dd($presensi);
+        // $presensiList = DB::table('presensi_permintaan')
+        //     ->where('id_permintaan', $permintaan->id_pelatihan_permintaan)
+        //     ->get();
+        // dd($permintaan);
 
-        if (!$presensi) {
-            abort(404, 'Presensi tidak ditemukan.');
+        // Ambil data peserta berdasarkan user login
+        $peserta = DB::table('peserta_pelatihan_permintaan')
+            ->where('id_user', auth()->user()->id)
+            ->where('id_pelatihan_permintaan', $id)
+            ->first();
+
+        if (!$peserta) {
+            abort(404, 'Peserta tidak ditemukan.');
         }
+
+        $presensiList = DB::table('presensi_permintaan')
+            ->where('id_permintaan', $id)
+            ->get();
+
+        if ($presensiList->isNotEmpty()) {
+            $presensiList = $presensiList->map(function ($p) use ($peserta) {
+                $p->sudahPresensi = DB::table('presensi_pelatihan_permintaan')
+                    ->where('id_presensi_permintaan', $p->id_presensi)
+                    ->where('id_peserta', $peserta->id_peserta)
+                    ->exists();
+                return $p;
+            });
+        }
+        // dd($presensiList);
+
+        // Hitung total sesi
+        $totalSesi = $presensiList->count();
+
+        // Hitung sesi hadir
+        $sesiHadir = $presensiList->where('sudahPresensi', true)->count();
+
+        // Hitung persentase kehadiran
+        $persentaseKehadiran = $totalSesi > 0 ? round(($sesiHadir / $totalSesi) * 100, 2) : 0;
+
 
         return view('user.training.pelatihan.permintaan.presensi', [
             'permintaan' => $permintaan,      // ← tetap model, ada hash_id
-            'presensi' => $presensi,    // ← data tambahan
+            'presensiList' => $presensiList,
+            'totalSesi' => $totalSesi,
+            'sesiHadir' => $sesiHadir,
+            'persentaseKehadiran' => $persentaseKehadiran,
             'title' => 'Presensi Pelatihan Permintaan',
         ]);
     }
 
     public function scanQRCodePermintaan($id, $id_presensi)
     {
+        if (!Auth::check()) {
+            return redirect('/'); // redirect ke beranda jika belum login
+        }
+
         // Ambil model reguler dengan relasi lengkap
         $permintaan = permintaan_pelatihan::findOrFail($id);
 
-        // Ambil presensi terkait dari tabel presensi_permintaan
+        // Ambil data presensi yang dimaksud
         $presensi = DB::table('presensi_permintaan')
-            ->where('id_permintaan', $permintaan->id_pelatihan_permintaan)
+            ->where('id_permintaan', $id)
             ->where('id_presensi', $id_presensi)
             ->first();
 
+        // Ambil presensi terkait dari tabel presensi_permintaan
+        $presensiCek = DB::table('presensi_pelatihan_permintaan')
+            ->where('id_presensi_permintaan', $id_presensi)
+            ->first();
+        // dd($presensiCek);
+
+        $isLoggedIn = auth()->check();
         $sudahPresensi = false;
-        if ($presensi && auth()->check()) {
-            // Cek di tabel presensi_pelatihan_permintaan dengan join ke peserta_pelatihan_permintaan
-            $sudahPresensi = DB::table('presensi_pelatihan_permintaan as ppp')
-                ->join('peserta_pelatihan_permintaan as ppm', 'ppp.id_peserta', '=', 'ppm.id_peserta')
-                ->where('ppp.id_presensi', $presensi->id_presensi)
-                ->where('ppm.id_user', auth()->user()->id)
-                ->exists();
+        $peserta = null;
+
+        if ($presensi && $isLoggedIn) {
+            // Ambil data peserta
+            $peserta = DB::table('peserta_pelatihan_permintaan')
+                ->where('id_user', auth()->user()->id)
+                ->where('id_pelatihan_permintaan', $id)
+                ->first();
+            // dd($peserta);
+
+            if ($peserta) {
+                // Debug dulu untuk memastikan nilai-nilainya
+                // dd([
+                //     'auth_user_id' => auth()->user()->id,
+                //     'presensi_id_presensi' => $presensi->id_presensi,
+                //     'parameter_id_presensi' => $id_presensi,
+                //     'peserta_data' => $peserta,
+                //     'peserta_id' => $peserta->id_peserta,
+                //     'query_check' => [
+                //         'id_presensi' => $presensi->id_presensi,
+                //         'id_peserta' => auth()->user()->id
+                //     ]
+                // ]);
+
+                // Cek apakah peserta sudah presensi
+                if ($presensiCek) {
+                    // Cek apakah peserta sudah presensi
+                    $sudahPresensi = DB::table('presensi_pelatihan_permintaan')
+                        ->where('id_presensi_permintaan', $presensiCek->id_presensi_permintaan)
+                        ->where('id_peserta', $peserta->id_peserta)
+                        ->exists();
+                } else {
+                    // Tangani kondisi jika belum ada data presensiCek
+                    $sudahPresensi = false;
+                }
+            }
         }
 
         // dd($sudahPresensi);
+        // dd($presensiCek);
 
         return view('user.training.pelatihan.permintaan.scan', [
             'permintaan' => $permintaan,
             'presensi' => $presensi,
-            'sudahPresensi' => $sudahPresensi, // Kirim status presensi
+            'peserta' => $peserta,
+            'sudahPresensi' => $sudahPresensi,
+            'isLoggedIn' => $isLoggedIn,
+            'id_presensi' => $id_presensi, // Tambahkan ini
             'title' => 'Presensi Pelatihan permintaan',
         ]);
     }
@@ -764,14 +883,112 @@ class TrainingController extends Controller
         if (!auth()->check()) {
             return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
         }
-        // dd(request()->all());
-        $reguler = peserta_pelatihan_reguler::with('reguler', 'status')->where('id_user', auth()->user()->id)->get()->sortByDesc(function ($item) {
-            return $item->reguler->tanggal_mulai; // Mengurutkan berdasarkan tanggal mulai
-        });
-        // dd($reguler);
+
+        // Ambil data pelatihan reguler
+        $reguler = peserta_pelatihan_reguler::with('reguler', 'status')
+            ->where('id_user', auth()->user()->id)
+            ->get()
+            ->sortByDesc(function ($item) {
+                return $item->reguler->tanggal_mulai;
+            });
+
+        // Ambil data pelatihan permintaan (tanpa status)
+        $permintaan = peserta_pelatihan_permintaan::with(['permintaan_pelatihan'])
+            ->where('id_user', auth()->user()->id)
+            ->get()
+            ->sortByDesc(function ($item) {
+                return $item->permintaan_pelatihan->tanggal_mulai ?? $item->created_at;
+            });
+
+        // Ambil data pelatihan konsultasi (tanpa status)
+        $konsultasi = peserta_pelatihan_konsultasi::with(['pelatihan_konsultasi'])
+            ->where('id_user', auth()->user()->id)
+            ->get()
+            ->sortByDesc(function ($item) {
+                return $item->pelatihan_konsultasi->tanggal_mulai ?? $item->created_at;
+            });
+
+        // Hitung statistics untuk summary
+        $totalPelatihan = $reguler->count() + $permintaan->count() + $konsultasi->count();
+
+        // Hitung sudah bayar (hanya dari reguler yang memiliki sistem pembayaran)
+        $sudahBayarReguler = $reguler->where('status.status', 'sudah_bayar')->count();
+        // Untuk permintaan dan konsultasi, anggap semua sudah "lunas" karena tidak ada sistem pembayaran
+        $sudahBayarPermintaan = $permintaan->count();
+        $sudahBayarKonsultasi = $konsultasi->count();
+        $sudahBayar = $sudahBayarReguler + $sudahBayarPermintaan + $sudahBayarKonsultasi;
+
+        // Hitung belum bayar (hanya dari reguler)
+        $belumBayarReguler = $reguler->where('status.status', 'belum_bayar')->count();
+        $belumBayarPermintaan = 0; // Permintaan tidak ada sistem pembayaran
+        $belumBayarKonsultasi = 0; // Konsultasi tidak ada sistem pembayaran
+        $belumBayar = $belumBayarReguler + $belumBayarPermintaan + $belumBayarKonsultasi;
+
+        // Hitung pelatihan berdasarkan status waktu (untuk yang sudah bayar)
+        $pelatihanAktif = 0;
+        $pelatihanSelesai = 0;
+        $pelatihanAkanDatang = 0;
+
+        // Hitung untuk reguler
+        foreach ($reguler->where('status.status', 'sudah_bayar') as $item) {
+            $tanggalMulai = \Carbon\Carbon::parse($item->reguler->tanggal_mulai);
+            $tanggalSelesai = \Carbon\Carbon::parse($item->reguler->tanggal_selesai);
+            $sekarang = \Carbon\Carbon::now();
+
+            if ($sekarang->lt($tanggalMulai)) {
+                $pelatihanAkanDatang++;
+            } elseif ($sekarang->between($tanggalMulai, $tanggalSelesai)) {
+                $pelatihanAktif++;
+            } else {
+                $pelatihanSelesai++;
+            }
+        }
+
+        // Hitung untuk permintaan (semua dianggap sudah "aktif" karena tidak ada sistem pembayaran)
+        foreach ($permintaan as $item) {
+            if ($item->permintaan_pelatihan->tanggal_mulai && $item->permintaan_pelatihan->tanggal_selesai) {
+                $tanggalMulai = \Carbon\Carbon::parse($item->permintaan_pelatihan->tanggal_mulai);
+                $tanggalSelesai = \Carbon\Carbon::parse($item->permintaan_pelatihan->tanggal_selesai);
+                $sekarang = \Carbon\Carbon::now();
+
+                if ($sekarang->lt($tanggalMulai)) {
+                    $pelatihanAkanDatang++;
+                } elseif ($sekarang->between($tanggalMulai, $tanggalSelesai)) {
+                    $pelatihanAktif++;
+                } else {
+                    $pelatihanSelesai++;
+                }
+            }
+        }
+
+        // Hitung untuk konsultasi (semua dianggap sudah "aktif" karena tidak ada sistem pembayaran)
+        foreach ($konsultasi as $item) {
+            if ($item->pelatihan_konsultasi->tanggal_mulai && $item->pelatihan_konsultasi->tanggal_selesai) {
+                $tanggalMulai = \Carbon\Carbon::parse($item->pelatihan_konsultasi->tanggal_mulai);
+                $tanggalSelesai = \Carbon\Carbon::parse($item->pelatihan_konsultasi->tanggal_selesai);
+                $sekarang = \Carbon\Carbon::now();
+
+                if ($sekarang->lt($tanggalMulai)) {
+                    $pelatihanAkanDatang++;
+                } elseif ($sekarang->between($tanggalMulai, $tanggalSelesai)) {
+                    $pelatihanAktif++;
+                } else {
+                    $pelatihanSelesai++;
+                }
+            }
+        }
+
         return view('user.training.pelatihan.reguler.index', [
             'title' => 'Pelatihan Saya',
-            'reguler' => $reguler
+            'reguler' => $reguler,
+            'permintaan' => $permintaan,
+            'konsultasi' => $konsultasi,
+            'totalPelatihan' => $totalPelatihan,
+            'sudahBayar' => $sudahBayar,
+            'belumBayar' => $belumBayar,
+            'pelatihanAktif' => $pelatihanAktif,
+            'pelatihanSelesai' => $pelatihanSelesai,
+            'pelatihanAkanDatang' => $pelatihanAkanDatang,
         ]);
     }
 
@@ -780,21 +997,87 @@ class TrainingController extends Controller
         if (!auth()->check()) {
             return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
         }
+
         // Decode parameter yang diterima dari URL
         $nama_pelatihan = urldecode($nama_pelatihan);
 
         // Cari data berdasarkan nama pelatihan
         $reguler = Reguler::with('fasilitators')->where('nama_pelatihan', $nama_pelatihan)->firstOrFail();
 
-        return view('user.training.pelatihan.reguler.show', [
+        // Get reguler ID for further queries
+        $id = $reguler->id_reguler;
+
+        // Get peserta data for current user
+        $peserta = DB::table('peserta_pelatihan_reguler')
+            ->where('id_user', auth()->user()->id)
+            ->where('id_reguler', $id)
+            ->first();
+
+        // Initialize default values
+        $persentaseKehadiran = 0;
+        $sudahEvaluasi = false;
+        $sertifikatTersedia = false;
+
+        if ($peserta) {
+            // Get presensi list
+            $presensiList = DB::table('presensi_reguler')
+                ->where('id_reguler', $id)
+                ->get();
+
+            if ($presensiList->isNotEmpty()) {
+                $presensiList = $presensiList->map(function ($p) use ($peserta) {
+                    $p->sudahPresensi = DB::table('presensi_pelatihan_reguler')
+                        ->where('id_presensi_reguler', $p->id_presensi)
+                        ->where('id_peserta', $peserta->id_peserta_reguler)
+                        ->exists();
+                    return $p;
+                });
+            }
+
+            // Hitung total sesi
+            $totalSesi = $presensiList->count();
+
+            // Hitung sesi hadir
+            $sesiHadir = $presensiList->where('sudahPresensi', true)->count();
+
+            // Hitung persentase kehadiran
+            $persentaseKehadiran = $totalSesi > 0 ? round(($sesiHadir / $totalSesi) * 100, 2) : 0;
+
+            // Check if evaluation form exists and if user has completed it
+            $formEvaluasiReguler = form_evaluasi_reguler::where('id_reguler', $id)->first();
+
+            if ($formEvaluasiReguler) {
+                $sudahEvaluasi = DB::table('hasil_evaluasi_reguler')
+                    ->where('id_hasil_evaluasi_reguler', $formEvaluasiReguler->id_hasil_evaluasi_reguler)
+                    ->where('id_peserta', $peserta->id_peserta_reguler)
+                    ->exists();
+            }
+
+            // Check if certificate is available
+            $sertifikatTersedia = DB::table('reguler_sertifikat')
+                ->join('peserta_pelatihan_reguler', 'reguler_sertifikat.id_peserta', '=', 'peserta_pelatihan_reguler.id_peserta_reguler')
+                ->where('peserta_pelatihan_reguler.id_user', auth()->user()->id)
+                ->where('peserta_pelatihan_reguler.id_reguler', $id)
+                ->exists();
+        }
+
+        return view('user.training.pelatihan.reguler.show_app', [
             'title' => $reguler->nama_pelatihan,
-            'reguler' => $reguler
+            'reguler' => $reguler,
+            'persentaseKehadiran' => $persentaseKehadiran,
+            'sudahEvaluasi' => $sudahEvaluasi,
+            'sertifikatTersedia' => $sertifikatTersedia,
+            'peserta' => $peserta
         ]);
     }
 
     public function regulerListShowEvaluasi(string $hash)
     {
+        // if (!auth()->check()) {
+        //     return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        // }
         $id = $this->decodeHash($hash);
+        // dd($id);
         $reguler = reguler::findOrFail($id);
         $formEvaluasiReguler = form_evaluasi_reguler::where('id_reguler', $id)->first();
         $formDataRaw = $formEvaluasiReguler ? json_decode($formEvaluasiReguler->content, true) : null;
@@ -986,41 +1269,223 @@ class TrainingController extends Controller
             ->with('success', 'Form Studi dampak berhasil disimpan!');
     }
 
+    // In your Controller
     public function regulerListShowMateri($id)
     {
         if (!auth()->check()) {
             return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
         }
 
-        $reguler = Reguler::findOrFail($id);
+        try {
+            $reguler = Reguler::findOrFail($id);
 
-        $records = DB::table('reguler_files')
-            ->where('id_reguler', $id)
-            ->get(['file_path', 'file_url', 'file_name']);
+            // Get all files for this training
+            $records = DB::table('reguler_files')
+                ->where('id_reguler', $id)
+                ->orderBy('file_path')
+                ->get(['file_path', 'file_url', 'file_name']);
 
-        // Ambil semua file dari reguler_files yang sesuai dengan id_reguler
-        $tree = [];
-        foreach ($records as $r) {
-            $parts = preg_split('/[\/\\\\]/', $r->file_path);   // session plan\BAB I …
-            $cursor = &$tree;
-            foreach ($parts as $idx => $part) {
-                if ($idx === count($parts) - 1) {
-                    // file
-                    $cursor[$part] = [
-                        'file_name' => $r->file_name,
-                        'file_url' => $r->file_url,
-                    ];
-                } else {
-                    // folder
-                    $cursor[$part] ??= [];
-                    $cursor = &$cursor[$part];
+            // Build the tree structure with improved organization
+            $tree = [];
+            foreach ($records as $record) {
+                $this->buildFileTree($tree, $record);
+            }
+
+            // Sort the tree for better presentation
+            $tree = $this->sortTree($tree);
+
+            return view('user.training.pelatihan.reguler.materi', compact('reguler', 'tree'), [
+                'title' => 'Materi Pelatihan ' . $reguler->nama_pelatihan,
+            ]);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat materi pelatihan.');
+        }
+    }
+
+    /**
+     * Build file tree structure from file path
+     */
+    private function buildFileTree(&$tree, $record)
+    {
+        // Clean and split the path
+        $path = str_replace('\\', '/', $record->file_path);
+        $parts = array_filter(explode('/', $path), function ($part) {
+            return !empty(trim($part));
+        });
+
+        $cursor = &$tree;
+
+        foreach ($parts as $index => $part) {
+            $part = trim($part);
+
+            if ($index === count($parts) - 1) {
+                // This is the file
+                $cursor[$part] = [
+                    'file_name' => $record->file_name,
+                    'file_url' => $record->file_url,
+                    'file_path' => $record->file_path,
+                ];
+            } else {
+                // This is a folder
+                if (!isset($cursor[$part]) || !is_array($cursor[$part])) {
+                    $cursor[$part] = [];
                 }
+                $cursor = &$cursor[$part];
+            }
+        }
+    }
+
+    /**
+     * Sort tree structure for better presentation
+     */
+    private function sortTree($tree)
+    {
+        if (!is_array($tree)) {
+            return $tree;
+        }
+
+        // Separate folders and files
+        $folders = [];
+        $files = [];
+
+        foreach ($tree as $key => $value) {
+            if (is_array($value) && isset($value['file_name'])) {
+                // This is a file
+                $files[$key] = $value;
+            } else {
+                // This is a folder
+                $folders[$key] = $this->sortTree($value);
             }
         }
 
+        // Sort folders and files separately
+        ksort($folders, SORT_NATURAL | SORT_FLAG_CASE);
+        ksort($files, SORT_NATURAL | SORT_FLAG_CASE);
+
+        // Merge folders first, then files
+        return array_merge($folders, $files);
+    }
+
+    /**
+     * Helper method to get file statistics
+     */
+    public function getFileStatistics($tree)
+    {
+        $stats = [
+            'total_files' => 0,
+            'total_folders' => 0,
+            'file_types' => [],
+            'total_size' => 0 // If you want to track file sizes
+        ];
+
+        $this->calculateStats($tree, $stats);
+
+        return $stats;
+    }
+
+    /**
+     * Recursively calculate file statistics
+     */
+    private function calculateStats($branch, &$stats)
+    {
+        foreach ($branch as $key => $value) {
+            if (is_array($value)) {
+                if (isset($value['file_name'])) {
+                    // This is a file
+                    $stats['total_files']++;
+
+                    // Track file types
+                    $extension = strtolower(pathinfo($value['file_name'], PATHINFO_EXTENSION));
+                    if (!isset($stats['file_types'][$extension])) {
+                        $stats['file_types'][$extension] = 0;
+                    }
+                    $stats['file_types'][$extension]++;
+                } else {
+                    // This is a folder
+                    $stats['total_folders']++;
+                    $this->calculateStats($value, $stats);
+                }
+            }
+        }
+    }
+
+    /**
+     * Search files within the tree structure
+     */
+    public function searchFiles(Request $request, $id)
+    {
+        $query = $request->get('q', '');
+
+        if (empty($query)) {
+            return $this->regulerListShowMateri($id);
+        }
+
+        $reguler = Reguler::findOrFail($id);
+
+        // Search in file names and paths
+        $records = DB::table('reguler_files')
+            ->where('id_reguler', $id)
+            ->where(function ($q) use ($query) {
+                $q->where('file_name', 'LIKE', "%{$query}%")
+                    ->orWhere('file_path', 'LIKE', "%{$query}%");
+            })
+            ->orderBy('file_name')
+            ->get(['file_path', 'file_url', 'file_name']);
+
+        // Build tree for search results
+        $tree = [];
+        foreach ($records as $record) {
+            $this->buildFileTree($tree, $record);
+        }
+
+        $tree = $this->sortTree($tree);
 
         return view('user.training.pelatihan.reguler.materi', compact('reguler', 'tree'), [
-            'title' => 'Materi Pelatihan ' . $reguler->nama_pelatihan,
+            'title' => 'Hasil Pencarian: ' . $query,
+            'search_query' => $query,
+        ]);
+    }
+
+    /**
+     * Download file with logging
+     */
+    public function downloadFile(Request $request, $id, $fileId)
+    {
+        try {
+            $file = DB::table('reguler_files')
+                ->where('id_reguler', $id)
+                ->where('id', $fileId)
+                ->first();
+
+            if (!$file) {
+                return redirect()->back()->with('error', 'File tidak ditemukan.');
+            }
+
+            // Log file access
+            $this->logFileAccess($file, auth()->user());
+
+            // Redirect to Google Drive URL
+            return redirect($file->file_url);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengakses file.');
+        }
+    }
+
+    /**
+     * Log file access for analytics
+     */
+    private function logFileAccess($file, $user)
+    {
+        // You can create a separate table for file access logs
+        DB::table('file_access_logs')->insert([
+            'user_id' => $user->id,
+            'file_name' => $file->file_name,
+            'file_url' => $file->file_url,
+            'accessed_at' => now(),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
         ]);
     }
 
@@ -1045,6 +1510,52 @@ class TrainingController extends Controller
             'title' => 'Sertifikat Pelatihan ' . $reguler->nama_pelatihan,
             // 'formData' => $formData
         ]);
+    }
+
+    // public function regulerListShowDokumentasi($id)
+    // {
+
+    //     if (!auth()->check()) {
+    //         return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+    //     }
+
+    //     $reguler = reguler::findOrFail($id);
+    //     // Ambil sertifikat berdasarkan user yang login
+    //     $files = DB::table('reguler_images')
+    //         ->join('peserta_pelatihan_reguler', 'reguler_sertifikat.id_peserta', '=', 'peserta_pelatihan_reguler.id_peserta_reguler')
+    //         ->where('peserta_pelatihan_reguler.id_user', auth()->user()->id)
+    //         ->where('peserta_pelatihan_reguler.id_reguler', $id) // filter berdasarkan pelatihan juga
+    //         ->select('reguler_sertifikat.file_url')
+    //         ->get();
+
+    //     return view('user.training.pelatihan.reguler.sertifikat', compact('reguler', 'files'), [
+    //         'title' => 'Sertifikat Pelatihan ' . $reguler->nama_pelatihan,
+    //         // 'formData' => $formData
+    //     ]);
+    // }
+
+    public function regulerListShowDokumentasi($id)
+    {
+
+        $reguler = reguler::findOrFail($id);
+
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        return view('user.training.pelatihan.reguler.dokumentasi', compact('reguler'));
+    }
+
+    public function regulerListShowForum($id)
+    {
+
+        $reguler = reguler::findOrFail($id);
+
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        return view('user.training.pelatihan.reguler.forum', compact('reguler'));
     }
 
     // permintaan
@@ -1076,45 +1587,149 @@ class TrainingController extends Controller
         // Cari data berdasarkan nama pelatihan
         $permintaan = permintaan_pelatihan::with('fasilitators')->where('nama_pelatihan', $nama_pelatihan)->firstOrFail();
 
+        // Get permintaan ID for further queries
+        $id = $permintaan->id_pelatihan_permintaan;
+
+        // Get peserta data for current user
+        $peserta = DB::table('peserta_pelatihan_permintaan')
+            ->where('id_user', auth()->user()->id)
+            ->where('id_pelatihan_permintaan', $id)
+            ->first();
+
+        // Initialize default values
+        $persentaseKehadiran = 0;
+        $sudahEvaluasi = false;
+        $sertifikatTersedia = false;
+
+        if ($peserta) {
+            // Get presensi list
+            $presensiList = DB::table('presensi_permintaan')
+                ->where('id_permintaan', $id)
+                ->get();
+
+            if ($presensiList->isNotEmpty()) {
+                $presensiList = $presensiList->map(function ($p) use ($peserta) {
+                    $p->sudahPresensi = DB::table('presensi_pelatihan_permintaan')
+                        ->where('id_presensi_permintaan', $p->id_presensi)
+                        ->where('id_peserta', $peserta->id_peserta)
+                        ->exists();
+                    return $p;
+                });
+            }
+
+            // Hitung total sesi
+            $totalSesi = $presensiList->count();
+
+            // Hitung sesi hadir
+            $sesiHadir = $presensiList->where('sudahPresensi', true)->count();
+
+            // Hitung persentase kehadiran
+            $persentaseKehadiran = $totalSesi > 0 ? round(($sesiHadir / $totalSesi) * 100, 2) : 0;
+
+            // Check if evaluation form exists and if user has completed it
+            $formEvaluasiPermintaan = form_evaluasi_permintaan::where('id_pelatihan_permintaan', $id)->first();
+
+            if ($formEvaluasiPermintaan) {
+                $sudahEvaluasi = DB::table('hasil_evaluasi_permintaan')
+                    ->where('id_hasil_evaluasi_permintaan', $formEvaluasiPermintaan->id_hasil_evaluasi_permintaan)
+                    ->where('id_peserta', $peserta->id_peserta)
+                    ->exists();
+            }
+
+            // Check if certificate is available
+            $sertifikatTersedia = DB::table('permintaan_sertifikat')
+                ->join('peserta_pelatihan_permintaan', 'permintaan_sertifikat.id_peserta', '=', 'peserta_pelatihan_permintaan.id_peserta')
+                ->where('peserta_pelatihan_permintaan.id_user', auth()->user()->id)
+                ->where('peserta_pelatihan_permintaan.id_pelatihan_permintaan', $id)
+                ->exists();
+        }
+
         return view('user.training.pelatihan.permintaan.show', [
             'title' => $permintaan->nama_pelatihan,
-            'permintaan' => $permintaan
+            'permintaan' => $permintaan,
+            'persentaseKehadiran' => $persentaseKehadiran,
+            'sudahEvaluasi' => $sudahEvaluasi,
+            'sertifikatTersedia' => $sertifikatTersedia,
+            'peserta' => $peserta
         ]);
     }
 
-    public function permintaanListShowEvaluasi($id)
+    public function permintaanListShowDokumentasi($id)
     {
+
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+
         if (!auth()->check()) {
             return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
         }
+
+        return view('user.training.pelatihan.permintaan.dokumentasi', compact('permintaan'));
+    }
+
+    public function permintaanListShowForum($id)
+    {
+
+        $permintaan = permintaan_pelatihan::findOrFail($id);
+
+        if (!auth()->check()) {
+            return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        }
+
+        return view('user.training.pelatihan.permintaan.forum', compact('permintaan'));
+    }
+
+    public function permintaanListShowEvaluasi(string $hash)
+    {
+        // if (!auth()->check()) {
+        //     return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
+        // }
+
+        $id = $this->decodeHash($hash);
         $permintaan = permintaan_pelatihan::findOrFail($id);
         // return 'true';
         // dd($permintaan);
         $formEvaluasiPermintaan = form_evaluasi_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $id)->first();
-        $peserta = peserta_pelatihan_permintaan::with('permintaan_pelatihan')
-            ->where('id_user', auth()->user()->id)
-            ->first();
+        $formDataRaw = $formEvaluasiPermintaan ? json_decode($formEvaluasiPermintaan->content, true) : null;
+
+        // Grouping formData berdasarkan 'group'
+        $groupedFormData = null;
+        if (is_array($formDataRaw)) {
+            $groupedFormData = collect($formDataRaw)->groupBy('group')->toArray();
+        }
+
+        if (!auth()->check()) {
+            return view('user.training.pelatihan.permintaan.evaluasi', [
+                'permintaan' => $permintaan,
+                'formEvaluasiPermintaan' => $formEvaluasiPermintaan,
+                'formData' => $groupedFormData, // Kirim data sudah dikelompokkan
+                'title' => 'Evaluasi ' . $permintaan->nama_pelatihan,
+                'showLoginModal' => true,
+                'sudahMengisi' => false,
+                'peserta' => null,
+                'pesertaId' => null
+            ]);
+        }
+
+        $peserta = peserta_pelatihan_permintaan::where('id_user', auth()->id())->first();
 
 
         $pesertaId = $peserta ? $peserta->id_peserta : null; // Cegah error jika null
         // dd($pesertaId);
 
-        // Debugging untuk memastikan peserta ditemukan
-        if (!$peserta) {
-            dd("Peserta tidak ditemukan untuk id_user: " . auth()->user()->id);
-        }
-
-        // Cek apakah form tersedia dan ubah content JSON menjadi array
-        $formData = $formEvaluasiPermintaan ? json_decode($formEvaluasiPermintaan->content, true) : null;
-        // Cek apakah user sudah mengisi evaluasi
-
         $sudahMengisi = hasil_evaluasi_permintaan::with('peserta')->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)
             ->where('id_peserta', $pesertaId)
             ->exists();
         // dd($sudahMengisi);
-        return view('user.training.pelatihan.permintaan.evaluasi', compact('permintaan', 'formEvaluasiPermintaan', 'sudahMengisi', 'peserta', 'pesertaId'), [
+        return view('user.training.pelatihan.permintaan.evaluasi', compact(
+            'permintaan',
+            'formEvaluasiPermintaan',
+            'sudahMengisi',
+            'peserta',
+            'pesertaId'
+        ), [
             'title' => 'Evaluasi ' . $permintaan->nama_pelatihan,
-            'formData' => $formData
+            'formData' => $groupedFormData,
+            'showLoginModal' => false
         ]);
     }
 
@@ -1272,66 +1887,31 @@ class TrainingController extends Controller
             return redirect()->route('beranda')->with('error', 'Sesi Anda telah habis. Silakan login kembali.');
         }
 
-        // Ambil data permintaan berdasarkan kolom id_pelatihan_permintaan
-        $permintaan = permintaan_pelatihan::where('id_pelatihan_permintaan', $id)->firstOrFail();
+        try {
+            $permintaan = permintaan_pelatihan::findOrFail($id);
 
-        // Ambil semua file dari permintaan_files yang sesuai dengan id_permintaan
-        // $files = DB::table('permintaan_files')
-        //     ->where('id_permintaan', $id)
-        //     ->whereNotNull('file_url')
-        //     ->paginate(5, ['file_url', 'file_name', 'file_path']);
+            // Get all files for this training
+            $records = DB::table('permintaan_files')
+                ->where('id_permintaan', $id)
+                ->orderBy('file_path')
+                ->get(['file_path', 'file_url', 'file_name']);
 
-        // // Bangun struktur folder-file (tree) dari file_path
-        // $tree = [];
-
-        // foreach ($files as $file) {
-        //     $parts = preg_split('/[\/\\\\]/', $file->file_path); // split dengan slash / atau \
-        //     $current = &$tree;
-
-        //     foreach ($parts as $index => $part) {
-        //         if ($index === count($parts) - 1) {
-        //             // ini file, simpan data file (nama & url)
-        //             $current[$part] = [
-        //                 'file_name' => $file->file_name,
-        //                 'file_url' => $file->file_url,
-        //             ];
-        //         } else {
-        //             // ini folder, buat key jika belum ada
-        //             if (!isset($current[$part])) {
-        //                 $current[$part] = [];
-        //             }
-        //             $current = &$current[$part];
-        //         }
-        //     }
-        // }
-
-        $records = DB::table('permintaan_files')
-            ->where('id_permintaan', $id)
-            ->get(['file_path', 'file_url', 'file_name']);
-
-        $tree = [];
-        foreach ($records as $r) {
-            $parts = preg_split('/[\/\\\\]/', $r->file_path);   // session plan\BAB I …
-            $cursor = &$tree;
-            foreach ($parts as $idx => $part) {
-                if ($idx === count($parts) - 1) {
-                    // file
-                    $cursor[$part] = [
-                        'file_name' => $r->file_name,
-                        'file_url' => $r->file_url,
-                    ];
-                } else {
-                    // folder
-                    $cursor[$part] ??= [];
-                    $cursor = &$cursor[$part];
-                }
+            // Build the tree structure with improved organization
+            $tree = [];
+            foreach ($records as $record) {
+                $this->buildFileTree($tree, $record);
             }
+
+            // Sort the tree for better presentation
+            $tree = $this->sortTree($tree);
+
+            return view('user.training.pelatihan.permintaan.materi', compact('permintaan', 'tree'), [
+                'title' => 'Materi Pelatihan ' . $permintaan->nama_pelatihan,
+            ]);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memuat materi pelatihan.');
         }
-
-
-        return view('user.training.pelatihan.permintaan.materi', compact('permintaan', 'tree'), [
-            'title' => 'Materi Pelatihan ' . $permintaan->nama_pelatihan,
-        ]);
     }
 
     public function permintaanListShowSertifikat($id)

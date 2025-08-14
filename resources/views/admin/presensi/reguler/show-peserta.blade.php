@@ -110,7 +110,7 @@
                                     <td>{{ $item->nama_organisasi }}</td>
                                     <td>
                                         @if ($item->tanggal_presensi)
-                                            {{ \Carbon\Carbon::parse($item->tanggal_presensi)->locale('id')->isoFormat('D-MM-Y [-] HH:mm') }}
+                                            {{ \Carbon\Carbon::parse($item->tanggal_presensi)->locale('id')->isoFormat('DD-MM-Y [-] HH:mm') }}
                                         @else
                                             -
                                         @endif

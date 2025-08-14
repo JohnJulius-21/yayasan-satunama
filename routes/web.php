@@ -160,6 +160,10 @@ Route::get('/pelatihan-saya/materi/{id}', [TrainingController::class, 'regulerLi
     ->name('reguler.pelatihan.materi');
 Route::get('/pelatihan-saya/sertifikat/{id}', [TrainingController::class, 'regulerListShowSertifikat'])
     ->name('reguler.pelatihan.sertifikat');
+Route::get('/pelatihan-saya/forum/{id}', [TrainingController::class, 'regulerListShowForum'])
+    ->name('reguler.pelatihan.forum');
+Route::get('/pelatihan-saya/dokumentasi/{id}', [TrainingController::class, 'regulerListShowDokumentasi'])
+    ->name('reguler.pelatihan.dokumentasi');
 Route::post('/pelatihan/reguler/simpanReguler', [TrainingController::class, 'storeReguler'])->name('reguler.store');
 
 Route::get('/get-provinsi/{negaraId}', [TrainingController::class, 'getProvinsi']);
@@ -183,7 +187,7 @@ Route::post('/admin/login', [AuthController::class, 'adminLoginProcess'])->name(
 Route::get('/pelatihan-saya/permintaan/{nama_pelatihan}', [TrainingController::class, 'permintaanListShow'])
     ->name('permintaan.pelatihan.list');
 
-Route::get('/pelatihan-saya/evaluasi/permintaan/{id}', [TrainingController::class, 'permintaanListShowEvaluasi'])
+Route::get('/form-evaluasi/permintaan/{hash}', [TrainingController::class, 'permintaanListShowEvaluasi'])
     ->name('permintaan.pelatihan.evaluasi');
 
 Route::post('/pelatihan-saya/evaluasi/permintaan/simpan', [TrainingController::class, 'permintaanListStoreEvaluasi'])
@@ -202,6 +206,10 @@ Route::get('/pelatihan-saya/materi/permintaan/{id}', [TrainingController::class,
     ->name('permintaan.pelatihan.materi');
 Route::get('/pelatihan-saya/sertifikat/permintaan/{id}', [TrainingController::class, 'permintaanListShowSertifikat'])
     ->name('permintaan.pelatihan.sertfikat');
+Route::get('/pelatihan-saya/dokumentasi/permintaan/{id}', [TrainingController::class, 'permintaanListShowDokumentasi'])
+    ->name('permintaan.pelatihan.dokumentasi');
+Route::get('/pelatihan-saya/forum/permintaan/{id}', [TrainingController::class, 'permintaanListShowForum'])
+    ->name('permintaan.pelatihan.forum');
 
 Route::get('/pelatihan-saya/konsultasi/{nama_pelatihan}', [TrainingController::class, 'konsultasiListShow'])
     ->name('konsultasi.pelatihan.list');

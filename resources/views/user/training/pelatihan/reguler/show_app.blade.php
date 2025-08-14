@@ -20,29 +20,28 @@
             Konten dilindungi - hanya untuk peserta pelatihan
         </div>
     </div>
-
     <!-- Course Header -->
     <div class="bg-gradient-to-r from-primary to-secondary rounded-2xl p-8 text-white mb-8">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div class="mb-6 md:mb-0">
-                <h2 class="text-3xl font-bold mb-2">{{ $permintaan->nama_pelatihan }}</h2>
+                <h2 class="text-3xl font-bold mb-2">{{ $reguler->nama_pelatihan }}</h2>
                 <p class="text-primary-100 mb-4">Fasilitator:
-                    @foreach ($permintaan->fasilitators as $fasilitator)
+                    @foreach ($reguler->fasilitators as $fasilitator)
                         {{ $fasilitator->nama_fasilitator }}{{ !$loop->last ? ',' : '' }}
                     @endforeach
                 </p>
                 <div class="flex items-center space-x-4 text-sm">
                     <div class="flex items-center">
                         <i class="fas fa-calendar mr-2"></i>
-                        <span>{{ \Carbon\Carbon::parse($permintaan->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
+                        <span>{{ \Carbon\Carbon::parse($reguler->tanggal_mulai)->locale('id')->isoFormat('D MMMM') }}
                             -
-                            {{ \Carbon\Carbon::parse($permintaan->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}</span>
+                            {{ \Carbon\Carbon::parse($reguler->tanggal_selesai)->locale('id')->isoFormat('D MMMM Y') }}</span>
                     </div>
                     <div class="flex items-center">
                         <i class="fas fa-clock mr-2"></i>
                         <span>
-                            {{ \Carbon\Carbon::parse($permintaan->tanggal_mulai)->diffInDays(
-                                \Carbon\Carbon::parse($permintaan->tanggal_selesai),
+                            {{ \Carbon\Carbon::parse($reguler->tanggal_mulai)->diffInDays(
+                                \Carbon\Carbon::parse($reguler->tanggal_selesai),
                             ) + 1 }}
                             Hari
                         </span>
@@ -93,13 +92,13 @@
                         @if ($sudahEvaluasi)
                             Selesai
                         @else
-                            Belum
+                            Belum 
                         @endif
                     </p>
                     @if ($sudahEvaluasi)
                         <span class="text-xs text-green-600 font-medium">Evaluasi Terkirim</span>
                     @else
-                        <span class="text-xs text-yellow-600 font-medium">Form Evaluasi Belum Tersedia</span>
+                        <span class="text-xs text-yellow-600 font-medium">Anda belum megisi evaluasi</span>
                     @endif
                 </div>
                 <div class="@if ($sudahEvaluasi) bg-green-100 @else bg-yellow-100 @endif p-3 rounded-lg">
@@ -167,8 +166,8 @@
         <div class="space-y-6">
             <div class="relative">
                 <div class="flex items-center space-x-4">
-                    @if (!empty($permintaan->pengumuman))
-                        {!! \Illuminate\Support\Str::words($permintaan->pengumuman, 1000, '...') !!}
+                    @if (!empty($reguler->pengumuman))
+                        {!! \Illuminate\Support\Str::words($reguler->pengumuman, 1000, '...') !!}
                     @else
                         <p>Belum ada pengumuman untuk pelatihan ini</p>
                     @endif
@@ -176,34 +175,4 @@
             </div>
         </div>
     </div>
-    {{-- 
-    <!-- Contact Section -->
-    <section id="contact" class="contact section">
-        <!-- Section Title -->
-        <div class="container" data-aos="fade-up" data-aos-delay="100">
-            <div class="row gy-4">
-                <div class="col-lg-3">
-                    @include('partials.user-routes-permintaan')
-                </div>
-                <div class="col-lg-9">
-                    <div class="php-email-form">
-                        <h3>{{ $permintaan->nama_pelatihan }}</h3>
-                        <p><strong>Fasilitator :</strong>
-                            @foreach ($permintaan->fasilitators as $fasilitator)
-                                {{ $fasilitator->nama_fasilitator }}{{ !$loop->last ? ',' : '' }}
-                            @endforeach
-                        </p>
-                        @if (!empty($permintaan->pengumuman))
-                            <p><strong>Pengumuman Pelatihan :</strong>
-                                {!! \Illuminate\Support\Str::words($permintaan->pengumuman, 1000, '...') !!}
-                            </p>
-                        @else
-                            <p>Belum ada pengumuman untuk pelatihan ini</p>
-                        @endif
-
-                    </div>
-                </div><!-- End Contact Form -->
-            </div>
-        </div>
-    </section><!-- /Contact Section --> --}}
 @endsection

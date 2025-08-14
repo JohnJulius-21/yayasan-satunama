@@ -64,5 +64,10 @@ class reguler extends Model
         return $this->hasMany(status::class, 'id_reguler', 'id_reguler');
     }
 
+    public function tema()
+    {
+        return $this->belongsTo(tema::class, 'id_tema', 'id'); // sesuaikan dengan foreign key dan primary key
+    }
+
 
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Hashids\Hashids;
 
 class permintaan_pelatihan extends Model
 {
@@ -27,6 +28,12 @@ class permintaan_pelatihan extends Model
         'tanggal_selesai',
         'deskripsi_pelatihan',
     ];
+
+    public function getHashIdAttribute()
+    {
+        $hashids = new Hashids(env('HASHIDS_SALT'), 10); // sesuai dengan salt & min_length
+        return $hashids->encode($this->id_pelatihan_permintaan);
+    }
 
     public function peserta_permintaan()
     {

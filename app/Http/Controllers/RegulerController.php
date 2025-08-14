@@ -19,11 +19,101 @@ use App\Models\peserta_pelatihan_reguler;
 
 class RegulerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $reguler = reguler::all();
+        // Debug untuk melihat parameter yang diterima
+        \Log::info('Request parameters:', $request->all());
 
-        return view('admin.reguler.index', compact('reguler'));
+        $query = reguler::with('tema'); // Eager loading relasi tema
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where('nama_pelatihan', 'LIKE', "%{$searchTerm}%");
+        }
+
+        // Category filter
+        if ($request->has('category') && !empty($request->category)) {
+            $query->where('id_tema', $request->category);
+        }
+
+        // Status filter berdasarkan tanggal
+        if ($request->has('status') && !empty($request->status)) {
+            $today = now()->startOfDay();
+
+            switch ($request->status) {
+                case 'upcoming':
+                    // Belum Mulai: tanggal mulai > hari ini
+                    $query->whereDate('tanggal_mulai', '>', $today);
+                    break;
+
+                case 'on-going':
+                    // Sedang Berlangsung: hari ini berada antara tanggal mulai dan selesai
+                    $query->whereDate('tanggal_mulai', '<=', $today)
+                        ->whereDate('tanggal_selesai', '>=', $today);
+                    break;
+
+                case 'completed':
+                    // Selesai: tanggal selesai < hari ini
+                    $query->whereDate('tanggal_selesai', '<', $today);
+                    break;
+            }
+        }
+
+        // Order by tanggal mulai (terbaru dulu)
+        $query->orderBy('tanggal_mulai', 'desc');
+
+        $reguler = $query->get();
+        $tema = tema::all();
+
+        // Debug untuk melihat jumlah hasil
+        \Log::info('Total reguler found:', ['count' => $reguler->count()]);
+
+        // Jika request AJAX, return partial view atau JSON
+        if ($request->ajax()) {
+            $html = view('admin.reguler.table_rows', compact('reguler'))->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'total' => $reguler->count(),
+                'debug' => [
+                    'search' => $request->search,
+                    'status' => $request->status,
+                    'category' => $request->category
+                ]
+            ]);
+        }
+
+        return view('admin.reguler.index_app', compact('reguler', 'tema'));
+    }
+
+    // Helper method untuk mendapatkan status berdasarkan tanggal
+    public static function getStatusByDate($tanggal_mulai, $tanggal_selesai)
+    {
+        $today = now();
+        $start = \Carbon\Carbon::parse($tanggal_mulai);
+        $end = \Carbon\Carbon::parse($tanggal_selesai);
+
+        if ($today->lt($start)) {
+            return [
+                'status' => 'upcoming',
+                'label' => 'Belum Mulai',
+                'class' => 'bg-blue-100 text-blue-700'
+            ];
+        } elseif ($today->between($start, $end)) {
+            return [
+                'status' => 'on-going',
+                'label' => 'Sedang Berlangsung',
+                'class' => 'bg-yellow-100 text-yellow-700'
+            ];
+        } else {
+            return [
+                'status' => 'completed',
+                'label' => 'Selesai',
+                'class' => 'bg-green-100 text-green-700'
+            ];
+        }
     }
 
     public function create()
@@ -31,7 +121,7 @@ class RegulerController extends Controller
         $fasilitator = fasilitator::all();
         $tema = tema::all();
         $oldIdFasilitator = old('id_fasilitator', []);
-        return view('admin.reguler.create', compact('fasilitator', 'oldIdFasilitator', 'tema'));
+        return view('admin.reguler.create_app', compact('fasilitator', 'oldIdFasilitator', 'tema'));
     }
 
     public function createTema()
@@ -290,7 +380,7 @@ class RegulerController extends Controller
         $tema = Tema::all();
         $fasilitators = Fasilitator::all();
         $oldIdFasilitator = $reguler->fasilitators->pluck('id_fasilitator')->toArray();
-        return view('admin.reguler.edit', compact('reguler', 'tema', 'fasilitators', 'images', 'files', 'oldIdFasilitator'));
+        return view('admin.reguler.edit_app', compact('reguler', 'tema', 'fasilitators', 'images', 'files', 'oldIdFasilitator'));
     }
 
     public function update(Request $request, $id)
