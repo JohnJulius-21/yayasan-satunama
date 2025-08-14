@@ -85,7 +85,7 @@ class RegulerController extends Controller
             ]);
         }
 
-        return view('admin.reguler.index_app', compact('reguler', 'tema'));
+        return view('admin.reguler.index', compact('reguler', 'tema'));
     }
 
     // Helper method untuk mendapatkan status berdasarkan tanggal
@@ -121,7 +121,7 @@ class RegulerController extends Controller
         $fasilitator = fasilitator::all();
         $tema = tema::all();
         $oldIdFasilitator = old('id_fasilitator', []);
-        return view('admin.reguler.create_app', compact('fasilitator', 'oldIdFasilitator', 'tema'));
+        return view('admin.reguler.create', compact('fasilitator', 'oldIdFasilitator', 'tema'));
     }
 
     public function createTema()
@@ -380,7 +380,7 @@ class RegulerController extends Controller
         $tema = Tema::all();
         $fasilitators = Fasilitator::all();
         $oldIdFasilitator = $reguler->fasilitators->pluck('id_fasilitator')->toArray();
-        return view('admin.reguler.edit_app', compact('reguler', 'tema', 'fasilitators', 'images', 'files', 'oldIdFasilitator'));
+        return view('admin.reguler.edit', compact('reguler', 'tema', 'fasilitators', 'images', 'files', 'oldIdFasilitator'));
     }
 
     public function update(Request $request, $id)
