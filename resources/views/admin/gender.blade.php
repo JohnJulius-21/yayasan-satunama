@@ -201,8 +201,8 @@
             <div class="p-6">
                 <div class="flex items-center justify-between mb-6">
                     <div>
-                        <h2 class="text-lg font-semibold text-gray-900">Asal Peserta</h2>
-                        <p class="text-sm text-gray-500 mt-1">Berdasarkan usia peserta pelatihan</p>
+                        <h2 class="text-lg font-semibold text-gray-900">Gender</h2>
+                        <p class="text-sm text-gray-500 mt-1">Berdasarkan gender peserta pelatihan</p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <button class="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100">
@@ -235,10 +235,10 @@
             const asalPesertaChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: {!! json_encode($usiaPeserta->pluck('rentang_usia')) !!},
+                    labels: {!! json_encode($genderPeserta->pluck('gender')) !!},
                     datasets: [{
                         label: 'Jumlah Peserta',
-                        data: {!! json_encode($usiaPeserta->pluck('total')) !!},
+                        data: {!! json_encode($genderPeserta->pluck('total')) !!},
                         backgroundColor: gradient,
                         borderColor: 'rgba(59, 130, 246, 1)',
                         borderWidth: 2,

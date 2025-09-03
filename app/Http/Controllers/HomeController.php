@@ -23,10 +23,10 @@ class HomeController extends Controller
                 $filename = DB::table('reguler_images')
                     ->where('id_reguler', $item->id_reguler)
                     ->value('image_url');
-            
+
                 if (!empty($filename)) {
                     $cachePath = public_path('storage/cache_drive/' . $filename);
-            
+
                     if (file_exists($cachePath)) {
                         $item->image_url = asset('storage/cache_drive/' . $filename);
                     } else {
@@ -36,7 +36,7 @@ class HomeController extends Controller
                     $item->image_url = asset('/images/stc.png'); // fallback image
                 }
             }
-            
+
 
 
         // dd($fasilitator);
@@ -59,6 +59,13 @@ class HomeController extends Controller
         $jumlahKonsultasi = DB::table('konsultasi')->count();
 
         // Peserta berdasarkan asal (contoh: asal_instansi atau asal_kota)
+        $asalPeserta = DB::table('peserta_pelatihan_reguler')
+            ->join('provinsi', 'peserta_pelatihan_reguler.id_provinsi', '=', 'provinsi.id')
+            ->select('provinsi.nama_provinsi', DB::raw('count(*) as total'))
+            ->groupBy('provinsi.nama_provinsi')
+            ->orderByDesc('total')
+            ->get();
+
         $asalPeserta = DB::table('peserta_pelatihan_reguler')
             ->join('provinsi', 'peserta_pelatihan_reguler.id_provinsi', '=', 'provinsi.id')
             ->select('provinsi.nama_provinsi', DB::raw('count(*) as total'))
@@ -251,6 +258,58 @@ class HomeController extends Controller
             'jumlahPermintaan' => $jumlahPermintaan,
             'jumlahKonsultasi' => $jumlahKonsultasi,
             'informasiPeserta' => $informasiPeserta,
+            'topFasilitator' => $topFasilitator,
+        ]);
+    }
+
+    public function gender()
+    {
+        // Jumlah pelatihan berdasarkan jenis
+        $jumlahReguler = DB::table('reguler')->count();
+        $jumlahPeserta = DB::table('users')
+            ->where('roles', 'peserta')
+            ->count();
+        $jumlahPermintaan = DB::table('permintaan_pelatihan')->count();
+        $jumlahKonsultasi = DB::table('konsultasi')->count();
+
+        // Menghitung jumlah peserta berdasarkan rentang usia
+        // Menghitung jumlah peserta berdasarkan asal informasi
+        $genderPeserta = DB::table('peserta_pelatihan_reguler')
+            ->select('gender', DB::raw('COUNT(*) as total'))
+            ->groupBy('gender')
+            ->orderByDesc('total')
+            ->get();
+
+
+        // Fasilitator paling sering terlibat
+        $topFasilitator = DB::table(function ($query) {
+            $query->select('id_fasilitator')
+                ->from('reguler_fasilitators')
+                ->unionAll(
+                    DB::table('permintaan_fasilitators')->select('id_fasilitator')
+                )
+                ->unionAll(
+                    DB::table('konsultasi_fasilitators')->select('id_fasilitator')
+                );
+        }, 'all_fasilitators')
+            ->join('fasilitator_pelatihan', 'all_fasilitators.id_fasilitator', '=', 'fasilitator_pelatihan.id_fasilitator')
+            ->select(
+                'fasilitator_pelatihan.nama_fasilitator',
+                DB::raw('COUNT(*) as jumlah_terlibat')
+            )
+            ->groupBy('fasilitator_pelatihan.id_fasilitator', 'fasilitator_pelatihan.nama_fasilitator')
+            ->orderByDesc('jumlah_terlibat')
+            ->limit(5)
+            ->get();
+
+
+        return view('admin.gender', [
+            'title' => 'Beranda',
+            'jumlahReguler' => $jumlahReguler,
+            'jumlahPeserta' => $jumlahPeserta,
+            'jumlahPermintaan' => $jumlahPermintaan,
+            'jumlahKonsultasi' => $jumlahKonsultasi,
+            'genderPeserta' => $genderPeserta,
             'topFasilitator' => $topFasilitator,
         ]);
     }
