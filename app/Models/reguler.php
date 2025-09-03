@@ -13,7 +13,7 @@ class reguler extends Model
     protected $table = 'reguler';
     protected $primaryKey = 'id_reguler';
 
-    public $timestamps = false;
+//    public $timestamps = false;
 
     protected $fillable = [
         'nama_pelatihan',

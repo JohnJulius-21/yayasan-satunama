@@ -63,7 +63,8 @@ class RegulerController extends Controller
         // Order by tanggal mulai (terbaru dulu)
         $query->orderBy('tanggal_mulai', 'desc');
 
-        $reguler = $query->get();
+        $perPage = $request->get('per_page', 12); // default 12
+        $reguler = $query->paginate($perPage)->appends($request->except('page'));
         $tema = tema::all();
 
         // Debug untuk melihat jumlah hasil
@@ -85,7 +86,7 @@ class RegulerController extends Controller
             ]);
         }
 
-        return view('admin.reguler.index', compact('reguler', 'tema'));
+        return view('admin.reguler.index_app', compact('reguler', 'tema'));
     }
 
     // Helper method untuk mendapatkan status berdasarkan tanggal
@@ -121,7 +122,7 @@ class RegulerController extends Controller
         $fasilitator = fasilitator::all();
         $tema = tema::all();
         $oldIdFasilitator = old('id_fasilitator', []);
-        return view('admin.reguler.create', compact('fasilitator', 'oldIdFasilitator', 'tema'));
+        return view('admin.reguler.create_app', compact('fasilitator', 'oldIdFasilitator', 'tema'));
     }
 
     public function createTema()
@@ -253,7 +254,30 @@ class RegulerController extends Controller
 
         $reguler = Reguler::findOrFail($id);
         $nama_pelatihan = $reguler->nama_pelatihan;
-        $peserta = peserta_pelatihan_reguler::with('reguler', 'negara', 'provinsi', 'kabupaten_kota', 'status')->where('id_reguler', $id)->get();
+        $peserta = peserta_pelatihan_reguler::with('reguler', 'negara', 'provinsi', 'kabupaten_kota', 'status')
+            ->where('id_reguler', $id)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id_peserta_reguler,
+                    'nama_peserta' => $item->nama_peserta ?? '-',
+                    'email_peserta' => $item->email_peserta ?? '-',
+                    'no_hp' => $item->no_hp ?? '-',
+                    'rentang_usia' => $item->rentang_usia ?? '-',
+                    'gender' => $item->gender ?? '-',
+                    'kabupaten_kota' => $item->kabupaten_kota->nama_kabupaten_kota ?? '-',
+                    'provinsi' => $item->provinsi->nama_provinsi ?? '-',
+                    'negara' => $item->negara->nama_negara ?? '-',
+                    'nama_organisasi' => $item->nama_organisasi ?? '-',
+                    'jenis_organisasi' => $item->organisasi ?? '-',
+                    'jabatan_peserta' => $item->jabatan_peserta ?? '-',
+                    'informasi' => $item->informasi ?? '-',
+                    'pelatihan_relevan' => $item->pelatihan_relevan ?? '-',
+                    'harapan_pelatihan' => $item->harapan_pelatihan ?? '-',
+                    'status_bayar' => $item->status ? $item->status->status : 'belum_bayar'
+                ];
+            })
+            ->toArray();
         // dd($peserta);
         // Ambil data images langsung dari tabel reguler_images
         $images = DB::table('reguler_images')->where('id_reguler', $id)->get();
@@ -263,7 +287,7 @@ class RegulerController extends Controller
         $negara = negara::all();
 
 
-        return view('admin.reguler.show', compact('reguler', 'images', 'files', 'nama_pelatihan', 'peserta', 'negara'));
+        return view('admin.reguler.show_app', compact('reguler', 'images', 'files', 'nama_pelatihan', 'peserta', 'negara'));
     }
 
     public function getProvinsi($negaraId)
@@ -367,7 +391,7 @@ class RegulerController extends Controller
                 ->where('id_reguler', $item->id_reguler)
                 ->value('image_url');
 
-            $images[] = (object) ['image' => $imageUrl]; // Simpan sebagai objek
+            $images[] = (object)['image' => $imageUrl]; // Simpan sebagai objek
         }
         // dd($images);
         // Ambil data files langsung dari tabel reguler_files
@@ -380,7 +404,7 @@ class RegulerController extends Controller
         $tema = Tema::all();
         $fasilitators = Fasilitator::all();
         $oldIdFasilitator = $reguler->fasilitators->pluck('id_fasilitator')->toArray();
-        return view('admin.reguler.edit', compact('reguler', 'tema', 'fasilitators', 'images', 'files', 'oldIdFasilitator'));
+        return view('admin.reguler.edit_app', compact('reguler', 'tema', 'fasilitators', 'images', 'files', 'oldIdFasilitator'));
     }
 
     public function update(Request $request, $id)

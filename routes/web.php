@@ -19,6 +19,7 @@ use App\Http\Controllers\KonsultasiController;
 use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\FasilitatorController;
 use App\Http\Controllers\CertificationController;
+use App\Http\Controllers\AlumniController;
 
 Route::get('/', [HomeController::class, 'index'])->name('beranda');
 Route::get('/tentang-kami', [AboutController::class, 'index'])->name('tentang');
@@ -238,6 +239,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/asal', [HomeController::class, 'asal'])->name('adminAsal');
     Route::get('/admin/rentang-usia', [HomeController::class, 'usia'])->name('adminUsia');
     Route::get('/admin/informasi', [HomeController::class, 'informasi'])->name('adminInformasi');
+    Route::get('/admin/gender', [HomeController::class, 'gender'])->name('adminGender');
     Route::get('/admin/pelatihan/reguler', [RegulerController::class, 'index'])->name('regulerAdmin');
     Route::get('/admin/pelatihan/reguler/lihat-pelatihan/{id}', [RegulerController::class, 'show'])->name('regulerShowAdmin');
     Route::get('/admin/pelatihan/reguler/edit-pelatihan/{id}', [RegulerController::class, 'edit'])->name('regulerEditAdmin');
@@ -387,6 +389,7 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/admin/diskusi/{id}', [DiscussionController::class, 'destroyAdmin'])->name('adminDestroyDiskusi');
 
     Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
+    Route::get('/admin/alumni', [AlumniController::class, 'index'])->name('adminAlumni');
 
     // Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
     Route::get('/admin/presensi/reguler', [PresensiController::class, 'indexReguler'])->name('adminPresensiReguler');
