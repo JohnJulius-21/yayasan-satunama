@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-
+@section('title', 'Admin |  Buat Presensi Pelatihan Reguler')
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -17,7 +17,6 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-success">Form Presensi</h6>
         </div>
-
 
         <div class="card-body">
 

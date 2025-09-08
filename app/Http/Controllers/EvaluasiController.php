@@ -18,16 +18,59 @@ use App\Models\form_evaluasi_permintaan;
 use App\Models\peserta_pelatihan_reguler;
 use App\Models\peserta_pelatihan_permintaan;
 use App\Models\peserta_pelatihan_konsultasi;
+use App\Traits\DataTableHelper;
+use Carbon\Carbon;
 
 class EvaluasiController extends Controller
 {
+    use DataTableHelper;
+
     // Evaluasi Reguler
-    public function indexReguler()
+    public function indexReguler(Request $request)
     {
         // $evaluasi = evaluasi::paginate(3);
         $reguler = reguler::all();
+        $query = reguler::query();
+        $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
+        $data = $query->paginate($request->get('per_page', 10));
 
-        return view('admin.evaluasi.reguler.index', compact('reguler'));
+        // Format tanggal dengan Carbon
+        $data->getCollection()->transform(function ($item) {
+            $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
+            $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
+            return $item;
+        });
+
+        $columns = [
+            ['label' => 'Nama Pelatihan', 'field' => 'nama_pelatihan'],
+            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'],
+            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'],
+            ['label' => 'Aksi', 'field' => 'aksi'],
+        ];
+
+        $actions = [
+            [
+                'route' => 'evaluasiShowRegulerAdmin',
+                'param' => 'id_reguler',
+                'label' => '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>Lihat Detail',
+                'class' => 'inline-flex items-center px-3 py-2 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100'
+            ]
+        ];
+
+        // Handle AJAX
+        $response = $this->handleDataTableResponse(
+            $request,
+            $data,
+            'partials.table_rows',
+            compact('columns','actions')
+        );
+
+        if ($response) return $response;
+
+        return view('admin.evaluasi.reguler.index', compact('data','columns','actions'));
     }
 
     public function createReguler($id)
@@ -186,12 +229,51 @@ class EvaluasiController extends Controller
 
 
     // Evaluasi Permintaan
-    public function indexPermintaan()
+    public function indexPermintaan(Request $request)
     {
         // $evaluasi = evaluasi::paginate(3);
         $permintaan = permintaan_pelatihan::all();
+        $query = permintaan_pelatihan::query();
+        $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
+        $data = $query->paginate($request->get('per_page', 10));
 
-        return view('admin.evaluasi.permintaan.index', compact('permintaan'));
+        // Format tanggal dengan Carbon
+        $data->getCollection()->transform(function ($item) {
+            $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
+            $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
+            return $item;
+        });
+
+        $columns = [
+            ['label' => 'Nama Pelatihan', 'field' => 'nama_pelatihan'],
+            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'],
+            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'],
+            ['label' => 'Aksi', 'field' => 'aksi'],
+        ];
+
+        $actions = [
+            [
+                'route' => 'evaluasiShowPermintaanAdmin',
+                'param' => 'id_pelatihan_permintaan',
+                'label' => '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>Lihat Detail',
+                'class' => 'inline-flex items-center px-3 py-2 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100'
+            ]
+        ];
+
+        // Handle AJAX
+        $response = $this->handleDataTableResponse(
+            $request,
+            $data,
+            'partials.table_rows',
+            compact('columns','actions')
+        );
+
+        if ($response) return $response;
+
+        return view('admin.evaluasi.permintaan.index', compact('data','columns','actions'));
     }
 
     public function createPermintaan($id)
@@ -205,9 +287,6 @@ class EvaluasiController extends Controller
     {
         $permintaan = permintaan_pelatihan::findOrFail($id);
         $form = form_evaluasi_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $id)->first();
-        // dd($permintaan);
-        // dd($form);
-        // $showButtons = is_null($form); //Cek apakah $form nul
 
         // Tampilkan pesan atau tindakan yang sesuai jika data form evaluasi tidak tersedia
         if (!$form || !isset($form->content)) {
@@ -216,37 +295,77 @@ class EvaluasiController extends Controller
                 ->get();
 
             $form1 = form_evaluasi_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)->get();
-            $showButtons = $form1->isEmpty(); // Check jika data form kosong
-            return view('admin.evaluasi.permintaan.show', compact('permintaan', 'pesertaStatus', 'showButtons'));
+            $showButtons = $form1->isEmpty();
+
+            // Return dengan labels kosong untuk menghindari error di view
+            return view('admin.evaluasi.permintaan.show', compact('permintaan', 'pesertaStatus', 'showButtons'))->with(['labels' => [], 'respons' => [], 'nama_peserta' => []]);
         }
-        // Decode JSON menjadi array PHP
-        $contentArray = $form ? json_decode($form->content, true) : null;
+
+        // Decode JSON dengan validasi yang lebih robust
+        $contentArray = null;
+
+        if (!empty($form->content)) {
+            // Cek apakah content sudah berupa array atau masih string
+            if (is_string($form->content)) {
+                $contentArray = json_decode($form->content, true);
+            } elseif (is_array($form->content)) {
+                $contentArray = $form->content;
+            }
+        }
+
+        // Validasi hasil decode
+        if (!is_array($contentArray)) {
+            // Log error untuk debugging
+            \Log::error('Content decode failed', [
+                'form_id' => $form->id ?? 'unknown',
+                'content_type' => gettype($form->content),
+                'content_preview' => is_string($form->content) ? substr($form->content, 0, 100) : 'not string',
+                'json_error' => json_last_error_msg()
+            ]);
+
+            $pesertaStatus = peserta_pelatihan_permintaan::with('hasilEvaluasiPermintaan')
+                ->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)
+                ->get();
+
+            $form1 = form_evaluasi_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)->get();
+            $showButtons = $form1->isEmpty();
+
+            // Return dengan labels kosong dan pesan error
+            return view('admin.evaluasi.permintaan.show', compact('permintaan', 'pesertaStatus', 'showButtons'))
+                ->with(['labels' => [], 'respons' => [], 'nama_peserta' => []])
+                ->with('warning', 'Data form evaluasi tidak valid. Silakan buat ulang form evaluasi.');
+        }
 
         // Inisialisasi array untuk menyimpan label
         $labels = [];
-        // Iterasi melalui setiap objek dalam array content
-        foreach ($contentArray as $item) {
-            // Memeriksa apakah tipe bukan header dan bukan paragraph
-            if ($item['type'] !== 'header' && $item['type'] !== 'paragraph') {
-                // Jika objek memiliki properti 'label', tambahkan label ke dalam array
-                if (isset($item['label'])) {
-                    $label = strip_tags($item['label']); // Menghilangkan tag HTML dari label
 
-                    $labels[] = $label;
+        // Iterasi dengan validasi tambahan
+        if (is_array($contentArray)) {
+            foreach ($contentArray as $item) {
+                // Pastikan $item adalah array dan memiliki struktur yang benar
+                if (is_array($item) && isset($item['type'])) {
+                    // Memeriksa apakah tipe bukan header dan bukan paragraph
+                    if ($item['type'] !== 'header' && $item['type'] !== 'paragraph') {
+                        // Jika objek memiliki properti 'label', tambahkan label ke dalam array
+                        if (isset($item['label'])) {
+                            $label = strip_tags($item['label']); // Menghilangkan tag HTML dari label
+                            $labels[] = $label;
+                        }
+                    }
                 }
             }
         }
+//        dd($labels);
 
         $peserta = peserta_pelatihan_permintaan::with('hasilEvaluasiPermintaan')
             ->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)
             ->get();
-        // dd($peserta); 
-        // dd($nama_peserta);
+
         $respons = [];
         $nama_peserta = [];
 
         foreach ($peserta as $evaluation) {
-            // Ambil data_respons dari relasi hasilEvaluasiReguler
+            // Ambil data_respons dari relasi hasilEvaluasiPermintaan
             $dataRespons = optional($evaluation->hasilEvaluasiPermintaan)->data_respons;
 
             if ($dataRespons !== null) {
@@ -254,7 +373,7 @@ class EvaluasiController extends Controller
 
                 if (is_array($decodedDataRespons)) {
                     $respons[] = array_values($decodedDataRespons);
-                    $nama_peserta[] = $evaluation->nama_peserta; // Simpan nama peserta sesuai data evaluasi
+                    $nama_peserta[] = $evaluation->nama_peserta;
                 }
             }
         }
@@ -263,10 +382,9 @@ class EvaluasiController extends Controller
             ->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)
             ->get();
 
-
-        // dd($pesertaStatus);
         $form1 = form_evaluasi_permintaan::with('permintaan_pelatihan')->where('id_pelatihan_permintaan', $permintaan->id_pelatihan_permintaan)->get();
         $showButtons = $form1->isEmpty();
+
         return view('admin.evaluasi.permintaan.show', compact('permintaan', 'pesertaStatus', 'labels', 'respons', 'nama_peserta', 'showButtons'));
     }
 
@@ -363,7 +481,7 @@ class EvaluasiController extends Controller
         // dd($request->id_pelatihan_konsultasi);
 
         $konsultasi = new form_evaluasi_konsultasi();
-        $konsultasi->id_pelatihan_konsultasi = (int) $request->id_pelatihan_konsultasi; // PAKSA JADI INTEGER
+        $konsultasi->id_pelatihan_konsultasi = (int)$request->id_pelatihan_konsultasi; // PAKSA JADI INTEGER
         $contentArray = json_decode($request->form, true);
         $konsultasi->content = $contentArray;
         $konsultasi->save();
@@ -412,7 +530,7 @@ class EvaluasiController extends Controller
         $peserta = peserta_pelatihan_konsultasi::with('hasilEvaluasiKonsultasi')
             ->where('id_pelatihan_konsultasi', $konsultasi->id_pelatihan_konsultasi)
             ->get();
-        // dd($peserta); 
+        // dd($peserta);
 
         $respons = [];
         $nama_peserta = [];

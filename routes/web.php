@@ -404,6 +404,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/admin/presensi/list-peserta-permintaan/{id}', [PresensiController::class, 'showPresensiPesertaPermintaan'])->name('adminShowPresensiPesertaPermintaan');
     Route::get('/admin/presensi/generate-presensi-permintaan/{id}', [PresensiController::class, 'generateQRCodePermintaan'])->name('generatePresensiPermintaan');
     Route::post('/admin/presensi/generate-presensi-permintaan/{id}', [PresensiController::class, 'storePermintaan'])->name('savePresensiPermintaan');
+    Route::delete('/admin/presensi/delete-permintaan/{id}', [PresensiController::class, 'destroyPermintaan'])->name('adminDestroyPresensiPermintaan');
 });
 
 Route::get('/form-fasilitator', [FasilitatorController::class, 'createFasilitator'])->name('fasilitatorCreate');
