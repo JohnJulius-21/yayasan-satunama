@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\reguler;
 use App\Models\permintaan_pelatihan;
+use App\Traits\DataTableHelper;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\presensi_reguler;
 use App\Models\presensi_permintaan;
@@ -13,11 +15,50 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PresensiController extends Controller
 {
-    public function indexReguler()
+    use DataTableHelper;
+    public function indexReguler(Request $request)
     {
-        $reguler = reguler::all();
+//        $reguler = reguler::all();
+        $query = reguler::query();
+        $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
+        $data = $query->paginate($request->get('per_page', 10));
+        // Format tanggal dengan Carbon
+        $data->getCollection()->transform(function ($item) {
+            $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
+            $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
+            return $item;
+        });
+
+        $columns = [
+            ['label' => 'Nama Pelatihan', 'field' => 'nama_pelatihan'],
+            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'],
+            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'],
+            ['label' => 'Aksi', 'field' => 'aksi'],
+        ];
+
+        $actions = [
+            [
+                'route' => 'adminShowPresensiReguler',
+                'param' => 'id_reguler',
+                'label' => '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>Lihat Detail',
+                'class' => 'inline-flex items-center px-3 py-2 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100'
+            ]
+        ];
+
+        // Handle AJAX
+        $response = $this->handleDataTableResponse(
+            $request,
+            $data,
+            'partials.table_rows',
+            compact('columns','actions')
+        );
+
+        if ($response) return $response;
         // $reguler = reguler::findOrFail($id);
-        return view('admin.presensi.reguler.index', compact('reguler'));
+        return view('admin.presensi.reguler.index', compact('data','columns','actions'));
     }
 
     public function showReguler($id)
@@ -128,12 +169,51 @@ class PresensiController extends Controller
 
     // permintaan
 
-    public function indexPermintaan()
+    public function indexPermintaan(Request $request)
     {
-        $permintaan = permintaan_pelatihan::all();
+//        $permintaan = permintaan_pelatihan::all();
+        $query = permintaan_pelatihan::query();
+        $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
+        $data = $query->paginate($request->get('per_page', 10));
+
+        // Format tanggal dengan Carbon
+        $data->getCollection()->transform(function ($item) {
+            $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
+            $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
+            return $item;
+        });
+
+        $columns = [
+            ['label' => 'Nama Pelatihan', 'field' => 'nama_pelatihan'],
+            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'],
+            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'],
+            ['label' => 'Aksi', 'field' => 'aksi'],
+        ];
+
+        $actions = [
+            [
+                'route' => 'adminShowPresensiPermintaan',
+                'param' => 'id_pelatihan_permintaan',
+                'label' => '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>Lihat Detail',
+                'class' => 'inline-flex items-center px-3 py-2 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100'
+            ]
+        ];
+
+        // Handle AJAX
+        $response = $this->handleDataTableResponse(
+            $request,
+            $data,
+            'partials.table_rows',
+            compact('columns','actions')
+        );
+
+        if ($response) return $response;
         // dd($permintaan);
         // $reguler = reguler::findOrFail($id);
-        return view('admin.presensi.permintaan.index', compact('permintaan'));
+        return view('admin.presensi.permintaan.index', compact('data','columns','actions'));
     }
 
     public function showPermintaan($id)
@@ -146,7 +226,7 @@ class PresensiController extends Controller
                 return (array) $item;
             });
 
-        // dd($presensi);
+//         dd($permintaan);
 
         return view('admin.presensi.permintaan.show', compact('permintaan', 'presensi'));
     }
@@ -225,6 +305,22 @@ class PresensiController extends Controller
         // dd($qrData);
 
         return redirect()->route('adminShowPresensiPermintaan', $permintaan->id_pelatihan_permintaan)->with('success', 'Presensi berhasil disimpan');
+    }
+
+    public function destroyPermintaan($id)
+    {
+        // Cari data reguler berdasarkan ID
+        $permintaan = presensi_permintaan::findOrFail($id);
+//        dd($permintaan);
+
+        // Hapus data
+        $permintaan->delete();
+
+        // Redirect ke halaman daftar reguler dengan pesan sukses
+        return redirect()
+            ->route('adminShowPresensiPermintaan', ['id' => $permintaan->id_permintaan])
+            ->with('success', 'Data presensi permintaan berhasil dihapus');
+
     }
 
 
