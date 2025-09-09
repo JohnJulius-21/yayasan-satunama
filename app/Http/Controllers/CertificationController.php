@@ -8,17 +8,56 @@ use App\Models\konsultasi_pelatihan;
 use App\Models\peserta_pelatihan_reguler;
 use App\Models\peserta_pelatihan_permintaan;
 use App\Models\peserta_pelatihan_konsultasi;
+use App\Traits\DataTableHelper;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class CertificationController extends Controller
 {
-    public function indexReguler()
+    use DataTableHelper;
+    public function indexReguler(Request $request)
     {
         $reguler = reguler::with('peserta')->get();
+        $query = reguler::query();
+        $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
+        $data = $query->paginate($request->get('per_page', 10));
         // dd($reguler);
-        return view('admin.sertifikat.reguler.index', compact('reguler'));
+        $data->getCollection()->transform(function ($item) {
+            $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
+            $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
+            return $item;
+        });
+
+        $columns = [
+            ['label' => 'Nama Pelatihan', 'field' => 'nama_pelatihan'],
+            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'],
+            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'],
+            ['label' => 'Aksi', 'field' => 'aksi'],
+        ];
+
+        $actions = [
+            [
+                'route' => 'sertiRegulerShowAdmin',
+                'param' => 'id_reguler',
+                'label' => '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>Lihat Detail',
+                'class' => 'inline-flex items-center px-3 py-2 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100'
+            ]
+        ];
+        // Handle AJAX
+        $response = $this->handleDataTableResponse(
+            $request,
+            $data,
+            'partials.table_rows',
+            compact('columns','actions')
+        );
+
+        if ($response) return $response;
+        return view('admin.sertifikat.reguler.index', compact('data','columns','actions'));
     }
 
     public function showReguler($id)
@@ -98,11 +137,49 @@ class CertificationController extends Controller
 
 
     // permintaan
-    public function indexPermintaan()
+    public function indexPermintaan(request $request)
     {
-        $permintaan = permintaan_pelatihan::with('peserta_permintaan')->get();
-        // dd($permintaan);
-        return view('admin.sertifikat.permintaan.index', compact('permintaan'));
+        $permintaan = permintaan_pelatihan::all();
+        $query = permintaan_pelatihan::query();
+        $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
+        $data = $query->paginate($request->get('per_page', 10));
+
+        // Format tanggal dengan Carbon
+        $data->getCollection()->transform(function ($item) {
+            $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
+            $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
+            return $item;
+        });
+
+        $columns = [
+            ['label' => 'Nama Pelatihan', 'field' => 'nama_pelatihan'],
+            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'],
+            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'],
+            ['label' => 'Aksi', 'field' => 'aksi'],
+        ];
+
+        $actions = [
+            [
+                'route' => 'sertiPermintaanShowAdmin',
+                'param' => 'id_pelatihan_permintaan',
+                'label' => '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>Lihat Detail',
+                'class' => 'inline-flex items-center px-3 py-2 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100'
+            ]
+        ];
+
+        // Handle AJAX
+        $response = $this->handleDataTableResponse(
+            $request,
+            $data,
+            'partials.table_rows',
+            compact('columns','actions')
+        );
+
+        if ($response) return $response;
+        return view('admin.sertifikat.permintaan.index', compact('data','columns','actions'));
     }
 
     public function showPermintaan($id)
