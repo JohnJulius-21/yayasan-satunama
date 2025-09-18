@@ -456,7 +456,7 @@ class RegulerController extends Controller
             // Simpan ke database (hanya 1 record)
             DB::table('reguler_images')->insert([
                 'id_reguler' => $reguler->id_reguler,
-                'image' => $filename, // Simpan nama file
+                'image_url' => $filename, // Simpan nama file
             ]);
         }
 
