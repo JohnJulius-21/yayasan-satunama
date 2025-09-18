@@ -445,16 +445,19 @@ class RegulerController extends Controller
 
         // Update Images
         if ($request->hasFile('image')) {
+            // Hapus semua image lama
             DB::table('reguler_images')->where('id_reguler', $id)->delete();
-            foreach ($request->file('image') as $image) {
-                $filename = $image->getClientOriginalName(); // Ambil nama file asli
-                $path = Storage::disk('google')->putFileAs('', $image, $filename); // Simpan di Drive
 
-                DB::table('reguler_images')->insert([
-                    'id_reguler' => $reguler->id_reguler,
-                    'image_url' => $filename, // Simpan hanya nama file di database
-                ]);
-            }
+            // Upload image baru (hanya 1)
+            $image = $request->file('image');
+            $filename = $image->getClientOriginalName();
+            $path = Storage::disk('google')->putFileAs('', $image, $filename);
+
+            // Simpan ke database (hanya 1 record)
+            DB::table('reguler_images')->insert([
+                'id_reguler' => $reguler->id_reguler,
+                'image' => $filename, // Simpan nama file
+            ]);
         }
 
 //        if ($request->hasFile('file')) {
