@@ -170,7 +170,7 @@ class RegulerController extends Controller
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
             'id_fasilitator' => 'required|array',
             'deskripsi_pelatihan' => 'required',
-            'image.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
 //            'file.*' => 'nullable|mimes:pdf,doc,docx,ppt,pptx|max:5120',
         ]);
 
@@ -422,8 +422,9 @@ class RegulerController extends Controller
             'tanggal_selesai' => 'required|date|after:tanggal_mulai',
             'id_fasilitator' => 'required|array',
             'deskripsi_pelatihan' => 'required',
-            'image.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'file.*' => 'nullable|mimes:pdf,doc,docx,ppt,pptx|max:10120',
+            'pengumuman' => 'nullable',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+//            'file.*' => 'nullable|mimes:pdf,doc,docx,ppt,pptx|max:10120',
         ]);
 
         $reguler = Reguler::findOrFail($id);
@@ -456,50 +457,50 @@ class RegulerController extends Controller
             }
         }
 
-        if ($request->hasFile('file')) {
-            // Ambil file lama dari database
-            $oldFiles = DB::table('reguler_files')
-                ->where('id_reguler', $reguler->id_reguler)
-                ->pluck('file_url');
-
-            // Hapus file lama dari Google Drive
-            foreach ($oldFiles as $oldFile) {
-                preg_match('/id=([^&]+)/', $oldFile, $matches);
-                if (isset($matches[1])) {
-                    Storage::disk('google')->delete($matches[1]); // Hapus berdasarkan ID
-                }
-            }
-
-            // Hapus data file lama dari database
-            DB::table('reguler_files')->where('id_reguler', $reguler->id_reguler)->delete();
-
-            // Simpan file baru ke Google Drive
-            foreach ($request->file('file') as $file) {
-                $filename = $file->getClientOriginalName(); // Ambil nama file asli
-                $filePath = Storage::disk('google')->putFileAs('', $file, $filename); // Simpan ke Drive
-
-                // Ambil metadata file untuk mendapatkan file ID
-                $service = Storage::disk('google')->getAdapter()->getService();
-                $fileMetadata = new Google_Service_Drive_DriveFile();
-                $fileList = $service->files->listFiles([
-                    'q' => "name='$filename' and trashed=false",
-                    'fields' => 'files(id, name)'
-                ]);
-
-                if (count($fileList->getFiles()) > 0) {
-                    $fileId = $fileList->getFiles()[0]->getId();
-
-                    // Simpan link berbentuk URL langsung ke database
-                    $fileUrl = "https://drive.google.com/file/d/$fileId/view?usp=sharing";
-
-                    DB::table('reguler_files')->insert([
-                        'id_reguler' => $reguler->id_reguler,
-                        'file_name' => $filename, // Simpan nama file langsung
-                        'file_url' => $fileUrl, // Simpan URL langsung
-                    ]);
-                }
-            }
-        }
+//        if ($request->hasFile('file')) {
+//            // Ambil file lama dari database
+//            $oldFiles = DB::table('reguler_files')
+//                ->where('id_reguler', $reguler->id_reguler)
+//                ->pluck('file_url');
+//
+//            // Hapus file lama dari Google Drive
+//            foreach ($oldFiles as $oldFile) {
+//                preg_match('/id=([^&]+)/', $oldFile, $matches);
+//                if (isset($matches[1])) {
+//                    Storage::disk('google')->delete($matches[1]); // Hapus berdasarkan ID
+//                }
+//            }
+//
+//            // Hapus data file lama dari database
+//            DB::table('reguler_files')->where('id_reguler', $reguler->id_reguler)->delete();
+//
+//            // Simpan file baru ke Google Drive
+//            foreach ($request->file('file') as $file) {
+//                $filename = $file->getClientOriginalName(); // Ambil nama file asli
+//                $filePath = Storage::disk('google')->putFileAs('', $file, $filename); // Simpan ke Drive
+//
+//                // Ambil metadata file untuk mendapatkan file ID
+//                $service = Storage::disk('google')->getAdapter()->getService();
+//                $fileMetadata = new Google_Service_Drive_DriveFile();
+//                $fileList = $service->files->listFiles([
+//                    'q' => "name='$filename' and trashed=false",
+//                    'fields' => 'files(id, name)'
+//                ]);
+//
+//                if (count($fileList->getFiles()) > 0) {
+//                    $fileId = $fileList->getFiles()[0]->getId();
+//
+//                    // Simpan link berbentuk URL langsung ke database
+//                    $fileUrl = "https://drive.google.com/file/d/$fileId/view?usp=sharing";
+//
+//                    DB::table('reguler_files')->insert([
+//                        'id_reguler' => $reguler->id_reguler,
+//                        'file_name' => $filename, // Simpan nama file langsung
+//                        'file_url' => $fileUrl, // Simpan URL langsung
+//                    ]);
+//                }
+//            }
+//        }
 
 
         // Update Fasilitators
