@@ -124,6 +124,30 @@
         <!-- Form -->
         <form method="post" action="{{ route('regulerStoreAdmin') }}" enctype="multipart/form-data" id="form-pelatihan">
             @csrf
+
+            {{-- Display All Validation Errors at Top (Optional) --}}
+            @if ($errors->any())
+                <div class="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <h3 class="text-sm font-medium">Terdapat kesalahan pada form:</h3>
+                            <div class="mt-2 text-sm">
+                                <ul class="list-disc list-inside space-y-1">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Left Column - Main Form -->
                 <div class="lg:col-span-7">
@@ -138,24 +162,27 @@
                             <!-- Nama Pelatihan -->
                             <div>
                                 <label for="nama_pelatihan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Nama Pelatihan
+                                    Nama Pelatihan <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                       placeholder="Masukkan Nama Pelatihan" name="nama_pelatihan" id="nama_pelatihan"
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('nama_pelatihan') border-red-500 @else border-gray-300 @enderror"
+                                       placeholder="Masukkan Nama Pelatihan"
+                                       name="nama_pelatihan"
+                                       id="nama_pelatihan"
+                                       value="{{ old('nama_pelatihan') }}"
                                        autofocus>
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                @error('nama_pelatihan')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Tema Pelatihan -->
                             <div>
                                 <label for="tema" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tema Pelatihan
+                                    Tema Pelatihan <span class="text-red-500">*</span>
                                 </label>
                                 <select
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('id_tema') border-red-500 @else border-gray-300 @enderror"
                                     name="id_tema">
                                     <option value="">Pilih Tema Pelatihan</option>
                                     @foreach ($tema as $item)
@@ -165,74 +192,92 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                @error('id_tema')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Fee Pelatihan -->
                             <div>
                                 <label for="fee_pelatihan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Fee Pelatihan
+                                    Fee Pelatihan <span class="text-red-500">*</span>
                                 </label>
-                                <input
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                    placeholder="Masukkan Fee Pelatihan" name="fee_pelatihan" id="fee_pelatihan">
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                <input type="number"
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('fee_pelatihan') border-red-500 @else border-gray-300 @enderror"
+                                       placeholder="Masukkan Fee Pelatihan"
+                                       name="fee_pelatihan"
+                                       id="fee_pelatihan"
+                                       value="{{ old('fee_pelatihan') }}"
+                                       min="0">
+                                @error('fee_pelatihan')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Metode Pelatihan -->
                             <div>
                                 <label for="metode_pelatihan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Metode Pelatihan
+                                    Metode Pelatihan <span class="text-red-500">*</span>
                                 </label>
                                 <select
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('metode_pelatihan') border-red-500 @else border-gray-300 @enderror"
                                     name="metode_pelatihan">
                                     <option value="">Pilih Metode Pelatihan</option>
-                                    <option value="Online">Online</option>
-                                    <option value="Offline">Offline</option>
+                                    <option value="Online" {{ old('metode_pelatihan') == 'Online' ? 'selected' : '' }}>Online</option>
+                                    <option value="Offline" {{ old('metode_pelatihan') == 'Offline' ? 'selected' : '' }}>Offline</option>
                                 </select>
+                                @error('metode_pelatihan')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Lokasi Pelatihan -->
                             <div>
                                 <label for="lokasi_pelatihan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Lokasi Pelatihan
+                                    Lokasi Pelatihan <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                       placeholder="Masukkan Lokasi Pelatihan" name="lokasi_pelatihan"
-                                       id="lokasi_pelatihan">
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('lokasi_pelatihan') border-red-500 @else border-gray-300 @enderror"
+                                       placeholder="Masukkan Lokasi Pelatihan"
+                                       name="lokasi_pelatihan"
+                                       id="lokasi_pelatihan"
+                                       value="{{ old('lokasi_pelatihan') }}">
+                                @error('lokasi_pelatihan')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Kuota Peserta -->
                             <div>
                                 <label for="kuota_peserta" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Kuota Peserta
+                                    Kuota Peserta <span class="text-red-500">*</span>
                                 </label>
                                 <input type="number"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                       placeholder="Masukkan Kuota Peserta" name="kuota_peserta" id="kuota_peserta">
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('kuota_peserta') border-red-500 @else border-gray-300 @enderror"
+                                       placeholder="Masukkan Kuota Peserta"
+                                       name="kuota_peserta"
+                                       id="kuota_peserta"
+                                       value="{{ old('kuota_peserta') }}"
+                                       min="1">
+                                @error('kuota_peserta')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Deskripsi Pelatihan -->
                             <div>
                                 <label for="deskripsi_pelatihan" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Deskripsi Pelatihan
+                                    Deskripsi Pelatihan <span class="text-red-500">*</span>
                                 </label>
                                 <textarea
-                                    class="ckeditor w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                    name="deskripsi_pelatihan" id="deskripsi_pelatihan" rows="5"
-                                    placeholder="Masukkan deskripsi pelatihan..."></textarea>
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                    class="ckeditor w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('deskripsi_pelatihan') border-red-500 @else border-gray-300 @enderror"
+                                    name="deskripsi_pelatihan"
+                                    id="deskripsi_pelatihan"
+                                    rows="5"
+                                    placeholder="Masukkan deskripsi pelatihan...">{{ old('deskripsi_pelatihan') }}</textarea>
+                                @error('deskripsi_pelatihan')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Pengumuman Pelatihan -->
@@ -242,11 +287,10 @@
                                 </label>
                                 <textarea
                                     class="ckeditor w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                    name="pengumuman" id="pengumuman" rows="5"
-                                    placeholder="Masukkan pengumuman pelatihan..."></textarea>
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                    name="pengumuman"
+                                    id="pengumuman"
+                                    rows="5"
+                                    placeholder="Masukkan pengumuman pelatihan...">{{ old('pengumuman') }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -263,54 +307,62 @@
                             <!-- Tanggal Pendaftaran -->
                             <div>
                                 <label for="tanggal_pendaftaran" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tanggal Pendaftaran Pelatihan
+                                    Tanggal Pendaftaran Pelatihan <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" id="tanggal_pendaftaran"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                       name="tanggal_pendaftaran">
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                <input type="date"
+                                       id="tanggal_pendaftaran"
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('tanggal_pendaftaran') border-red-500 @else border-gray-300 @enderror"
+                                       name="tanggal_pendaftaran"
+                                       value="{{ old('tanggal_pendaftaran') }}">
+                                @error('tanggal_pendaftaran')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Tanggal Batas Pendaftaran -->
                             <div>
                                 <label for="tanggal_batas_pendaftaran"
                                        class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tanggal Batas Pendaftaran Pelatihan
+                                    Tanggal Batas Pendaftaran Pelatihan <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" id="tanggal_batas_pendaftaran"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                       name="tanggal_batas_pendaftaran">
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                <input type="date"
+                                       id="tanggal_batas_pendaftaran"
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('tanggal_batas_pendaftaran') border-red-500 @else border-gray-300 @enderror"
+                                       name="tanggal_batas_pendaftaran"
+                                       value="{{ old('tanggal_batas_pendaftaran') }}">
+                                @error('tanggal_batas_pendaftaran')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Tanggal Mulai -->
                             <div>
                                 <label for="tanggal_mulai" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tanggal Mulai Pelatihan
+                                    Tanggal Mulai Pelatihan <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" id="tanggal_mulai"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                       name="tanggal_mulai">
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                <input type="date"
+                                       id="tanggal_mulai"
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('tanggal_mulai') border-red-500 @else border-gray-300 @enderror"
+                                       name="tanggal_mulai"
+                                       value="{{ old('tanggal_mulai') }}">
+                                @error('tanggal_mulai')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Tanggal Selesai -->
                             <div>
                                 <label for="tanggal_selesai" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Tanggal Selesai Pelatihan
+                                    Tanggal Selesai Pelatihan <span class="text-red-500">*</span>
                                 </label>
-                                <input type="date" id="tanggal_selesai"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200"
-                                       name="tanggal_selesai">
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                <input type="date"
+                                       id="tanggal_selesai"
+                                       class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('tanggal_selesai') border-red-500 @else border-gray-300 @enderror"
+                                       name="tanggal_selesai"
+                                       value="{{ old('tanggal_selesai') }}">
+                                @error('tanggal_selesai')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -324,39 +376,46 @@
                             <!-- Upload Poster -->
                             <div>
                                 <label for="image" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Upload Poster Pelatihan
+                                    Upload Poster Pelatihan <span class="text-red-500">*</span>
                                 </label>
                                 <input
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-                                    type="file" id="image" name="image[]" multiple>
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100 @error('image.*') border-red-500 @else border-gray-300 @enderror"
+                                    type="file"
+                                    id="image"
+                                    name="image[]"
+                                    multiple
+                                    accept="image/jpeg,image/png,image/jpg,image/gif">
                                 <div class="mt-2 text-xs text-gray-500">
                                     <ul class="list-disc list-inside">
-                                        <li>Poster tidak boleh lebih dari 2mb</li>
+                                        <li>Poster tidak boleh lebih dari 2MB</li>
+                                        <li>Format yang diterima: JPEG, PNG, JPG, GIF</li>
                                     </ul>
                                 </div>
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
+                                @error('image.*')
+                                <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Upload Materi -->
-                            <div>
-                                <label for="file" class="block text-sm font-medium text-gray-700 mb-2">
-                                    Upload Materi
-                                </label>
-                                <input
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
-                                    type="file" id="file" name="file[]" multiple>
-                                <div class="mt-2 text-xs text-gray-500">
-                                    <ul class="list-disc list-inside space-y-1">
-                                        <li>File tidak boleh lebih dari 5mb</li>
-                                        <li>Kosongkan kolom upload materi jika tidak ingin mengupload materi</li>
-                                    </ul>
-                                </div>
-                                <div class="text-red-600 text-sm mt-1 hidden error-message">
-                                    Error message here
-                                </div>
-                            </div>
+{{--                            <div>--}}
+{{--                                <label for="file" class="block text-sm font-medium text-gray-700 mb-2">--}}
+{{--                                    Upload Materi--}}
+{{--                                </label>--}}
+{{--                                <input--}}
+{{--                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-green-50 file:text-green-700 hover:file:bg-green-100"--}}
+{{--                                    type="file"--}}
+{{--                                    id="file"--}}
+{{--                                    name="file[]"--}}
+{{--                                    multiple--}}
+{{--                                    accept=".pdf,.doc,.docx,.ppt,.pptx">--}}
+{{--                                <div class="mt-2 text-xs text-gray-500">--}}
+{{--                                    <ul class="list-disc list-inside space-y-1">--}}
+{{--                                        <li>File tidak boleh lebih dari 5MB</li>--}}
+{{--                                        <li>Format yang diterima: PDF, DOC, DOCX, PPT, PPTX</li>--}}
+{{--                                        <li>Kosongkan kolom upload materi jika tidak ingin mengupload materi</li>--}}
+{{--                                    </ul>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
                         </div>
                     </div>
 
@@ -367,31 +426,26 @@
                         </div>
                         <div class="p-6">
                             <label for="fasilitator" class="block text-sm font-medium text-gray-700 mb-2">
-                                Fasilitator Pelatihan
+                                Fasilitator Pelatihan <span class="text-red-500">*</span>
                             </label>
-                            <select id="fasilitator" class="w-full" name="id_fasilitator[]" multiple="multiple">
+                            <select id="fasilitator"
+                                    class="w-full @error('id_fasilitator') border-red-500 @endif"
+                                    name="id_fasilitator[]"
+                                    multiple="multiple">
                                 @foreach ($fasilitator as $item)
                                     <option value="{{ $item->id_fasilitator }}"
-                                            @if (in_array($item->id_fasilitator, $oldIdFasilitator)) selected @endif>{{ $item->nama_fasilitator }}
+                                            @if (in_array($item->id_fasilitator, old('id_fasilitator', $oldIdFasilitator ?? []))) selected @endif>
+                                        {{ $item->nama_fasilitator }}
                                     </option>
                                 @endforeach
                             </select>
+                            @error('id_fasilitator')
+                            <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Action Buttons -->
-            {{-- <div class="flex gap-4 mt-8">
-                <a class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-medium transition duration-200"
-                    href="#">
-                    Kembali
-                </a>
-                <button type="submit"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition duration-200">
-                    Simpan
-                </button>
-            </div> --}}
 
             <!-- Tombol mengambang kanan bawah -->
             <div class="floating-buttons">

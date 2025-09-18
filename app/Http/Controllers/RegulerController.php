@@ -171,7 +171,7 @@ class RegulerController extends Controller
             'id_fasilitator' => 'required|array',
             'deskripsi_pelatihan' => 'required',
             'image.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'file.*' => 'nullable|mimes:pdf,doc,docx,ppt,pptx|max:5120',
+//            'file.*' => 'nullable|mimes:pdf,doc,docx,ppt,pptx|max:5120',
         ]);
 
         // Simpan data pelatihan
