@@ -692,7 +692,7 @@
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.nama_organisasi}">${item.nama_organisasi}</td>
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.jenis_organisasi}">${item.jenis_organisasi}</td>
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.jabatan_peserta}">${item.jabatan_peserta}</td>
-                <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.informasi_pelatihan}">${item.informasi_pelatihan}</td>
+                <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.informasi}">${item.informasi}</td>
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.pelatihan_relevan}">${item.pelatihan_relevan}</td>
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.harapan_pelatihan}">${item.harapan_pelatihan}</td>
                 <td class="px-4 py-2 w-40 min-w-[192px]">
