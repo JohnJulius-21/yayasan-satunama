@@ -176,7 +176,6 @@
             border-bottom: 2px solid #e5e7eb;
             position: sticky;
             top: 0;
-            z-index: 10;
         }
 
         .table td {
@@ -366,21 +365,25 @@
             <table class="table" id="pesertaTable">
                 <thead>
                 <tr>
-                    <th>Nama Peserta</th>
-                    <th>Email Peserta</th>
-                    <th>No. HP</th>
-                    <th>Rentang Usia</th>
-                    <th>Gender</th>
-                    <th>Kabupaten/Kota</th>
-                    <th>Provinsi</th>
-                    <th>Negara</th>
-                    <th>Nama Organisasi</th>
-                    <th>Jenis Organisasi</th>
-                    <th>Jabatan Peserta</th>
-                    <th>Informasi Pelatihan</th>
-                    <th>Pelatihan Relevan</th>
-                    <th>Harapan Pelatihan</th>
-                    <th>Status Bayar</th>
+                    <!-- Kolom sticky pertama -->
+                    <th class="sticky left-0 top-0 bg-gray-400 z-30">Nama Peserta</th>
+
+                    <!-- Header lain cukup sticky top-0 -->
+                    <th class="sticky top-0 bg-white z-20">Email Peserta</th>
+                    <th class="sticky top-0 bg-white z-20">No. HP</th>
+                    <th class="sticky top-0 bg-white z-20">Rentang Usia</th>
+                    <th class="sticky top-0 bg-white z-20">Gender</th>
+                    <th class="sticky top-0 bg-white z-20">Kabupaten/Kota</th>
+                    <th class="sticky top-0 bg-white z-20">Provinsi</th>
+                    <th class="sticky top-0 bg-white z-20">Negara</th>
+                    <th class="sticky top-0 bg-white z-20">Nama Organisasi</th>
+                    <th class="sticky top-0 bg-white z-20">Jenis Organisasi</th>
+                    <th class="sticky top-0 bg-white z-20">Jabatan Peserta</th>
+                    <th class="sticky top-0 bg-white z-20">Informasi Pelatihan</th>
+                    <th class="sticky top-0 bg-white z-20">Pelatihan Relevan</th>
+                    <th class="sticky top-0 bg-white z-20">Harapan Pelatihan</th>
+                    <th class="sticky top-0 bg-white z-20">Status Bayar</th>
+                </tr>
                 </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -681,7 +684,7 @@
 
                 tbody.innerHTML = currentData.map(item => `
             <tr class="hover:bg-gray-50 transition-colors duration-200">
-                <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.nama_peserta}">${item.nama_peserta}</td>
+                <td class="px-4 py-2 text-sm text-gray-900 sticky left-0 bg-white z-10" title="${item.nama_peserta}">${item.nama_peserta}</td>
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.email_peserta}">${item.email_peserta}</td>
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.no_hp}">${item.no_hp}</td>
                 <td class="px-4 py-2 text-sm text-gray-900 editable" title="${item.rentang_usia}">${item.rentang_usia}</td>
