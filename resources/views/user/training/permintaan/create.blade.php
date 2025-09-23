@@ -1,647 +1,706 @@
-@extends('layouts.user')
-
+@extends('layouts.main')
+@section('title', 'Form Request Permintaan')
 @section('content')
-    <div class="page-title">
-        <div class="container d-lg-flex justify-content-between align-items-center">
-            <h1 class="mb-2 mb-lg-0">Form Permintaan</h1>
-            <nav class="breadcrumbs">
-                <ol>
-                    <li><a href="{{ route('beranda') }}">Beranda</a></li>
-                    <li><a href="{{ route('pelatihan') }}">Permintaan</a></li>
-                    <li class="current">Form Permintaan</li>
-                </ol>
-            </nav>
-        </div>
-    </div>
-
-    <div class="container my-3">
-        <div class="card px-3 mb-4">
-            {{-- @if (Session::has('success'))
-                <div class="container mt-3" data-aos="fade-up">
-                    <div class="pt-3">
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            {{ Session::get('success') }}
-                        </div>
-                    </div>
-            @endif --}}
-
-            <section id="contact" class="contact">
-                <div class="row mt-1 justify-content-center" data-aos="fade-up">
-                    <div class="col-lg-10">
-                        <div class="form-studi">
-                            {{-- <form id="dynamicForm" method="post" action="{{ route('peserta.permintaan.store') }}"> --}}
-
-                            @if (!Auth::check())
-                                <h5 class="text-center">Silahkan Masuk / Daftar Terlebih dahulu..</h5>
-                                {{-- Jika belum login --}}
-                                <script>
-                                    document.addEventListener('DOMContentLoaded', function() {
-                                        const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-                                        loginModal.show();
-                                    });
-                                </script>
-                            @else
-                                <form id="multi-step-form" method="post" role="form">
-                                    @csrf
-                                    <input type="hidden" id="id_user" name="id_user" value="{{ Auth::id() }}">
-                                    <h4 class="mb-2">Check List Training & Konsultasi</h4>
-                                    <hr>
-                                    <div class="stepper mb-4">
-                                        <div class="step active">
-                                            <div class="circle">1</div>
-                                            <div class="label">Informasi Mitra</div>
-                                        </div>
-                                        <div class="line"></div>
-                                        <div class="step">
-                                            <div class="circle">2</div>
-                                            <div class="label">Jadwal Pelaksanaan Pelatihan</div>
-                                        </div>
-                                        <div class="line"></div>
-                                        <div class="step">
-                                            <div class="circle">3</div>
-                                            <div class="label">Asesesment Dasar</div>
-                                        </div>
-                                        <div class="line"></div>
-                                        <div class="step">
-                                            <div class="circle">4</div>
-                                            <div class="label">Asessment Peserta</div>
-                                        </div>
-                                        <div class="line"></div>
-                                        <div class="step">
-                                            <div class="circle">5</div>
-                                            <div class="label">Request Khusus</div>
-                                        </div>
-                                    </div>
-
-                                    <div class="step-content active" id="step-1">
-                                        <div class="form-group mt-3">
-                                            {{-- <label for="nama_mitra">Nama Mitra</label> --}}
-                                            <h6>Nama Mitra</h6>
-                                            <select id="mitra"
-                                                class="form-control @error('id_mitra') is-invalid @enderror" name="id_mitra"
-                                                id="id_mitra">
-                                                <option value="">Pilih Mitra</option>
-                                                @foreach ($mitra as $item)
-                                                    <option value="{{ $item->id_mitra }}"
-                                                        {{ old('id_mitra') == $item->id_mitra ? 'seltected' : '' }}>
-                                                        {{ $item->nama_mitra }}</option>
-                                                @endforeach
-                                                <option value="Lainnya">Lainnya</option>
-                                            </select>
-                                            @error('id_mitra')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                            <small style="color: #6c757d"> Note: Jika tidak ada nama organisasi anda,
-                                                silahkan
-                                                memilih opsi lainnya untuk mengisi nama organisasi anda.</small>
-                                        </div>
-
-                                        <div class="form-group mt-3" id="namaMitraContainer" style="display: none;">
-                                            <input type="text"
-                                                class="form-select @error('nama_mitra') is-invalid @enderror"
-                                                id="nama_mitra" name="nama_mitra" placeholder="Masukan nama Organisasi anda"
-                                                value="{{ old('nama_mitra') }}">
-                                            @error('nama_mitra')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-
-                                        <div class="form-group mt-3">
-                                            {{-- <label for="judul_pelatihan">Judul Pelatihan</label> --}}
-                                            <h6>Judul Pelatihan</h6>
-                                            <input type="text"
-                                                class="form-control @error('judul_pelatihan') is-invalid @enderror"
-                                                id="judul_pelatihan" name="judul_pelatihan" placeholder="Judul Pelatihan"
-                                                value="{{ old('judul_pelatihan') }}">
-                                            @error('judul_pelatihan')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="form-group mt-3">
-                                                    <label for="id_tema">Tema Pelatihan</label>
-                                                    <select class="form-control @error('id_tema') is-invalid @enderror"
-                                                        name="id_tema" id="id_tema">
-                                                        <option value="">Pilih Tema Pelatihan</option>
-                                                        @foreach ($tema as $item)
-                                                            <option value="{{ $item->id }}"
-                                                                {{ old('id_tema') == $item->id ? 'selected' : '' }}>
-                                                                {{ $item->judul_tema }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                    @error('id_tema')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col">
-                                            <div class="form-group mt-3 mb-3">
-                                                <label for="no_pic">Nomor PIC Mitra</label>
-                                                <input type="text" maxlength="12" pattern="[0-9]*" inputmode="numeric"
-                                                    class="form-control @error('no_pic') is-invalid @enderror"
-                                                    id="no_pic" name="no_pic" placeholder="Masukan Nomor PIC"
-                                                    value="{{ old('no_pic') }}">
-
-                                                @error('no_pic')
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-success next-step">Next</button>
-                                    </div>
-
-                                    <div class="step-content" id="step-2">
-                                        <div class="row mt-3 mb-3">
-                                            <h6>Jadwal Pelaksanaan Pelatihan</h6>
-                                            <div class="col">
-                                                <div class="form-group">
-                                                    <p>Tanggal Mulai</p>
-                                                    <input type="date"
-                                                        class="form-control @error('tanggal_waktu_mulai') is-invalid @enderror"
-                                                        id="tanggal_waktu_mulai" name="tanggal_waktu_mulai"
-                                                        value="{{ old('tanggal_waktu_mulai') }}">
-                                                    @error('tanggal_waktu_mulai')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            {{-- datetime-local --}}
-                                            <div class="col">
-                                                <div class="form-group">
-                                                    <p>Tanggal Selesai</p>
-                                                    <input type="date"
-                                                        class="form-control @error('tanggal_waktu_selesai') is-invalid @enderror"
-                                                        id="tanggal_waktu_selesai" name="tanggal_waktu_selesai"
-                                                        value="{{ old('tanggal_waktu_selesai') }}">
-                                                    @error('tanggal_waktu_selesai')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                                        <button type="button" class="btn btn-success next-step">Next</button>
-                                    </div>
-
-
-                                    <div class="step-content" id="step-3">
-                                        <!-- Asessment Dasar -->
-                                        <div class="form-group mt-3 mb-3">
-                                            <h6>Asessment Dasar</h6>
-                                            <p>Masalah yang sedang dihadapi oleh lembaga</p>
-                                            <textarea class="form-control @error('masalah') is-invalid @enderror" name="masalah" rows="5">{{ old('masalah') }}</textarea>
-                                            @error('masalah')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Kebutuhan lembaga -->
-                                        <div class="form-group mt-3 mb-3">
-                                            <p>Kebutuhan lembaga</p>
-                                            <textarea class="form-control @error('kebutuhan') is-invalid @enderror" name="kebutuhan" rows="5">{{ old('kebutuhan') }}</textarea>
-                                            @error('kebutuhan')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Materi & topik yang diharapkan dari pelatihan -->
-                                        <div class="form-group mt-3 mb-3">
-                                            <p>Materi & topik yang diharapkan dari pelatihan</p>
-                                            <textarea class="form-control @error('materi') is-invalid @enderror" name="materi" rows="5">{{ old('materi') }}</textarea>
-                                            @error('materi')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                                        <button type="button" class="btn btn-success next-step">Next</button>
-                                    </div>
-
-
-                                    <div class="step-content" id="step-4">
-                                        <!-- Asessment Peserta -->
-                                        <div>
-                                            <h6>Asessment Peserta</h6>
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Nama Peserta</th>
-                                                        <th>Email Peserta</th>
-                                                        <th>Jenis Kelamin</th>
-                                                        <th>Jabatan di Lembaga</th>
-                                                        <th>Tanggung Jawab Utama</th>
-                                                        <th>Tindakan</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="tableBody2">
-                                                    <tr>
-                                                        <td><input type="text" name="nama_peserta[]"
-                                                                class="form-control @error('nama_peserta.*') is-invalid @enderror"
-                                                                value="{{ old('nama_peserta.0') }}"></td>
-                                                        <td><input type="email" name="email_peserta[]"
-                                                                class="form-control @error('email_peserta.*') is-invalid @enderror"
-                                                                value="{{ old('email_peserta.0') }}"></td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <select
-                                                                    class="form-control @error('jenis_kelamin.*') is-invalid @enderror"
-                                                                    name="jenis_kelamin[]" id="exampleFormControlSelect2">
-                                                                    <option value="">Pilih</option>
-                                                                    <option value="Laki-laki"
-                                                                        {{ old('jenis_kelamin.0') == 'Laki-laki' ? 'selected' : '' }}>
-                                                                        Laki-laki</option>
-                                                                    <option value="Perempuan"
-                                                                        {{ old('jenis_kelamin.0') == 'Perempuan' ? 'selected' : '' }}>
-                                                                        Perempuan</option>
-                                                                    <option value="Transgender"
-                                                                        {{ old('jenis_kelamin.0') == 'Transgender' ? 'selected' : '' }}>
-                                                                        Transgender</option>
-                                                                    <option value="Tidak ingin menyebutkan"
-                                                                        {{ old('jenis_kelamin.0') == 'Tidak ingin menyebutkan' ? 'selected' : '' }}>
-                                                                        Tidak ingin menyebutkan</option>
-                                                                </select>
-                                                            </div>
-                                                        </td>
-                                                        <td><input type="text" name="jabatan[]"
-                                                                class="form-control @error('jabatan.*') is-invalid @enderror"
-                                                                value="{{ old('jabatan.0') }}"></td>
-                                                        <td><input type="text" name="tanggung_jawab[]"
-                                                                class="form-control @error('tanggung_jawab.*') is-invalid @enderror"
-                                                                value="{{ old('tanggung_jawab.0') }}"></td>
-                                                        <td>
-                                                            <button type="button"
-                                                                class="btn btn-primary btn-sm addRow2">+
-                                                                Tambah
-                                                                Peserta</button>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            @error('nama_peserta.*')
-                                                <div class="text-danger">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                                        <button type="button" class="btn btn-success next-step">Next</button>
-                                    </div>
-
-                                    <div class="step-content" id="step-5">
-                                        <!-- Request Khusus -->
-                                        <div class="form-group mt-3 mb-3">
-                                            <h6>Request Khusus</h6>
-                                            <textarea class="form-control @error('request_khusus') is-invalid @enderror" name="request_khusus" rows="5"
-                                                placeholder="Request Khusus">{{ old('request_khusus') }}</textarea>
-                                            @error('request_khusus')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        <button type="button" class="btn btn-secondary prev-step">Previous</button>
-                                        <button type="submit" id="submit-button" class="btn btn-success"
-                                            disabled>Daftar</button>
-
-                                    </div>
-
-                                    {{-- <div class="text-center my-3">
-                                    <button type="submit" class="btn btn-success" style="width: 20%;">Daftar
-                                        Pelatihan</button>
-                                </div> --}}
-                                </form>
-                            @endif
-
-                        </div>
-                    </div>
+    <!-- Header Section -->
+    <div class="bg-white/80 backdrop-blur-md border-b border-gray-200/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div>
+                    <h1
+                        class="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-green-600 to-green-600 bg-clip-text text-transparent">
+                        Form Permintaan Training
+                    </h1>
+                    <p class="text-gray-600 mt-1">Manajemen Pelatihan & Konsultasi</p>
                 </div>
-            </section>
+                <!-- Breadcrumb -->
+                <nav class="hidden sm:flex items-center space-x-2 text-sm">
+                    <a href="/" class="text-green-600 hover:text-green-800 transition-colors">Beranda</a>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                    <span class="text-gray-500">Form Permintaan</span>
+                </nav>
+            </div>
         </div>
     </div>
 
-    <style>
-        .step-indicator .step {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #e9ecef;
-            border-radius: 50px;
-            margin: 5px;
-            font-weight: bold;
-        }
+    <!-- Main Container -->
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="multiStepForm()">
+        <!-- Progress Steps -->
+        <div class="mb-12">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <template x-for="(step, index) in steps" :key="index">
+                    <div class="flex flex-col sm:flex-row items-center mb-4 sm:mb-0 relative">
+                        <!-- Step Circle -->
+                        <div class="flex items-center">
+                            <div
+                                class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg transition-all duration-300 relative"
+                                :class="index + 1 <= currentStep ?
+                                    'bg-gradient-to-r from-green-500 to-green-600 shadow-lg scale-110' : 'bg-gray-300'">
+                                <i :class="step.icon"
+                                   x-show="index + 1 !== currentStep || index + 1 === steps.length"></i>
+                                <div x-show="index + 1 === currentStep && index + 1 !== steps.length"
+                                     class="animate-bounce-subtle">
+                                    <i :class="step.icon"></i>
+                                </div>
+                                <!-- Progress Ring -->
+                                <div x-show="index + 1 === currentStep"
+                                     class="absolute inset-0 rounded-full border-2 border-green-300 animate-ping"></div>
+                            </div>
 
-        .step-indicator .step.active {
-            background-color: #28a745;
-            color: white;
-        }
+                            <!-- Connector Line (Hidden on mobile, shown on larger screens) -->
+                            <div x-show="index < steps.length - 1"
+                                 class="hidden sm:block w-20 lg:w-32 h-1 mx-4 transition-all duration-500"
+                                 :class="index + 1 < currentStep ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gray-300'">
+                            </div>
+                        </div>
 
-        .step-content {
-            display: none;
-        }
+                        <!-- Step Label -->
+                        <div
+                            class="text-center sm:text-left mt-2 sm:mt-0 sm:absolute sm:top-14 sm:left-1/2 sm:transform sm:-translate-x-1/2 sm:w-32">
+                            <p class="text-sm font-medium transition-colors duration-300"
+                               :class="index + 1 <= currentStep ? 'text-green-600' : 'text-gray-500'"
+                               x-text="step.title">
+                            </p>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
 
-        .step-content.active {
-            display: block;
-        }
+        <!-- Form Container -->
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+            <!-- Form Header -->
+            <div class="bg-gradient-to-r from-green-500 to-green-600 px-8 py-6">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-clipboard-list mr-3"></i>
+                    Check List Training & Konsultasi
+                </h2>
+                <p class="text-green-100 mt-2">Silakan isi formulir berikut dengan lengkap dan benar</p>
+            </div>
 
-        /* Stepper container */
-        .stepper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
+            <!-- Form Content -->
+            <div class="px-8 py-8">
+{{--                @guest--}}
+{{--                    <button id="loginBtn"--}}
+{{--                            class="bg-green-700 text-white px-6 py-2 rounded-full hover:bg-green-600 transition-all duration-300 font-medium shadow-md hover:shadow-lg transform hover:scale-105">--}}
+{{--                        Masuk atau Daftar--}}
+{{--                    </button>--}}
+{{--                @endguest--}}
+{{--                @auth--}}
+                    <form id="multi-step-form" method="post">
+                        @csrf
+{{--                        <input type="hidden" id="id_user" name="id_user" value="{{ Auth::id() }}">--}}
+                        <!-- Step 1: Informasi Mitra -->
+                        <div x-show="currentStep === 1" x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-4"
+                             x-transition:enter-end="opacity-1 transform translate-x-0" class="space-y-6">
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Nama Mitra -->
+                                <div class="lg:col-span-2">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        <i class="fas fa-building mr-2 text-green-500"></i>Nama Mitra
+                                    </label>
+                                    <select x-model="formData.id_mitra" @change="toggleCustomMitra" name="id_mitra"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 bg-white hover:border-gray-300">
+                                        <option value="">Pilih Mitra</option>
+                                        @foreach ($mitra as $item)
+                                            <option value="{{ $item->id_mitra }}"
+                                                {{ old('id_mitra') == $item->id_mitra ? 'seltected' : '' }}>
+                                                {{ $item->nama_mitra }}</option>
+                                        @endforeach
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
 
-        /* Individual step */
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            position: relative;
-        }
+                                    <!-- Custom Mitra Input -->
+                                    <div x-show="showCustomMitra" x-transition class="mt-4">
+                                        <input x-model="formData.nama_mitra" type="text" name="nama_mitra"
+                                               placeholder="Masukan nama Organisasi anda"
+                                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 bg-gray-50 hover:border-gray-300">
+                                    </div>
+                                    <p class="text-sm text-gray-600 mt-2 flex items-start">
+                                        <i class="fas fa-info-circle mr-2 text-blue-500 mt-0.5"></i>
+                                        Jika tidak ada nama organisasi anda, silahkan memilih opsi lainnya untuk
+                                        mengisi
+                                        nama organisasi anda.
+                                    </p>
+                                </div>
 
-        /* Circle */
-        .circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            color: #28a745;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-        }
+                                <!-- Judul Pelatihan -->
+                                <div class="lg:col-span-2">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        <i class="fas fa-graduation-cap mr-2 text-green-500"></i>Judul Pelatihan
+                                    </label>
+                                    <input x-model="formData.judul_pelatihan" type="text" name="judul_pelatihan"
+                                           placeholder="Masukan judul pelatihan yang diinginkan"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 bg-white hover:border-gray-300">
+                                </div>
 
-        /* Active circle */
-        .step.active .circle {
-            background-color: #28a745;
-            color: white;
-        }
+                                <!-- Tema Pelatihan -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        <i class="fas fa-tags mr-2 text-green-500"></i>Tema Pelatihan
+                                    </label>
+                                    <select x-model="formData.id_tema" name="id_tema"
+                                            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 bg-white hover:border-gray-300">
+                                        <option value="">Pilih Tema Pelatihan</option>
+                                        @foreach ($tema as $item)
+                                            <option value="{{ $item->id }}"
+                                                {{ old('id_tema') == $item->id ? 'selected' : '' }}>
+                                                {{ $item->judul_tema }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-        /* Step label */
-        .label {
-            margin-top: 8px;
-            font-size: 14px;
-            color: #6c757d;
-        }
+                                <!-- Nomor PIC -->
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        <i class="fas fa-phone mr-2 text-green-500"></i>Nomor PIC Mitra
+                                    </label>
+                                    <input x-model="formData.no_pic" type="tel" placeholder="08xxxxxxxxxx"
+                                           maxlength="12" pattern="[0-9]*" inputmode="numeric" name="no_pic"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 bg-white hover:border-gray-300">
+                                </div>
+                            </div>
+                        </div>
 
-        /* Line between steps */
-        .line {
-            flex-grow: 1;
-            height: 2px;
-            background-color: #e0e0e0;
-        }
+                        <!-- Step 2: Jadwal Pelaksanaan -->
+                        <div x-show="currentStep === 2" x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-4"
+                             x-transition:enter-end="opacity-1 transform translate-x-0" class="space-y-6">
+                            <div class="text-center mb-8">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Jadwal Pelaksanaan Pelatihan</h3>
+                                <p class="text-gray-600">Tentukan waktu pelaksanaan pelatihan yang diinginkan</p>
+                            </div>
 
-        /* Active line */
-        .step.active~.line {
-            background-color: #28a745;
-        }
-    </style>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Tanggal Mulai -->
+                                <div
+                                    class="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border border-green-200">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        <i class="fas fa-play-circle mr-2 text-green-500"></i>Tanggal Mulai
+                                    </label>
+                                    <input x-model="formData.tanggal_waktu_mulai" type="date" name="tanggal_waktu_mulai"
+                                           class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 bg-white">
+                                </div>
 
+                                <!-- Tanggal Selesai -->
+                                <div
+                                    class="bg-gradient-to-br from-red-50 to-rose-50 p-6 rounded-xl border border-red-200">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                        <i class="fas fa-stop-circle mr-2 text-red-500"></i>Tanggal Selesai
+                                    </label>
+                                    <input x-model="formData.tanggal_waktu_selesai" type="date" name="tanggal_waktu_selesai"
+                                           class="w-full px-4 py-3 border-2 border-red-200 rounded-xl focus:border-red-500 focus:ring-0 transition-all duration-200 bg-white">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Assessment Dasar -->
+                        <div x-show="currentStep === 3" x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-4"
+                             x-transition:enter-end="opacity-1 transform translate-x-0" class="space-y-8">
+                            <div class="text-center mb-8">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Assessment Dasar</h3>
+                                <p class="text-gray-600">Berikan informasi detail tentang kebutuhan pelatihan</p>
+                            </div>
+
+                            <!-- Masalah Lembaga -->
+                            <div
+                                class="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-xl border border-orange-200">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    <i class="fas fa-exclamation-triangle mr-2 text-orange-500"></i>Masalah yang sedang
+                                    dihadapi
+                                    oleh lembaga
+                                </label>
+                                <textarea x-model="formData.masalah" rows="4" name="masalah"
+                                          placeholder="Deskripsikan masalah utama yang dihadapi organisasi..."
+                                          class="w-full px-4 py-3 border-2 border-orange-200 rounded-xl focus:border-orange-500 focus:ring-0 transition-all duration-200 bg-white resize-none"></textarea>
+                            </div>
+
+                            <!-- Kebutuhan Lembaga -->
+                            <div
+                                class="bg-gradient-to-br from-blue-50 to-green-50 p-6 rounded-xl border border-blue-200">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    <i class="fas fa-lightbulb mr-2 text-blue-500"></i>Kebutuhan lembaga
+                                </label>
+                                <textarea x-model="formData.kebutuhan" rows="4" name="kebutuhan"
+                                          placeholder="Jelaskan kebutuhan spesifik yang ingin dicapai..."
+                                          class="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-500 focus:ring-0 transition-all duration-200 bg-white resize-none"></textarea>
+                            </div>
+
+                            <!-- Materi & Topik -->
+                            <div
+                                class="bg-gradient-to-br from-green-50 to-violet-50 p-6 rounded-xl border border-green-200">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    <i class="fas fa-book-open mr-2 text-green-500"></i>Materi & topik yang diharapkan
+                                    dari
+                                    pelatihan
+                                </label>
+                                <textarea x-model="formData.materi" rows="4" name="materi"
+                                          placeholder="Sebutkan materi dan topik yang diinginkan..."
+                                          class="w-full px-4 py-3 border-2 border-green-200 rounded-xl focus:border-green-500 focus:ring-0 transition-all duration-200 bg-white resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Assessment Peserta -->
+                        <div x-show="currentStep === 4" x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-4"
+                             x-transition:enter-end="opacity-1 transform translate-x-0">
+                            <div class="text-center mb-8">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Data Peserta Pelatihan</h3>
+                                <p class="text-gray-600">Masukan informasi peserta yang akan mengikuti pelatihan</p>
+                            </div>
+
+                            <div class="space-y-6">
+                                <template x-for="(participant, index) in participants" :key="index">
+                                    <div
+                                        class="bg-gradient-to-r from-gray-50 to-slate-50 p-6 rounded-xl border-2 border-gray-200 relative">
+                                        <!-- Remove Button -->
+                                        <button x-show="participants.length > 1" @click="removeParticipant(index)"
+                                                type="button"
+                                                class="absolute top-4 right-4 w-8 h-8 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center transition-colors duration-200">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+
+                                        <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+                                            <i class="fas fa-user mr-2 text-green-500"></i>
+                                            Peserta <span x-text="index + 1"></span>
+                                        </h4>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            <!-- Nama -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Nama
+                                                    Lengkap</label>
+                                                <input name="`nama_peserta[${index}]`" x-model="participant.nama" type="text" placeholder="Nama peserta"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-0 transition-colors">
+                                            </div>
+
+                                            <!-- Email -->
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                                <input name="`email_peserta[${index}]`" x-model="participant.email" type="email"
+                                                       placeholder="email@domain.com"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-0 transition-colors">
+                                            </div>
+
+                                            <!-- Jenis Kelamin -->
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Jenis
+                                                    Kelamin</label>
+                                                <select name="`jenis_kelamin[${index}]`" x-model="participant.jenis_kelamin"
+                                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-0 transition-colors">
+                                                    <option value="">Pilih</option>
+                                                    <option value="Laki-laki">Laki-laki</option>
+                                                    <option value="Perempuan">Perempuan</option>
+                                                    <option value="Transgender">Transgender</option>
+                                                    <option value="Tidak ingin menyebutkan">Tidak ingin menyebutkan
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <!-- Jabatan -->
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-700 mb-2">Jabatan</label>
+                                                <input name="`jabatan[${index}]`" x-model="participant.jabatan" type="text"
+                                                       placeholder="Jabatan di lembaga"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-0 transition-colors">
+                                            </div>
+
+                                            <!-- Tanggung Jawab -->
+                                            <div class="md:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Tanggung
+                                                    Jawab
+                                                    Utama</label>
+                                                <input name="`tanggung_jawab[${index}]`" x-model="participant.tanggung_jawab" type="text"
+                                                       placeholder="Deskripsi tanggung jawab utama"
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-0 transition-colors">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- Add Participant Button -->
+                                <button @click="addParticipant" type="button"
+                                        class="w-full py-3 border-2 border-dashed border-green-300 text-green-600 rounded-xl hover:border-green-400 hover:bg-green-50 transition-all duration-200 flex items-center justify-center space-x-2">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Tambah Peserta</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 5: Request Khusus -->
+                        <div x-show="currentStep === 5" x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-4"
+                             x-transition:enter-end="opacity-1 transform translate-x-0">
+                            <div class="text-center mb-8">
+                                <h3 class="text-xl font-bold text-gray-800 mb-2">Request Khusus</h3>
+                                <p class="text-gray-600">Ada permintaan atau kebutuhan khusus? Sampaikan di sini</p>
+                            </div>
+
+                            <div
+                                class="bg-gradient-to-br from-teal-50 to-cyan-50 p-8 rounded-xl border border-teal-200">
+                                <label class="block text-sm font-semibold text-gray-700 mb-4">
+                                    <i class="fas fa-star mr-2 text-teal-500"></i>Request Khusus (Opsional)
+                                </label>
+                                <textarea name="request_khusus" x-model="formData.request_khusus" rows="6"
+                                          placeholder="Sampaikan request khusus, kebutuhan tambahan, atau catatan penting lainnya..."
+                                          class="w-full px-4 py-3 border-2 border-teal-200 rounded-xl focus:border-teal-500 focus:ring-0 transition-all duration-200 bg-white resize-none"></textarea>
+                                <p class="text-sm text-gray-600 mt-3 flex items-start">
+                                    <i class="fas fa-info-circle mr-2 text-teal-500 mt-0.5"></i>
+                                    Contoh: Kebutuhan sertifikat, materi dalam bahasa tertentu, metode pembelajaran
+                                    khusus,
+                                    dll.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
+                            <!-- Previous Button -->
+                            <button x-show="currentStep > 1" @click="prevStep" type="button"
+                                    class="flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-all duration-200 font-medium">
+                                <i class="fas fa-chevron-left mr-2"></i>
+                                Sebelumnya
+                            </button>
+
+                            <div x-show="currentStep === 1"></div>
+
+                            <!-- Next/Submit Button -->
+                            <button x-show="currentStep < 5" @click="nextStep" type="button"
+                                    class="flex items-center px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                Selanjutnya
+                                <i class="fas fa-chevron-right ml-2"></i>
+                            </button>
+
+                            <button x-show="currentStep === 5" type="submit" id="submit-button"
+                                    class="flex items-center px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Kirim Permintaan
+                            </button>
+                        </div>
+                    </form>
+{{--                @endauth--}}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.2/js/bootstrap.min.js"></script>
     <script>
-        $(document).ready(function() {
+        function multiStepForm() {
+            return {
+                currentStep: 1,
+                showCustomMitra: false,
+                steps: [{
+                    title: 'Informasi Mitra',
+                    icon: 'fas fa-building'
+                },
+                    {
+                        title: 'Jadwal',
+                        icon: 'fas fa-calendar'
+                    },
+                    {
+                        title: 'Assessment Dasar',
+                        icon: 'fas fa-clipboard-check'
+                    },
+                    {
+                        title: 'Data Peserta',
+                        icon: 'fas fa-users'
+                    },
+                    {
+                        title: 'Request Khusus',
+                        icon: 'fas fa-star'
+                    }
+                ],
+                formData: {
+                    id_mitra: '',
+                    nama_mitra: '',
+                    judul_pelatihan: '',
+                    id_tema: '',
+                    no_pic: '',
+                    tanggal_waktu_mulai: '',
+                    tanggal_waktu_selesai: '',
+                    masalah: '',
+                    kebutuhan: '',
+                    materi: '',
+                    request_khusus: ''
+                },
+                participants: [{
+                    nama: '',
+                    email: '',
+                    jenis_kelamin: '',
+                    jabatan: '',
+                    tanggung_jawab: ''
+                }],
 
-            document.getElementById('no_pic').addEventListener('input', function() {
-                this.value = this.value.replace(/[^0-9]/g, ''); // hapus karakter selain angka
-            });
-            // Add row for Assessment Dasar
-            $(".addRow1").click(function() {
-                console.log('Tombol tambah Assessment Dasar diklik!');
-                $("#tableBody1").append(
-                    '<tr><td><input type="text" name="masalah[]" class="form-control" ></td><td><input type="text" name="kebutuhan[]" class="form-control" ></td><td><input type="text" name="materi[]" class="form-control" ></td><td><button type="button" class="btn btn-danger btn-sm removeRow">Hapus</button></td></tr>'
-                );
-            });
+                nextStep() {
+                    if (this.validateCurrentStep()) {
+                        if (this.currentStep < 5) {
+                            this.currentStep++;
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Form Belum Lengkap',
+                            text: 'Silakan isi semua kolom yang diperlukan sebelum melanjutkan.',
+                            confirmButtonText: 'Mengerti',
+                            confirmButtonColor: '#6366f1'
+                        });
+                    }
+                },
 
-            // Add row for Assessment Peserta
-            $(".addRow2").click(function() {
-                $("#tableBody2").append(
-                    '<tr><td><input type="text" name="nama_peserta[]" class="form-control" ></td> <td><input type="text" name="email_peserta[]" class="form-control" > </td> <td><div class="form-group"><select class="form-control" name="jenis_kelamin[]"id="exampleFormControlSelect2"><option value="">Pilih</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option><option value="Transgender">Transgender</option><option value="Tidak ingin menyebutkan">Tidak ingin menyebutkan</option></select></div></td><td><input type="text" name="jabatan[]" class="form-control" ></td><td><input type="text" name="tanggung_jawab[]" class="form-control" ></td><td><button type="button" class="btn btn-danger btn-sm removeRow">Hapus</button></td></tr>'
-                );
-            });
+                prevStep() {
+                    if (this.currentStep > 1) {
+                        this.currentStep--;
+                    }
+                },
 
-            // Remove row on button click
-            $(document).on("click", ".removeRow", function() {
-                $(this).closest("tr").remove();
-            });
+                validateCurrentStep() {
+                    switch (this.currentStep) {
+                        case 1:
+                            if (this.formData.id_mitra === 'Lainnya') {
+                                return this.formData.nama_mitra && this.formData.judul_pelatihan && this.formData.id_tema &&
+                                    this.formData.no_pic;
+                            }
+                            return this.formData.id_mitra && this.formData.judul_pelatihan && this.formData.id_tema && this
+                                .formData.no_pic;
+                        case 2:
+                            return this.formData.tanggal_waktu_mulai && this.formData.tanggal_waktu_selesai;
+                        case 3:
+                            return this.formData.masalah && this.formData.kebutuhan && this.formData.materi;
+                        case 4:
+                            return this.participants.every(p => p.nama && p.email && p.jenis_kelamin && p.jabatan && p
+                                .tanggung_jawab);
+                        case 5:
+                            return true; // Request khusus is optional
+                        default:
+                            return false;
+                    }
+                },
 
-            $('.form-control').on('input', function() {
-                $(this).removeClass('is-invalid'); // Menghapus kelas 'is-invalid'
-                $(this).siblings('.invalid-feedback').remove(); // Menghapus pesan kesalahan
-            });
+                toggleCustomMitra() {
+                    this.showCustomMitra = this.formData.id_mitra === 'Lainnya';
+                    if (!this.showCustomMitra) {
+                        this.formData.nama_mitra = '';
+                    }
+                },
 
-            $('#mitra').on('change', function() {
-                var selected = $(this).val();
-                if (selected === 'Lainnya') {
-                    $('#namaMitraContainer').slideDown();
-                    $('#nama_mitra').prop('required', true);
-                } else {
-                    $('#namaMitraContainer').slideUp();
-                    $('#nama_mitra').val('');
-                    $('#nama_mitra').prop('required', false);
+                addParticipant() {
+                    this.participants.push({
+                        nama: '',
+                        email: '',
+                        jenis_kelamin: '',
+                        jabatan: '',
+                        tanggung_jawab: ''
+                    });
+                },
+
+                removeParticipant(index) {
+                    if (this.participants.length > 1) {
+                        this.participants.splice(index, 1);
+                    }
+                },
+
+                submitForm() {
+                    if (!this.validateCurrentStep()) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Form Belum Lengkap',
+                            text: 'Silakan lengkapi semua data yang diperlukan.',
+                            confirmButtonText: 'Mengerti',
+                            confirmButtonColor: '#6366f1'
+                        });
+                        return;
+                    }
+
+                    // Show loading
+                    Swal.fire({
+                        title: 'Mengirim Permintaan...',
+                        text: 'Mohon tunggu sebentar.',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Simulate form submission
+                    setTimeout(() => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Permintaan pelatihan Anda telah berhasil dikirim. Tim kami akan segera menghubungi Anda.',
+                            confirmButtonText: 'Baik',
+                            confirmButtonColor: '#10b981'
+                        }).then(() => {
+                            // Reset form or redirect
+                            console.log('Form Data:', this.formData);
+                            console.log('Participants:', this.participants);
+
+                            // In real implementation, you would send this data to your Laravel backend
+                            // window.location.href = '/success-page';
+                        });
+                    }, 2000);
+                }
+            }
+        }
+
+        $('#submit-button').click(function (e) {
+            e.preventDefault();
+
+            // Get Alpine.js data
+            const alpineData = Alpine.$data(document.querySelector('[x-data]'));
+
+            // Create FormData
+            var formData = new FormData($('#multi-step-form')[0]);
+
+            // Remove existing participant data that might be in form
+            for (let [key, value] of formData.entries()) {
+                if (key.startsWith('nama_peserta') ||
+                    key.startsWith('email_peserta') ||
+                    key.startsWith('jenis_kelamin') ||
+                    key.startsWith('jabatan') ||
+                    key.startsWith('tanggung_jawab')) {
+                    formData.delete(key);
+                }
+            }
+
+            // Add participants data in the correct format
+            if (alpineData.participants && alpineData.participants.length > 0) {
+                alpineData.participants.forEach((participant, index) => {
+                    formData.append(`nama_peserta[${index}]`, participant.nama || '');
+                    formData.append(`email_peserta[${index}]`, participant.email || '');
+                    formData.append(`jenis_kelamin[${index}]`, participant.jenis_kelamin || '');
+                    formData.append(`jabatan[${index}]`, participant.jabatan || '');
+                    formData.append(`tanggung_jawab[${index}]`, participant.tanggung_jawab || '');
+                });
+            }
+
+            // Debug: log what we're sending
+            console.log('Sending participants data:');
+            for (let [key, value] of formData.entries()) {
+                if (key.includes('peserta') || key.includes('kelamin') || key.includes('jabatan') || key.includes('tanggung_jawab')) {
+                    console.log(key + ': ' + value);
+                }
+            }
+
+            // Show loading spinner
+            Swal.fire({
+                title: 'Menyimpan data...',
+                text: 'Mohon tunggu sebentar.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
 
+            // Send AJAX request
+            $.ajax({
+                url: "{{ route('permintaan.store') }}",
+                type: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    Swal.close();
 
-            $('.form-control').on('input', function() {
-                $(this).removeClass('is-invalid'); // Menghapus kelas 'is-invalid'
-                $(this).siblings('.invalid-feedback').remove(); // Menghapus pesan kesalahan
+                    if (response.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: 'Data berhasil disimpan.',
+                            confirmButtonText: 'Lanjut'
+                        }).then(() => {
+                            window.location.href = response.redirect_url;
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: 'Terjadi kesalahan, silakan coba lagi.',
+                            confirmButtonText: 'Oke'
+                        });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    Swal.close();
+
+                    if (xhr.responseJSON && xhr.responseJSON.errors) {
+                        let messages = '';
+                        $.each(xhr.responseJSON.errors, function (key, value) {
+                            messages += `• ${value[0]}<br>`;
+                        });
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validasi Gagal',
+                            html: messages,
+                            confirmButtonText: 'Perbaiki'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Terjadi Kesalahan!',
+                            html: xhr.responseJSON?.error ?? 'Gagal mengirim data. Silakan coba lagi nanti.',
+                            confirmButtonText: 'Oke'
+                        });
+                    }
+                }
             });
         });
 
-        $(document).ready(function() {
-            var currentStep = 1;
-
-            // Function to validate fields of the current step
-            function validateStep(step) {
-                var valid = true;
-
-                $("#step-" + step + " .form-control").each(function() {
-                    var inputField = $(this);
-
-                    // Logika validasi untuk mitra dan nama mitra
-                    if (inputField.attr('id') === 'mitra' && inputField.val() === "") {
-                        inputField.addClass("is-invalid"); // Add invalid class if mitra is empty
-                        $('#nama_mitra').prop('required',
-                            false); // Nama Mitra tidak wajib jika mitra kosong
-                    } else if (inputField.attr('id') === 'nama_mitra' && inputField.val() === "" && !$(
-                            '#mitra').val()) {
-                        // Jika mitra kosong dan nama_mitra kosong, beri kesalahan
-                        inputField.addClass("is-invalid");
-                        valid = false;
-                    } else {
-                        // Hapus kelas is-invalid jika field tidak kosong
-                        inputField.removeClass("is-invalid");
-                    }
-
-                    // Pengkondisian untuk validasi field lain yang mungkin kosong
-                    if (inputField.val() === "") {
-                        inputField.addClass("is-invalid"); // Add invalid class to show error
-                        valid = false;
-                    } else {
-                        inputField.removeClass("is-invalid"); // Remove invalid class if input is filled
-                    }
-                });
-
-                return valid;
-            }
-
-            // Navigate to next step
-            $(".next-step").click(function() {
-                if (validateStep(currentStep)) {
-                    var currentContent = $("#step-" + currentStep);
-                    var nextContent = $("#step-" + (currentStep + 1));
-
-                    currentContent.removeClass("active");
-                    nextContent.addClass("active");
-
-                    currentStep++;
-                    updateStepper();
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Form Belum Lengkap',
-                        text: 'Silakan isi semua kolom pada langkah ini sebelum melanjutkan.',
-                        confirmButtonText: 'Oke'
-                    });
-                }
-            });
-
-            // Navigate to previous step
-            $(".prev-step").click(function() {
-                var currentContent = $("#step-" + currentStep);
-                var prevContent = $("#step-" + (currentStep - 1));
-
-                currentContent.removeClass("active");
-                prevContent.addClass("active");
-
-                currentStep--;
-                updateStepper();
-            });
-
-            // Update the stepper to reflect current step
-            function updateStepper() {
-                $(".step").removeClass("active");
-                $(".step").eq(currentStep - 1).addClass("active");
-            }
-
-            // Ensure that nama_mitra is required only if mitra is not selected
-            $('#mitra').on('change', function() {
-                if ($(this).val() === "") {
-                    $('#nama_mitra').prop('required', false); // Nama Mitra tidak wajib jika mitra dipilih
-                } else {
-                    $('#nama_mitra').prop('required', true); // Nama Mitra wajib jika mitra tidak dipilih
-                }
-            });
-
-            // Enable or disable the submit button based on validation
-            function toggleSubmitButton() {
-                var allStepsValid = true;
-
-                // Check if all steps are valid
-                $(".form-step").each(function() {
-                    var step = $(this).attr('id').replace('step-', '');
-                    if (!validateStep(step)) {
-                        allStepsValid = false;
-                    }
-                });
-
-                // Enable/disable submit button based on form validity
-                if (allStepsValid) {
-                    $('#submit-button').prop('disabled', false);
-                } else {
-                    $('#submit-button').prop('disabled', true);
-                }
-            }
-
-            // Check form validity whenever there is an input change
-            $(".form-control").on('input', function() {
-                toggleSubmitButton();
-            });
-
-            // Ensure the submit button is initially checked
-            toggleSubmitButton();
-
-            $('#submit-button').click(function(e) {
-                e.preventDefault(); // Prevent form from submitting normally
-
-                // Collect form data
-                var formData = new FormData($('#multi-step-form')[0]);
-
-                // Show loading spinner (optional)
-                Swal.fire({
-                    title: 'Menyimpan data...',
-                    text: 'Mohon tunggu sebentar.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Send AJAX request
-                $.ajax({
-                    url: "{{ route('permintaan.store') }}", // Route ke controller
-                    type: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function(response) {
-                        Swal.close(); // Tutup loading
-
-                        if (response.success) {
-                            // Tampilkan alert sukses
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                text: 'Data berhasil disimpan.',
-                                confirmButtonText: 'Lanjut'
-                            }).then(() => {
-                                window.location.href = response.redirect_url;
-                            });
-                        } else {
-                            // Tampilkan alert gagal (tanpa redirect)
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: 'Terjadi kesalahan, silakan coba lagi.',
-                                confirmButtonText: 'Oke'
-                            });
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.close();
-
-                        if (xhr.responseJSON && xhr.responseJSON.errors) {
-                            let messages = '';
-                            $.each(xhr.responseJSON.errors, function(key, value) {
-                                messages += `• ${value[0]}<br>`;
-                            });
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Validasi Gagal',
-                                html: messages,
-                                confirmButtonText: 'Perbaiki'
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Terjadi Kesalahan!',
-                                html: xhr.responseJSON?.error ??
-                                    'Gagal mengirim data. Silakan coba lagi nanti.',
-                                confirmButtonText: 'Oke'
-                            });
-                        }
-                    }
-
+        // Format phone number input
+        document.addEventListener('alpine:init', () => {
+            Alpine.directive('phone', (el) => {
+                el.addEventListener('input', function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
                 });
             });
         });
     </script>
+
+    <!-- Custom Styles -->
+    <style>
+        /* Smooth transitions for Alpine.js */
+        [x-cloak] {
+            display: none !important;
+        }
+
+        /* Custom focus styles */
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* Hover effects for cards */
+        .bg-gradient-to-br:hover {
+            transform: translateY(-1px);
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Animation for step indicators */
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
+        }
+
+        .animate-ping {
+            animation: pulse-ring 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+    </style>
+
 @endsection

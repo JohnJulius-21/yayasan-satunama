@@ -15,7 +15,6 @@ class permintaan extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id_user',
         'id_tema',
         'id_mitra',
         'judul_pelatihan',

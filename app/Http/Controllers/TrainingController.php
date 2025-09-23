@@ -263,7 +263,59 @@ class TrainingController extends Controller
             'peserta.*.informasi' => 'required',
             'peserta.*.pelatihan_relevan' => 'required|string|max:100',
             'peserta.*.harapan_pelatihan' => 'required|string|max:255',
+        ],[
+            'peserta.required' => 'Data peserta wajib diisi.',
+            'peserta.array' => 'Format data peserta tidak valid.',
+            'peserta.min' => 'Minimal harus ada satu peserta.',
+
+            'peserta.*.nama_peserta.required' => 'Nama peserta wajib diisi.',
+            'peserta.*.nama_peserta.string' => 'Nama peserta harus berupa teks.',
+            'peserta.*.nama_peserta.max' => 'Nama peserta maksimal 100 karakter.',
+
+            'peserta.*.email_peserta.required' => 'Email peserta wajib diisi.',
+            'peserta.*.email_peserta.email' => 'Format email peserta tidak valid.',
+            'peserta.*.email_peserta.max' => 'Email peserta maksimal 100 karakter.',
+
+            'peserta.*.no_hp.required' => 'Nomor HP peserta wajib diisi.',
+            'peserta.*.no_hp.numeric' => 'Nomor HP peserta harus berupa angka.',
+
+            'peserta.*.gender.required' => 'Jenis kelamin peserta wajib dipilih.',
+
+            'peserta.*.rentang_usia.required' => 'Rentang usia peserta wajib dipilih.',
+
+            'peserta.*.id_negara.required' => 'Negara peserta wajib dipilih.',
+            'peserta.*.id_negara.integer' => 'Negara tidak valid.',
+            'peserta.*.id_negara.exists' => 'Negara yang dipilih tidak tersedia.',
+
+            'peserta.*.id_provinsi.required' => 'Provinsi peserta wajib dipilih.',
+            'peserta.*.id_provinsi.integer' => 'Provinsi tidak valid.',
+            'peserta.*.id_provinsi.exists' => 'Provinsi yang dipilih tidak tersedia.',
+
+            'peserta.*.id_kabupaten.required' => 'Kabupaten/Kota peserta wajib dipilih.',
+            'peserta.*.id_kabupaten.integer' => 'Kabupaten/Kota tidak valid.',
+            'peserta.*.id_kabupaten.exists' => 'Kabupaten/Kota yang dipilih tidak tersedia.',
+
+            'peserta.*.nama_organisasi.required' => 'Nama organisasi wajib diisi.',
+            'peserta.*.nama_organisasi.string' => 'Nama organisasi harus berupa teks.',
+            'peserta.*.nama_organisasi.max' => 'Nama organisasi maksimal 100 karakter.',
+
+            'peserta.*.organisasi.required' => 'Jenis organisasi wajib dipilih.',
+
+            'peserta.*.jabatan_peserta.required' => 'Jabatan peserta wajib diisi.',
+            'peserta.*.jabatan_peserta.string' => 'Jabatan peserta harus berupa teks.',
+            'peserta.*.jabatan_peserta.max' => 'Jabatan peserta maksimal 100 karakter.',
+
+            'peserta.*.informasi.required' => 'Sumber informasi wajib dipilih.',
+
+            'peserta.*.pelatihan_relevan.required' => 'Pelatihan relevan wajib diisi.',
+            'peserta.*.pelatihan_relevan.string' => 'Pelatihan relevan harus berupa teks.',
+            'peserta.*.pelatihan_relevan.max' => 'Pelatihan relevan maksimal 100 karakter.',
+
+            'peserta.*.harapan_pelatihan.required' => 'Harapan terhadap pelatihan wajib diisi.',
+            'peserta.*.harapan_pelatihan.string' => 'Harapan pelatihan harus berupa teks.',
+            'peserta.*.harapan_pelatihan.max' => 'Harapan pelatihan maksimal 255 karakter.',
         ]);
+
 
         $akunBaru = []; // Menyimpan peserta yang dibuatkan akun
 
@@ -509,7 +561,7 @@ class TrainingController extends Controller
                 ->where('id_presensi_reguler', $id_presensi_reguler)
                 ->first();
 
-            // DEBUG LOG  
+            // DEBUG LOG
             Log::info('Existing presensi check:', [
                 'existing' => $existing ? 'found' : 'not found'
             ]);
@@ -749,15 +801,14 @@ class TrainingController extends Controller
     {
         try {
             $request->validate([
-                // ... aturan validasi ...
             ], [
-                // ... pesan validasi ...
+
             ]);
 
-            $id_user = Auth::user()->id;
+//            $id_user = Auth::user()->id;
 
             $permintaan = new permintaan();
-            $permintaan->id_user = $id_user;
+//            $permintaan->id_user = $id_user;
 
             $nama_mitra = $request->input('nama_mitra');
             $no_pic = $request->input('no_pic');
@@ -788,20 +839,48 @@ class TrainingController extends Controller
             $permintaan->request_khusus = $request->input('request_khusus');
             $permintaan->save();
 
-            foreach ($request->nama_peserta as $key => $value) {
-                $assessmentPeserta = new assesment_peserta_permintaan();
-                $assessmentPeserta->nama_peserta = $value;
-                $assessmentPeserta->email_peserta = $request->email_peserta[$key] ?? null;
-                $assessmentPeserta->jenis_kelamin = $request->jenis_kelamin[$key] ?? null;
-                $assessmentPeserta->jabatan = $request->jabatan[$key] ?? null;
-                $assessmentPeserta->tanggung_jawab = $request->tanggung_jawab[$key] ?? null;
-                $assessmentPeserta->id_permintaan = $permintaan->id_permintaan;
-                $assessmentPeserta->save();
+            // Debug: Log participants data specifically
+            \Log::info('Participants data:', [
+                'nama_peserta' => $request->input('nama_peserta'),
+                'email_peserta' => $request->input('email_peserta'),
+                'jenis_kelamin' => $request->input('jenis_kelamin'),
+                'jabatan' => $request->input('jabatan'),
+                'tanggung_jawab' => $request->input('tanggung_jawab'),
+            ]);
+
+            // Simpan data peserta
+            $namaPeserta = $request->input('nama_peserta', []);
+            $emailPeserta = $request->input('email_peserta', []);
+            $jenisKelamin = $request->input('jenis_kelamin', []);
+            $jabatan = $request->input('jabatan', []);
+            $tanggungJawab = $request->input('tanggung_jawab', []);
+
+            foreach ($namaPeserta as $key => $nama) {
+                if (!empty($nama)) {
+                    $assessmentPeserta = new assesment_peserta_permintaan();
+                    $assessmentPeserta->nama_peserta = $nama;
+                    $assessmentPeserta->email_peserta = $emailPeserta[$key] ?? null;
+                    $assessmentPeserta->jenis_kelamin = $jenisKelamin[$key] ?? null;
+                    $assessmentPeserta->jabatan = $jabatan[$key] ?? null;
+                    $assessmentPeserta->tanggung_jawab = $tanggungJawab[$key] ?? null;
+                    $assessmentPeserta->id_permintaan = $permintaan->id_permintaan;
+
+                    // Debug: log what we're saving
+                    \Log::info("Saving participant {$key}:", [
+                        'nama' => $nama,
+                        'email' => $emailPeserta[$key] ?? null,
+                        'jenis_kelamin' => $jenisKelamin[$key] ?? null,
+                        'jabatan' => $jabatan[$key] ?? null,
+                        'tanggung_jawab' => $tanggungJawab[$key] ?? null,
+                    ]);
+
+                    $assessmentPeserta->save();
+                }
             }
 
             return response()->json([
                 'success' => true,
-                'redirect_url' => route('reguler.pelatihan')
+                'redirect_url' => route('permintaan.create')
             ]);
         } catch (\Throwable $e) {
             \Log::error("Error saat menyimpan permintaan pelatihan: " . $e->getMessage());
