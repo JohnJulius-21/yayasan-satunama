@@ -1,72 +1,94 @@
-<footer class="py-5 bg-dark text-light">
-    <div class="container">
-        <div class="row">
-            <div class="col-6 col-md-2 mb-3">
-                <h5>SATUNAMA Training Center</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-light">Beranda</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pelatihan</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Tentang</a>
+<!-- Footer -->
+<footer id="footer" class="bg-white text-dark">
+    <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Logo dan Kontak -->
+            <div class="lg:col-span-1">
+                <a href="index.html" class="flex items-center mb-4">
+                    <img class="w-1/1 max-w-20" src="{{asset('images/stc.png')}}" alt="Logo" />
+                </a>
+                <div class="pt-3">
+                    <p class="mb-2">Jl. Sambisari Jl. Duwet No.99</p>
+                    <p class="mb-4">Sleman, Daerah Istimewa Yogyakarta, 55285</p>
+                    <p class="mb-2">
+                        <strong>Phone:</strong>
+                        <span>+62 822-2688-7110</span>
+                    </p>
+                    <p>
+                        <strong>Email:</strong>
+                        <span>training@satunama.org</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Link -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Link</h4>
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <i class="bi bi-chevron-right text-sm mr-2"></i>
+                        <a href="#" class="hover:text-green-700 transition-colors">Beranda</a>
                     </li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Blog</a></li>
+                    <li class="flex items-center">
+                        <i class="bi bi-chevron-right text-sm mr-2"></i>
+                        <a href="#" class="hover:text-green-700 transition-colors">Daftar Pelatihan</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="bi bi-chevron-right text-sm mr-2"></i>
+                        <a href="#" class="hover:text-green-700 transition-colors">Tentang Kami</a>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="bi bi-chevron-right text-sm mr-2"></i>
+                        <a href="#" class="hover:text-green-700 transition-colors">Ruang Diskusi</a>
+                    </li>
                 </ul>
             </div>
 
-            <div class="col-6 col-md-2 mb-3">
-                <h5>Section</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a>
+            <!-- Pelatihan Kami -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Pelatihan Kami</h4>
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <i class="bi bi-chevron-right text-sm mr-2"></i>
+                        <a href="#" class="hover:text-green-700 transition-colors">Reguler</a>
                     </li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
+                    <li class="flex items-center">
+                        <i class="bi bi-chevron-right text-sm mr-2"></i>
+                        <a href="#" class="hover:text-green-700 transition-colors">Permintaan</a>
                     </li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
                 </ul>
             </div>
 
-            <div class="col-6 col-md-2 mb-3">
-                <h5>Sosial Media</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a>
-                    </li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a>
-                    </li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
-                    <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
-                </ul>
-            </div>
-
-            <div class="col-md-5 offset-md-1 mb-3">
-                <form>
-                    <h5>Subscribe to our newsletter</h5>
-                    <p>Monthly digest of what's new and exciting from us.</p>
-                    <div class="d-flex flex-column flex-sm-row w-100 gap-2">
-                        <label for="newsletter1" class="visually-hidden">Email address</label>
-                        <input id="newsletter1" type="text" class="form-control" placeholder="Email address">
-                        <button class="btn btn-success" type="button">Subscribe</button>
-                    </div>
-                </form>
+            <!-- Social Media -->
+            <div>
+                <h4 class="text-lg font-semibold mb-4">Follow Us</h4>
+                <p class="mb-4">Ikuti Sosial Media Kami</p>
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/SATUNAMATrainingCenter"
+                       class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                        <i class="fa-brands fa-facebook" style="color: #ffffff;"></i>
+                    </a>
+                    <a href="https://www.instagram.com/yayasansatunama/?hl=en"
+                       class="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors">
+                        <i class="fa-brands fa-instagram" style="color: #ffffff;"></i>
+                    </a>
+{{--                    <a href="https://www.linkedin.com/company/yayasan-satunama-yogyakarta/posts/?feedView=all"--}}
+{{--                       class="w-10 h-10 bg-green-700 rounded-full flex items-center justify-center hover:bg-green-800 transition-colors">--}}
+{{--                        <i class="fas fa-linkedin text-white"></i>--}}
+{{--                    </a>--}}
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="d-flex flex-column flex-sm-row justify-content-between py-4 my-4 border-top">
-            <p>© SATUANAMA Training Center 2024, Inc. All rights reserved.</p>
-            <ul class="list-unstyled d-flex">
-                <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24"
-                            height="24">
-                            <use xlink:href="#twitter"></use>
-                        </svg></a></li>
-                <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24"
-                            height="24">
-                            <use xlink:href="#instagram"></use>
-                        </svg></a></li>
-                <li class="ms-3"><a class="link-body-emphasis" href="#"><svg class="bi" width="24"
-                            height="24">
-                            <use xlink:href="#facebook"></use>
-                        </svg></a></li>
-            </ul>
+    <!-- Copyright -->
+    <div class="bg-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-600">
+                © <span>Copyright</span>
+                <strong class="px-1 text-black">SATUNAMA Training Center</strong>
+                <span>All Rights Reserved</span>
+            </p>
         </div>
     </div>
 </footer>
