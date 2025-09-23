@@ -18,11 +18,22 @@ class PresensiController extends Controller
     use DataTableHelper;
     public function indexReguler(Request $request)
     {
-//        $reguler = reguler::all();
+        // Base query
         $query = reguler::query();
+
+        // Apply search
         $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
-        $data = $query->paginate($request->get('per_page', 10));
-        // Format tanggal dengan Carbon
+
+        // Order by tanggal_mulai descending (terbaru dulu)
+        $query->orderBy('tanggal_mulai', 'desc');
+        // Get paginated data
+        $perPage = $request->get('per_page', 10);
+        $data = $query->paginate($perPage);
+
+        // Preserve query parameters in pagination links
+        $data->appends($request->query());
+
+        // Format tanggal dengan Carbon - lakukan setelah pagination
         $data->getCollection()->transform(function ($item) {
             $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
             $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
@@ -31,8 +42,8 @@ class PresensiController extends Controller
 
         $columns = [
             ['label' => 'Nama Pelatihan', 'field' => 'nama_pelatihan'],
-            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'],
-            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'],
+            ['label' => 'Tanggal Mulai', 'field' => 'tanggal_mulai'], // Gunakan field yang sudah diformat
+            ['label' => 'Tanggal Selesai', 'field' => 'tanggal_selesai'], // Gunakan field yang sudah diformat
             ['label' => 'Aksi', 'field' => 'aksi'],
         ];
 
@@ -48,17 +59,18 @@ class PresensiController extends Controller
             ]
         ];
 
-        // Handle AJAX
-        $response = $this->handleDataTableResponse(
-            $request,
-            $data,
-            'partials.table_rows',
-            compact('columns','actions')
-        );
+        // Handle AJAX request
+        if ($request->ajax()) {
+            return $this->handleDataTableResponse(
+                $request,
+                $data,
+                'partials.table_rows',
+                compact('columns', 'actions')
+            );
+        }
 
-        if ($response) return $response;
-        // $reguler = reguler::findOrFail($id);
-        return view('admin.presensi.reguler.index', compact('data','columns','actions'));
+        return view('admin.presensi.reguler.index', compact('data', 'columns', 'actions'))
+            ->with('paginatedData', $data);
     }
 
     public function showReguler($id)

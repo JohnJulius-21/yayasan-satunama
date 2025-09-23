@@ -19,15 +19,18 @@ class CertificationController extends Controller
     use DataTableHelper;
     public function indexReguler(Request $request)
     {
-        $reguler = reguler::with('peserta')->get();
         $query = reguler::query();
         $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
+
+        // Order by tanggal_mulai descending (terbaru dulu)
+        $query->orderBy('tanggal_mulai', 'desc');
+
         $perPage = $request->get('per_page', 10);
         $data = $query->paginate($perPage);
 
         // Preserve query parameters in pagination links
         $data->appends($request->query());
-        // dd($reguler);
+
         $data->getCollection()->transform(function ($item) {
             $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
             $item->tanggal_selesai = Carbon::parse($item->tanggal_selesai)->locale('id')->isoFormat('D MMMM YYYY');
