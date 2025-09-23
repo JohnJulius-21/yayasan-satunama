@@ -202,13 +202,12 @@
                                 <label for="fee_pelatihan" class="block text-sm font-medium text-gray-700 mb-2">
                                     Fee Pelatihan <span class="text-red-500">*</span>
                                 </label>
-                                <input type="number"
+                                <input type="text"
                                        class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition duration-200 @error('fee_pelatihan') border-red-500 @else border-gray-300 @enderror"
                                        placeholder="Masukkan Fee Pelatihan"
                                        name="fee_pelatihan"
                                        id="fee_pelatihan"
-                                       value="{{ old('fee_pelatihan') }}"
-                                       min="0">
+                                       value="{{ old('fee_pelatihan') }}">
                                 @error('fee_pelatihan')
                                 <div class="text-red-600 text-sm mt-1">{{ $message }}</div>
                                 @enderror
