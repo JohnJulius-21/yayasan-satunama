@@ -99,13 +99,14 @@ Route::get('/file/{filename}', function ($filename) {
 })->where('filename', '.*')->name('file.show');
 
 
-
 Route::get('pelatihan-saya', [TrainingController::class, 'regulerList'])
     ->name('reguler.pelatihan');
 
+Route::get('/pelatihan/permintaan/form-request-permintaan', [TrainingController::class, 'createPermintaan'])
+    ->name('permintaan.create');
+
 Route::middleware(['peserta'])->group(function () {
-    Route::get('/pelatihan/permintaan/create', [TrainingController::class, 'createPermintaan'])
-        ->name('permintaan.create');
+
 
     Route::post('/pelatihan/permintaan/store', [TrainingController::class, 'storePermintaan'])
         ->name('permintaan.store');
@@ -144,8 +145,6 @@ Route::middleware(['peserta'])->group(function () {
 
 Route::get('/pelatihan-saya/{nama_pelatihan}', [TrainingController::class, 'regulerListShow'])
     ->name('reguler.pelatihan.list');
-
-
 
 
 Route::get('/pelatihan-saya/survey-kepuasan/{id}', [TrainingController::class, 'regulerListShowSurvey'])
@@ -384,12 +383,15 @@ Route::middleware(['admin'])->group(function () {
     Route::delete('/admin/fasilitator/hapus-fasilitator/{id_fasilitator}', [FasilitatorController::class, 'destroy'])->name('fasilitatorDestroyAdmin');
 
     Route::get('/admin/ruang-diskusi/daftar-ruang-diskusi', [DiscussionController::class, 'indexAdmin'])->name(name: 'adminDiskusi');
+    Route::get('/admin/ruang-diskusi/buat-ruang-diskusi', [DiscussionController::class, 'createAdmin'])->name(name: 'adminCreateDiskusi');
     Route::get('/admin/ruang-diskusi/lihat-ruang-diskusi/{id}', [DiscussionController::class, 'showAdmin'])->name(name: 'adminShowDiskusi');
     Route::post('/admin/ruang-diskusi/simpan-komen-ruang-diskusi/{id}', [DiscussionController::class, 'storeKomenAdmin'])->name('adminKomenStore');
+    Route::delete('/admin/ruang-diskusi/hapus-komen/{id}', [DiscussionController::class, 'deleteComment'])->name('adminKomenDelete');
     Route::delete('/admin/diskusi/{id}', [DiscussionController::class, 'destroyAdmin'])->name('adminDestroyDiskusi');
 
     Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
     Route::get('/admin/alumni', [AlumniController::class, 'index'])->name('adminAlumni');
+    Route::get('/admin/alumni/tambah-alumni', [AlumniController::class, 'create'])->name('adminAlumniCreate');
 
     // Route::get('/admin/sertifikat', [CertificationController::class, 'index'])->name('adminSertifikat');
     Route::get('/admin/presensi/reguler', [PresensiController::class, 'indexReguler'])->name('adminPresensiReguler');
