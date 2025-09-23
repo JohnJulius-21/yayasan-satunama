@@ -5,6 +5,7 @@ namespace App\View\Components;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class DataTable extends Component
 {
@@ -25,6 +26,7 @@ class DataTable extends Component
     public bool $showBackButton;
     public ?string $exportRoute;
     public bool $showSearch;
+    public $paginatedData; // Tambahan untuk Laravel pagination
 
     public function __construct(
         string $title = 'Data Table',
@@ -40,7 +42,8 @@ class DataTable extends Component
         string $customStyles = '',
         bool $showBackButton = false,
         ?string $exportRoute = null,
-        bool $showSearch = true
+        bool $showSearch = true,
+        $paginatedData = null // Tambahan parameter
     ) {
         $this->title = $title;
         $this->description = $description;
@@ -56,6 +59,7 @@ class DataTable extends Component
         $this->showBackButton = $showBackButton;
         $this->exportRoute = $exportRoute;
         $this->showSearch = $showSearch;
+        $this->paginatedData = $paginatedData;
     }
 
     public function render()
@@ -94,12 +98,53 @@ class DataTable extends Component
         return (bool) $this->addButton;
     }
 
-
     /**
      * Get columns for view
      */
     public function getColumns(): array
     {
         return $this->getDefaultColumns();
+    }
+
+    /**
+     * Check if has paginated data
+     */
+    public function hasPaginatedData(): bool
+    {
+        return $this->paginatedData !== null &&
+            ($this->paginatedData instanceof LengthAwarePaginator ||
+                method_exists($this->paginatedData, 'hasPages'));
+    }
+
+    /**
+     * Check if should show Laravel pagination
+     */
+    public function shouldShowLaravelPagination(): bool
+    {
+        return $this->showPagination &&
+            $this->hasPaginatedData() &&
+            $this->paginatedData->hasPages();
+    }
+
+    /**
+     * Get pagination info
+     */
+    public function getPaginationInfo(): array
+    {
+        if (!$this->hasPaginatedData()) {
+            return [
+                'showing' => 0,
+                'to' => 0,
+                'total' => 0,
+                'from' => 0
+            ];
+        }
+
+        return [
+            'showing' => $this->paginatedData->firstItem() ?? 0,
+            'to' => $this->paginatedData->lastItem() ?? 0,
+            'total' => $this->paginatedData->total() ?? 0,
+            'from' => $this->paginatedData->firstItem() ?? 0
+        ];
     }
 }

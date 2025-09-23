@@ -22,7 +22,11 @@ class CertificationController extends Controller
         $reguler = reguler::with('peserta')->get();
         $query = reguler::query();
         $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
-        $data = $query->paginate($request->get('per_page', 10));
+        $perPage = $request->get('per_page', 10);
+        $data = $query->paginate($perPage);
+
+        // Preserve query parameters in pagination links
+        $data->appends($request->query());
         // dd($reguler);
         $data->getCollection()->transform(function ($item) {
             $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
@@ -57,7 +61,7 @@ class CertificationController extends Controller
         );
 
         if ($response) return $response;
-        return view('admin.sertifikat.reguler.index', compact('data','columns','actions'));
+        return view('admin.sertifikat.reguler.index', compact('data','columns','actions'))->with('paginatedData', $data);;
     }
 
     public function showReguler($id)

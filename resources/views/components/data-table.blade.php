@@ -6,20 +6,36 @@
     </div>
 @endif
 
+
 <div class="card">
     <div class="controls">
+        @if($showEntriesSelect)
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <label for="entriesSelect_{{ $tableId }}"
+                       style="font-size: 14px; color: #64748b;">Tampilkan:</label>
+                <select id="entriesSelect_{{ $tableId }}" class="entries-select" onchange="changePerPage_{{ $tableId }}(this.value)">
+                    <option value="10" {{ request('per_page') == 10 || (!request('per_page') && 10 == 10) ? 'selected' : '' }}>10</option>
+                    <option value="25" {{ request('per_page') == 25  ? 'selected' : '' }}>25</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                    <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
+                </select>
+            </div>
+        @endif
+
         <div class="search-container">
-            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-            </svg>
+
             <input type="text"
                    id="searchInput_{{ $tableId }}"
                    placeholder="{{ $searchPlaceholder }}"
                    class="search-input"
                    value="{{ request('search') }}">
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
         </div>
+
 
         {{-- Dynamic Filters --}}
         @if($filters && count($filters) > 0)
@@ -66,36 +82,32 @@
         </table>
     </div>
 
-    {{-- Pagination --}}
-    @if($showPagination)
+    {{-- Laravel Pagination --}}
+    @if($shouldShowLaravelPagination())
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 sm:flex sm:items-center sm:justify-between">
+            <div class="text-sm text-gray-700">
+                @php $info = $getPaginationInfo() @endphp
+                Menampilkan {{ $info['showing'] }} - {{ $info['to'] }} dari {{ $info['total'] }} data
+            </div>
+            <div class="mt-3 sm:mt-0">
+                {{ $paginatedData->appends(request()->query())->links() }}
+            </div>
+        </div>
+    @elseif($showPagination)
+        {{-- Fallback ke custom pagination jika tidak ada Laravel pagination --}}
         <div class="pagination">
-            @if($showEntriesSelect)
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <label for="entriesSelect_{{ $tableId }}"
-                           style="font-size: 14px; color: #64748b;">Tampilkan:</label>
-                    <select id="entriesSelect_{{ $tableId }}" class="entries-select">
-                        <option value="10">10</option>
-                        <option value="25" selected>25</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                    </select>
-                </div>
-            @endif
-
             <div class="pagination-info" id="paginationInfo_{{ $tableId }}">
-                Menampilkan 0 dari 0 data
+                <span id="paginationText_{{ $tableId }}">Menampilkan 0 dari 0 data</span>
             </div>
 
             <div class="pagination-controls">
-                <button class="page-button" id="prevButton_{{ $tableId }}" onclick="changePage_{{ $tableId }}(-1)"
-                        disabled>
+                <button class="page-button" id="prevButton_{{ $tableId }}" onclick="changePage_{{ $tableId }}(-1)" disabled>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="15,18 9,12 15,6"></polyline>
                     </svg>
                 </button>
                 <div id="pageNumbers_{{ $tableId }}"></div>
-                <button class="page-button" id="nextButton_{{ $tableId }}" onclick="changePage_{{ $tableId }}(1)"
-                        disabled>
+                <button class="page-button" id="nextButton_{{ $tableId }}" onclick="changePage_{{ $tableId }}(1)" disabled>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polyline points="9,18 15,12 9,6"></polyline>
                     </svg>
@@ -168,7 +180,7 @@
 
     .search-input {
         width: 100%;
-        padding: 12px 16px 12px 44px;
+        padding: 12px 14px 12px 44px;
         border: 2px solid #e2e8f0;
         border-radius: 8px;
         font-size: 14px;
@@ -178,12 +190,12 @@
     .search-input:focus {
         outline: none;
         border-color: #346a32;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        /*box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);*/
     }
 
     .search-icon {
         position: absolute;
-        left: 14px;
+        right: 14px;
         top: 50%;
         transform: translateY(-50%);
         color: #64748b;
@@ -315,9 +327,9 @@
     }
 
     .page-button.active {
-        background: #667eea;
-        color: white;
-        border-color: #667eea;
+        background: #ffffff;
+        color: black;
+        border-color: #919297;
     }
 
     .page-button:disabled {
@@ -473,4 +485,10 @@
             }
         });
     });
+    function changePerPage_{{ $tableId }}(perPage) {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('per_page', perPage);
+        currentUrl.searchParams.delete('page'); // Reset to first page
+        window.location.href = currentUrl.toString();
+    }
 </script>

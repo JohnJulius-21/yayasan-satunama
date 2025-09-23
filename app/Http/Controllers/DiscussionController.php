@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Komen;
 use App\Models\Discussion;
+use App\Traits\DataTableHelper;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\discussion_file;
 use Illuminate\Support\Facades\DB;
@@ -14,16 +16,65 @@ use Illuminate\Support\Str;
 
 class DiscussionController extends Controller
 {
+    use DataTableHelper;
     //admin
-    public function indexAdmin()
+    public function indexAdmin(Request $request)
     {
         $discussion = Discussion::all(); // 10 item per halaman
+        $query = Discussion::query();
+        $this->applySearch($query, $request, ['title', 'id_user', 'content', 'views', 'created_at']);
         // dd($discussion);
+        $data = $query->paginate($request->get('per_page', 10));
+        // dd($reguler);
+        // Atur locale ke Indonesia
+//        Carbon::setLocale('id');
+        $data->getCollection()->transform(function ($item) {
+            $item->created_at = Carbon::parse($item->created_at)->translatedFormat('l, j F Y');
+            return $item;
+        });
 
+        $columns = [
+            ['label' => 'Judul Diskusi', 'field' => 'title'],
+            ['label' => 'content', 'field' => 'content'],
+            ['label' => 'views', 'field' => 'views'],
+            ['label' => 'tanggal dibuat', 'field' => 'created_at'],
+            ['label' => 'Aksi', 'field' => 'aksi'],
+        ];
 
-        return view('admin.discussion.index', compact('discussion'));
+        $actions = [
+            [
+                'route' => 'adminShowDiskusi',
+                'param' => 'id_diskusi',
+                'label' => '<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>Lihat Detail',
+                'class' => 'inline-flex items-center px-3 py-2 border border-blue-300 text-xs font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100'
+            ]
+        ];
+
+        // Handle AJAX
+        $response = $this->handleDataTableResponse(
+            $request,
+            $data,
+            'partials.table_rows',
+            compact('columns','actions')
+        );
+
+        if ($response) return $response;
+        return view('admin.discussion.index', compact('data','columns','actions'));
     }
 
+    public function createAdmin()
+    {
+        if (!auth()->check()) {
+            return redirect()->back()->with('error', 'Anda perlu masuk sebelum membuat ruang diskusi.');
+        }
+
+        return view('admin.discussion.create', [
+            'title' => 'Buat Diskusi Baru'
+        ]);
+    }
     public function showAdmin($id)
     {
         $discussion = Discussion::with('user', 'comments.user', 'files')->findOrFail($id);
@@ -43,18 +94,55 @@ class DiscussionController extends Controller
     public function storeKomenAdmin(Request $request, $id_diskusi)
     {
         $request->validate([
-            'content' => 'required',
-            'id_parent' => 'nullable|exists:komen_diskusi,id_komen', // Validasi id_parent
+            'content' => 'required|string',
+            'id_parent' => 'nullable|exists:komen_diskusi,id_komen'
         ]);
 
-        Komen::create([
-            'id_diskusi' => $id_diskusi,
-            'id_user' => Auth::id(),
-            'id_parent' => $request->id_parent, // NULL jika komentar utama
-            'content' => $request->content,
-        ]);
+        try {
+            Komen::create([
+                'id_diskusi' =>$id_diskusi,
+                'id_user' => Auth::id(),
+                'content' => $request->content,
+                'id_parent' => $request->id_parent ?: null
+            ]);
 
-        return back()->with('success', 'Komentar berhasil ditambahkan!');
+            $message = $request->id_parent ? 'Balasan berhasil ditambahkan!' : 'Komentar berhasil ditambahkan!';
+
+            return redirect()->back()->with('success', $message);
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal menambahkan komentar: ' . $e->getMessage());
+        }
+    }
+
+    public function deleteComment($id)
+    {
+        try {
+            // Cari komentar berdasarkan ID
+            $comment = DB::table('komen_diskusi')->where('id_komen', $id)->first();
+
+            // Cek apakah komentar ada
+            if (!$comment) {
+                return redirect()->back()->with('error', 'Komentar tidak ditemukan.');
+            }
+
+            // Cek apakah user yang login adalah pemilik komentar
+//            if (Auth::id() != $comment->id_user) {
+//                return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus komentar ini.');
+//            }
+
+            // Hapus komentar
+            $deleted = DB::table('komen_diskusi')->where('id_komen', $id)->delete();
+
+            if ($deleted) {
+                return redirect()->back()->with('success', 'Komentar berhasil dihapus.');
+            } else {
+                return redirect()->back()->with('error', 'Gagal menghapus komentar.');
+            }
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     // Menghapus diskusi dari database
@@ -139,7 +227,7 @@ class DiscussionController extends Controller
         Komen::create([
             'id_diskusi' => $id_diskusi,
             'id_user' => Auth::id(),
-            'id_parent' => $request->id_parent, // NULL jika komentar utama
+            'id_parent' => $request->id_parent ?: null,
             'content' => $request->content,
         ]);
 
