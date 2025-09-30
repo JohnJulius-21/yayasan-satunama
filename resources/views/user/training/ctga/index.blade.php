@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="{{ asset('images/stc.png') }}">
     <title>Change The Game Academy - Local Fundraising & Community Mobilisation</title>
     <!-- Vite CSS & JS -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
