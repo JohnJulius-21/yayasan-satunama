@@ -130,7 +130,9 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center space-x-3">
                 <div>
-                    <img src="{{asset('images/ctga-satunama.png')}}" class="w-50 h-11">
+                    <img src="{{ asset('images/ctga-satunama.png') }}"
+                         class="h-10 w-auto sm:h-12 md:h-14 object-contain"
+                         alt="CTGA Satunama Logo">
                 </div>
             </div>
 
@@ -183,7 +185,7 @@
 
         <div class="gap-16 items-start">
             <div class="card bg-white p-6 lg:p-8 rounded-3xl shadow-lg">
-                @if(now()->format('Y-m-d') == '2025-10-24')
+                @if(now()->format('Y-m-d') == '2025-10-30')
                     <form id="myForm" method="post" action="{{route('ctga.store')}}" role="form"
                           enctype="multipart/form-data">
                         @csrf

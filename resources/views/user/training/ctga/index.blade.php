@@ -130,7 +130,9 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center space-x-3">
                 <div>
-                    <img src="{{asset('images/ctga-satunama.png')}}" class="w-50 h-11">
+                    <img src="{{ asset('images/ctga-satunama.png') }}"
+                         class="h-10 w-auto sm:h-12 md:h-14 object-contain"
+                         alt="CTGA Satunama Logo">
                 </div>
             </div>
             <div class="hidden md:flex space-x-8">
