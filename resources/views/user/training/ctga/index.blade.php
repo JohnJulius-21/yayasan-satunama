@@ -475,13 +475,13 @@
                 <span class="text-gray-400 text-lg">Banner Kelas MS 4</span>
             </div>
             <a href="{{route('daftar.ctga')}}"
-               class="inline-block px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold rounded-xl shadow hover:shadow-lg hover:scale-105 transition transform">
+               class="inline-block px-8 py-3 bg-green-600 text-white font-semibold rounded-xl shadow hover:shadow-lg hover:scale-105 transition transform">
                 Daftar Sekarang
             </a>
         </div>
 
         <!-- STATISTIK -->
-        <div class="text-center mb-20">
+        <div class="text-center mb-5">
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10">📊 STATISTIK</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -531,8 +531,8 @@
         </div>
 
         <!-- FASILITATOR -->
-        <div class="text-center max-w-4xl mx-auto">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6">👩‍🏫 FASILITATOR</h2>
+        <div class="text-center max-w-4xl mx-auto mt-5">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 mt-5">👩‍🏫 FASILITATOR</h2>
             <p class="text-lg text-gray-700 leading-relaxed">
                 Setiap kelas dipandu oleh <span class="font-semibold text-orange-600">2–3 fasilitator</span> pelatihan
                 CtGA bersertifikat,
@@ -827,7 +827,7 @@
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
             <a href="{{route('daftar.ctga')}}"
-               class="bg-white text-green-600 px-10 py-4 rounded-full text-lg font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300">
+               class="bg-white text-green-600 px-10 py-4 rounded-2xl text-lg font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                 Bergabung
             </a>
         </div>

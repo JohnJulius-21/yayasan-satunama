@@ -185,13 +185,11 @@
 
         <div class="gap-16 items-start">
             <div class="card bg-white p-6 lg:p-8 rounded-3xl shadow-lg">
-                @if(now()->format('Y-m-d') == '2025-10-30')
+                @if(now()->lessThan(\Carbon\Carbon::parse('2025-10-24')))
                     <form id="myForm" method="post" action="{{route('ctga.store')}}" role="form"
                           enctype="multipart/form-data">
                         @csrf
-
                         <!-- Peserta Sections -->
-
                         <div class="peserta-section mb-8">
 
                             <!-- Personal Information Section -->
