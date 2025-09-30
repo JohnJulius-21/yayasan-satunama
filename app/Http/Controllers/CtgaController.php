@@ -83,7 +83,7 @@ class CtgaController extends Controller
             }
 
             // Insert ke database menggunakan DB Query Builder
-            $inserted = DB::table('registrasi_lembaga')->insert([
+            $inserted = DB::table('registrasi_ctga')->insert([
                 'nama_lembaga' => $validated['nama_lembaga'],
                 'kontak_lembaga' => $validated['kontak_lembaga'],
                 'nama_pemimpin_lembaga' => $validated['nama_pemimpin_lembaga'],
