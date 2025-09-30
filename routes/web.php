@@ -129,8 +129,7 @@ Route::middleware(['peserta'])->group(function () {
     // Route::get('/pelatihan-saya/konsultasi/show', [TrainingController::class, 'konsultasiShow'])
     //     ->name('konsultasi.pelatihan.show');
 
-    Route::get('/ctga', [CtgaController::class, 'index'])
-        ->name('ctga');
+
 
     Route::get('/ruang-diskusi/buat-ruang-diskusi', [DiscussionController::class, 'createUser'])->middleware('peserta')->name('userForumCreate');
     Route::post('/ruang-diskusi/simpan-ruang-diskusi', [DiscussionController::class, 'storeUser'])->name('userForumStore');
@@ -142,6 +141,13 @@ Route::middleware(['peserta'])->group(function () {
     Route::post('/pelatihan-saya/evaluasi/simpan', [TrainingController::class, 'regulerListStoreEvaluasi'])
         ->name('reguler.pelatihan.evaluasi.store');
 });
+
+Route::get('/change-the-game-academy', [CtgaController::class, 'index'])
+    ->name('ctga');
+Route::post('/change-the-game-academy', [CtgaController::class, 'store'])
+    ->name('ctga.store');
+Route::get('/change-the-game-academy/ms-ctga-batch-4', [CtgaController::class, 'create'])
+    ->name('daftar.ctga');
 
 Route::get('/pelatihan-saya/{nama_pelatihan}', [TrainingController::class, 'regulerListShow'])
     ->name('reguler.pelatihan.list');
