@@ -216,7 +216,8 @@
                             </div>
                             <div>
 
-                                <div class="text-sm md:text-xl font-bold text-black">MOBILIZING SUPPORT (MS) – Batch 4
+                                <div class="text-sm md:text-xl font-bold text-green-500 hover:text-green-600 hover:underline transition-all duration-300 cursor-pointer">
+                                    MOBILIZING SUPPORT (MS) – Batch 4
                                     <br>17 – 22 November 2025
                                 </div>
 
@@ -383,9 +384,6 @@
                     Cita-cita
                 </h2>
             </div>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto mt-8">
-                Change the Game Academy (CtGA) di Indonesia menawarkan 2 pelatihan bagi Organisasi Masyarakat Sipil
-            </p>
         </div>
 
         <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 border-l-4 border-green-600">
@@ -634,7 +632,7 @@
                         kami berada.
                     </p>
                     <div class="text-lg">
-                        <div class="font-bold text-gray-900">Herise</div>
+                        <div class="font-bold text-gray-900">Heri Se</div>
                         <div class="text-gray-600">Peserta Pelatihan dari Tananua Flores</div>
                     </div>
                 </div>
