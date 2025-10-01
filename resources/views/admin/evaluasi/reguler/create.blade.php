@@ -230,429 +230,248 @@
 
                 // Templates data
                 const templates = {
-                    eval: [{
-                        "type": "header",
-                        "subtype": "h6",
-                        "label": "Fasilitator 1 : <br><span style=\"color: rgb(32, 33, 36); font-family: Roboto, Arial, sans-serif; font-size: 14.6667px;\">Silahkan menilai dan memberi komentar untuk hal-hal berikut :</span><br>"
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Metode yang digunakan",
-                        "inline": true,
-                        "name": "metode_yang_digunakan",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Kemampuan merespon peserta",
-                        "inline": true,
-                        "name": "kemampuan_merespon_peserta",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Pengendalian/ pengembangan proses",
-                        "inline": true,
-                        "name": "pengembangan_proses",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Kecukupan waktu",
-                        "inline": true,
-                        "name": "kecukupan_waktu",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Penguasaan materi",
-                        "inline": true,
-                        "name": "penguasaan_materi",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Kemampuan menyampaikan materi",
-                        "inline": true,
-                        "name": "kemampuan_menyampaikan_materi",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "textarea",
-                        "required": true,
-                        "label": "CATATAN : Apapun nilai yang anda berikan di atas, mohon diberikan penjelasan dalam satu atau dua kalimat di bawah ini:",
-                        "className": "form-control",
-                        "name": "catatan_fasilitator",
-                        "subtype": "textarea"
-                    }, {
-                        "type": "header",
-                        "subtype": "h6",
-                        "label": "Peserta<br><span style=\"color: rgb(32, 33, 36); font-family: Roboto, Arial, sans-serif; font-size: 14.6667px;\">Silahkan menilai dan memberi komentar untuk hal-hal berikut :</span><br>"
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Partisipasi peserta",
-                        "inline": true,
-                        "name": "partisipasi_peserta",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Disiplin peserta",
-                        "inline": true,
-                        "name": "disiplin_peserta",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Kemampuan menyerap materi",
-                        "inline": true,
-                        "name": "kemampuan_menyerap_materi",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Keterbukaan gagasan",
-                        "inline": true,
-                        "name": "keterbukaan_gagasan",
-                        "other": false,
-                        "values": [{
-                            "label": "Kurang",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Cukup",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Baik",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Baik",
-                            "value": "4",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "textarea",
-                        "required": true,
-                        "label": "CATATAN : Apapun nilai yang anda berikan di atas, mohon diberikan penjelasan dalam satu atau dua kalimat di bawah ini:",
-                        "className": "form-control",
-                        "name": "catatan_peserta",
-                        "subtype": "textarea"
-                    }, {
-                        "type": "header",
-                        "subtype": "h6",
-                        "label": "Materi Pelatihan<br><span style=\"color: rgb(32, 33, 36); font-family: Roboto, Arial, sans-serif; font-size: 14.6667px;\">Dari topik-topik pembahasan di bawah, manakah yang :</span>"
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Materi 1",
-                        "inline": false,
-                        "name": "materi",
-                        "other": false,
-                        "values": [{
-                            "label": "Tidak dipahami",
-                            "value": "Tidak dipahami",
-                            "selected": false
-                        }, {
-                            "label": "Mudah dipahami",
-                            "value": "Mudah dipahami",
-                            "selected": false
-                        }, {
-                            "label": "Sulit dipahami",
-                            "value": "Sulit dipahami",
-                            "selected": false
-                        }, {
-                            "label": "Sudah dipahami sebelumnya/ tidak ada hal baru",
-                            "value": "Sudah dipahami sebelumnya/ tidak ada hal baru",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "header",
-                        "subtype": "h6",
-                        "label": "Fasilitas"
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Ruang Kelas",
-                        "inline": true,
-                        "name": "ruang_kelas",
-                        "other": false,
-                        "values": [{
-                            "label": "Tidak memuaskan",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Kurang memuaskan",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Cukup memuaskan",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Memuaskan",
-                            "value": "4",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Memuaskan",
-                            "value": "5",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Konsumsi",
-                        "inline": true,
-                        "name": "konsumsi",
-                        "other": false,
-                        "values": [{
-                            "label": "Tidak memuaskan",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Kurang memuaskan",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Cukup memuaskan",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Memuaskan",
-                            "value": "4",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Memuaskan",
-                            "value": "5",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Layanan Panitia",
-                        "inline": true,
-                        "name": "layanan_panitia",
-                        "other": false,
-                        "values": [{
-                            "label": "Tidak memuaskan",
-                            "value": "1",
-                            "selected": false
-                        }, {
-                            "label": "Kurang memuaskan",
-                            "value": "2",
-                            "selected": false
-                        }, {
-                            "label": "Cukup memuaskan",
-                            "value": "3",
-                            "selected": false
-                        }, {
-                            "label": "Memuaskan",
-                            "value": "4",
-                            "selected": false
-                        }, {
-                            "label": "Sangat Memuaskan",
-                            "value": "5",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "textarea",
-                        "required": true,
-                        "label": "Apa yang dapat dilakukan untuk memperbaiki pelatihan ini, baik konten/ materi pelatihan maupun fasilitas pelatihan ?",
-                        "className": "form-control",
-                        "name": "perbaikan_pelatihan",
-                        "subtype": "textarea"
-                    }, {
-                        "type": "radio-group",
-                        "required": true,
-                        "label": "Saya akan merekomendasikan orang lain untuk mengikuti pelatihan ini",
-                        "inline": false,
-                        "name": "rekomendasi_pelatihan",
-                        "other": false,
-                        "values": [{
-                            "label": "Ya",
-                            "value": "Ya",
-                            "selected": false
-                        }, {
-                            "label": "Tidak",
-                            "value": "Tidak",
-                            "selected": false
-                        }]
-                    }, {
-                        "type": "text",
-                        "required": true,
-                        "label": "Jika ya, sebutkan nama, lembaga dan kontak yang bisa dihubungi:",
-                        "className": "form-control",
-                        "name": "kontak",
-                        "subtype": "text"
-                    }, {
-                        "type": "textarea",
-                        "required": true,
-                        "label": "Hal yang paling utama yang saya dapatkan / pelajari dari pelatihan ini :",
-                        "className": "form-control",
-                        "name": "manfaat_pelatihan",
-                        "subtype": "textarea"
-                    }, {
-                        "type": "textarea",
-                        "required": true,
-                        "label": "Pelatihan apa yang masih saya butuhkan untuk mendukung pekerjaan saya ?",
-                        "className": "form-control",
-                        "name": "pelatihan_yang_dibutuhkan",
-                        "subtype": "textarea"
-                    }]
+                    eval: [
+                        {
+                            "type": "radio-group",
+                            "required": true,
+                            "label": "1. Apakah Anda puas dengan pelatihan ini?",
+                            "inline": false,
+                            "name": "radio-group-1752133451853",
+                            "other": false,
+                            "values": [
+                                {
+                                    "label": "Tidak Puas",
+                                    "value": "Tidak Puas",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Kurang Puas",
+                                    "value": "Kurang Puas",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Cukup Puas",
+                                    "value": "Cukup Puas",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Puas",
+                                    "value": "Puas",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Sangat Puas",
+                                    "value": "Sangat Puas",
+                                    "selected": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "2. Berikan Alasannya",
+                            "className": "form-control",
+                            "name": "textarea-1752133802774-0",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "radio-group",
+                            "required": true,
+                            "label": "3. Seberapa relevan topik-topik yang dibahas di Pelatihan Monitoring, Evaluasi dan Learning (MEL)",
+                            "inline": false,
+                            "name": "radio-group-1752133472421",
+                            "other": false,
+                            "values": [
+                                {
+                                    "label": "Tidak Relevan",
+                                    "value": "Tidak Relevan",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Kurang Relevan",
+                                    "value": "Kurang Relevan",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Cukup Relevan",
+                                    "value": "Cukup Relevan",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Relevan",
+                                    "value": "Relevan",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Sangat relevan",
+                                    "value": "Sangat relevan",
+                                    "selected": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "4. Berikan Alasannya",
+                            "className": "form-control",
+                            "name": "textarea-1752133837680",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "5. Untuk Pelatihan Monitoring, Evaluasi dan Learning (MEL), pertanyaan atau tanggapan apa, yang masih ingin Anda sampaikan kepada pihak SATUNAMA?",
+                            "className": "form-control",
+                            "name": "textarea-1752133852927",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "6. Untuk Pelatihan Monitoring, Evaluasi dan Learning (MEL), topik apa yang menurut Anda paling menginspirasi dan perlu untuk ditindak lanjuti, dan apa alasannya? (Boleh jawab lebih dari satu topik).",
+                            "className": "form-control",
+                            "name": "textarea-1752134288614",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "7. Moment apa saja yang meninggalkan kesan baik dari pelatihan ini bagi Anda?",
+                            "className": "form-control",
+                            "name": "textarea-1752134359728",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "8. Pembelajaran apa saja yang Anda bawa pulang dari pelatihan ini? ",
+                            "className": "form-control",
+                            "name": "textarea-1752134469233",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "radio-group",
+                            "required": true,
+                            "label": "9. Penilaian Anda atas fasilitasi akomodasi dan logistik pelatihan. Skala 1 (Rendah) - 5 (Tinggi)",
+                            "inline": true,
+                            "name": "ruang_kelas",
+                            "other": false,
+                            "values": [
+                                {
+                                    "label": "1",
+                                    "value": "1",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "2",
+                                    "value": "2",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "3",
+                                    "value": "3",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "4",
+                                    "value": "4",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "5",
+                                    "value": "5",
+                                    "selected": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "10. Berikan Alasannya",
+                            "className": "form-control",
+                            "name": "textarea-1752134554189",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "radio-group",
+                            "required": true,
+                            "label": "11. Penilaian Anda atas penyelenggara dalam mengorganisir (dari persiapan sampai dengan pelaksanaan), dan hal yang perlu diperbaiki untuk penyelenggaraan pelatihan yang akan datang: Skala 1 (Rendah) - 5 (Tinggi)",
+                            "inline": true,
+                            "name": "radio-group-1752134578179",
+                            "other": false,
+                            "values": [
+                                {
+                                    "label": "1",
+                                    "value": "1",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "2",
+                                    "value": "2",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "3",
+                                    "value": "3",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "4",
+                                    "value": "4",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "5",
+                                    "value": "5",
+                                    "selected": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "12. Saran perbaikan untuk Pelatihan ini",
+                            "className": "form-control",
+                            "name": "textarea-1752134630356",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "textarea",
+                            "required": true,
+                            "label": "13. Adakah usulan Anda untuk pelatihan yang akan datang?",
+                            "className": "form-control",
+                            "name": "textarea-1752134651746",
+                            "subtype": "textarea"
+                        },
+                        {
+                            "type": "radio-group",
+                            "required": true,
+                            "label": "14. Apakah anda akan merekomendasikan orang lain untuk mengikuti pelatihan ini ?",
+                            "inline": false,
+                            "name": "rekomendasi_pelatihan",
+                            "other": false,
+                            "values": [
+                                {
+                                    "label": "Ya",
+                                    "value": "Ya",
+                                    "selected": false
+                                },
+                                {
+                                    "label": "Tidak",
+                                    "value": "Tidak",
+                                    "selected": false
+                                }
+                            ]
+                        },
+                        {
+                            "type": "text",
+                            "required": true,
+                            "label": "15. Jika ya, sebutkan nama, lembaga dan kontak yang bisa dihubungi:",
+                            "className": "form-control",
+                            "name": "kontak",
+                            "subtype": "text"
+                        }
+                    ]
                 };
 
                 // Event listener for template select

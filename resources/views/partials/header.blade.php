@@ -16,6 +16,7 @@
                         Pelatihan<i class="bi bi-chevron-down toggle-dropdown"></i></a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('pelatihan') }}">Pelatihan</a></li>
+                        <li><a class="dropdown-item" href="{{ route('ctga') }}">Change the Game Academy Batch 4</a></li>
                         {{-- <hr class="dropdown-divider">
                         <li><a class="dropdown-item" href="{{ route('ctga') }}">CTGA</a></li> --}}
                         {{-- <li><a class="dropdown-item" href="#">Konsultasi</a></li> --}}

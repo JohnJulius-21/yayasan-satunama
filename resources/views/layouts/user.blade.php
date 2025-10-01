@@ -54,7 +54,7 @@
                         steps: @json(session('tutorial_steps'))
                     }).start();
                 });
-            </script>   
+            </script>
         @endif --}}
 
 
@@ -145,27 +145,37 @@
                 <div class="modal-body">
                     <!-- Gambar diperkecil -->
                     <img src="{{ asset('images/stc.png') }}" alt="Hero Image"
-                        class="img-fluid mx-auto d-block logo-img mb-3" style="max-width: 100px;">
+                         class="img-fluid mx-auto d-block logo-img mb-3" style="max-width: 100px;">
 
                     <h5 class="text-center mb-3">Reset Password</h5>
 
-                    <form action="{{ route('password.whatsapp') }}" method="POST">
+                    @if(session('success'))
+                        <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
+
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            {{ $errors->first('email') }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('password.email') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label">Nomor WhatsApp*</label>
+                            <label class="form-label">Email*</label>
                             <div class="input-group">
-                                <input type="text" name="no_hp" class="form-control" placeholder="08xxxxxxxxxx"
-                                    required>
-                                <span class="input-group-text"><i class="fab fa-whatsapp"></i></span>
+                                <input type="email" name="email" class="form-control"
+                                       placeholder="contoh@email.com"
+                                       value="{{ old('email') }}" required>
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-success w-100">Kirim Link via WhatsApp</button>
+                        <button type="submit" class="btn btn-primary w-100">Kirim Link Reset Password</button>
                     </form>
-
 
                     <div class="text-center mt-3">
                         <button class="btn btn-link text-decoration-none" data-bs-dismiss="modal"
-                            data-bs-toggle="modal" data-bs-target="#loginModal">
+                                data-bs-toggle="modal" data-bs-target="#loginModal">
                             Kembali ke Login
                         </button>
                     </div>
@@ -338,7 +348,7 @@
                     type: 'error',
                     message: `
                       <div class="d-flex align-items-center gap-2">
-                          <i class="bi bi-x-circle-fill"></i> 
+                          <i class="bi bi-x-circle-fill"></i>
                           <span>{{ session('error') }}</span>
                       </div>`
                 });
@@ -353,7 +363,7 @@
                     type: 'success',
                     message: `
                       <div class="d-flex align-items-center gap-2">
-                          <i class="bi bi-check-circle-fill"></i> 
+                          <i class="bi bi-check-circle-fill"></i>
                           <span>{{ session('success') }}</span>
                       </div>`
                 });

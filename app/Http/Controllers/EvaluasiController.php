@@ -32,8 +32,16 @@ class EvaluasiController extends Controller
         $reguler = reguler::all();
         $query = reguler::query();
         $this->applySearch($query, $request, ['nama_pelatihan', 'tanggal_mulai', 'tanggal_selesai']);
-        $data = $query->paginate($request->get('per_page', 10));
 
+        // Order by tanggal_mulai descending (terbaru dulu)
+        $query->orderBy('tanggal_mulai', 'desc');
+
+        // Get paginated data
+        $perPage = $request->get('per_page', 10);
+        $data = $query->paginate($perPage);
+
+        // Preserve query parameters in pagination links
+        $data->appends($request->query());
         // Format tanggal dengan Carbon
         $data->getCollection()->transform(function ($item) {
             $item->tanggal_mulai = Carbon::parse($item->tanggal_mulai)->locale('id')->isoFormat('D MMMM YYYY');
@@ -65,12 +73,12 @@ class EvaluasiController extends Controller
             $request,
             $data,
             'partials.table_rows',
-            compact('columns','actions')
+            compact('columns', 'actions')
         );
 
         if ($response) return $response;
 
-        return view('admin.evaluasi.reguler.index', compact('data','columns','actions'));
+        return view('admin.evaluasi.reguler.index', compact('data', 'columns', 'actions'));
     }
 
     public function createReguler($id)
@@ -268,12 +276,12 @@ class EvaluasiController extends Controller
             $request,
             $data,
             'partials.table_rows',
-            compact('columns','actions')
+            compact('columns', 'actions')
         );
 
         if ($response) return $response;
 
-        return view('admin.evaluasi.permintaan.index', compact('data','columns','actions'));
+        return view('admin.evaluasi.permintaan.index', compact('data', 'columns', 'actions'));
     }
 
     public function createPermintaan($id)
