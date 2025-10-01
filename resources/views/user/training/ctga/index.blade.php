@@ -147,7 +147,7 @@
                 <a href="#impact" id="link-impact"
                    class="nav-link text-gray-700 hover:text-green-500 transition-colors">Program</a>
                 <a href="#testimonials" id="link-testimonials"
-                   class="nav-link text-gray-700 hover:text-green-500 transition-colors">Testimonial</a>
+                   class="nav-link text-gray-700 hover:text-green-500 transition-colors">Testimoni</a>
             </div>
             <a
                 href="{{route('detail.ctga')}}"
@@ -526,7 +526,7 @@
 
         <!-- TERBARU -->
         <div class="text-center mb-16">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">✨ TERBARU</h2>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">✨ Terbaru</h2>
             <div class="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden mb-6">
                 <img src="{{asset('images/banner-ctga.jpg')}}" class="w-full h-full object-cover object-center" alt="Banner CTGA">
             </div>
@@ -538,7 +538,7 @@
 
         <!-- STATISTIK -->
         <div class="text-center mb-5">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10">📊 STATISTIK</h2>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10">📊 Statistik</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 
                 <div class="bg-white rounded-2xl p-8 shadow hover:shadow-xl transition transform hover:-translate-y-1">
@@ -588,7 +588,7 @@
 
         <!-- FASILITATOR -->
         <div class="text-center max-w-4xl mx-auto mt-5">
-            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 mt-5">👩‍🏫 FASILITATOR</h2>
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 mt-5">👩‍🏫 Fasilitator</h2>
             <p class="text-lg text-gray-700 leading-relaxed">
                 Setiap kelas dipandu oleh <span class="font-semibold text-orange-600">2–3 fasilitator</span> pelatihan
                 CtGA bersertifikat,
@@ -615,7 +615,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="text-center mb-16">
-            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Testimonial</h2>
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">Testimoni</h2>
         </div>
 
         <div class="space-y-16">
