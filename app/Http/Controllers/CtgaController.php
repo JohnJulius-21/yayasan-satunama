@@ -35,6 +35,13 @@ class CtgaController extends Controller
         ]);
     }
 
+    public function show()
+    {
+        return view('user.training.ctga.show', [
+            'title' => 'CTGA',
+        ]);
+    }
+
     public function store(Request $request)
     {
         // Debug: Cek data yang masuk

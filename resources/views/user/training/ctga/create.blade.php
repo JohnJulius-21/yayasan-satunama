@@ -130,9 +130,11 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center space-x-3">
                 <div>
-                    <img src="{{ asset('images/ctga-satunama.png') }}"
-                         class="h-10 w-auto sm:h-12 md:h-14 object-contain"
-                         alt="CTGA Satunama Logo">
+                    <a href="{{route('ctga')}}">
+                        <img src="{{ asset('images/satunama-ctga.jpg') }}"
+                             class="h-10 w-auto sm:h-12 md:h-14 object-contain"
+                             alt="CTGA Satunama Logo">
+                    </a>
                 </div>
             </div>
 
@@ -439,15 +441,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row justify-between items-center">
             <div class="flex items-center space-x-3 mb-6 md:mb-0">
-                <img src="{{asset('images/ctga-satunama.png')}}" class="w-50 h-12">
+                <img src="{{asset('images/satunama-ctga.jpg')}}" class="w-50 h-12">
             </div>
 
             <div class="text-center md:text-right">
                 <p class="text-gray-400 text-sm">
-                    Strengthening social changemakers worldwide
-                </p>
-                <p class="text-gray-400 text-sm">
-                    © 2025 Change the Game Academy Alliance
+                    © 2025 Yayasan SATUNAMA Yogyakarta
                 </p>
             </div>
         </div>

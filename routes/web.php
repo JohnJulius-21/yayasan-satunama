@@ -42,7 +42,7 @@ Route::post('/reset-password-update', [AuthController::class, 'resetPasswordManu
 Route::get('forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
 
 // Handle password reset link request
-Route::post('forgot-password', [AuthController::class, 'sendResetLink'])->name('password.whatsapp');
+Route::post('forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
 
 // Reset password form (after user clicks the reset link in the email)
 Route::get('reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
@@ -148,6 +148,8 @@ Route::post('/change-the-game-academy', [CtgaController::class, 'store'])
     ->name('ctga.store');
 Route::get('/change-the-game-academy/ms-ctga-batch-4', [CtgaController::class, 'create'])
     ->name('daftar.ctga');
+Route::get('/change-the-game-academy/detail-informasi-ms-ctga-batch-4', [CtgaController::class, 'show'])
+    ->name('detail.ctga');
 
 Route::get('/pelatihan-saya/{nama_pelatihan}', [TrainingController::class, 'regulerListShow'])
     ->name('reguler.pelatihan.list');

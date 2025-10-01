@@ -130,19 +130,27 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center space-x-3">
                 <div>
-                    <img src="{{ asset('images/ctga-satunama.png') }}"
-                         class="h-10 w-auto sm:h-12 md:h-14 object-contain"
-                         alt="CTGA Satunama Logo">
+                    <a href="{{route('ctga')}}">
+                        <img src="{{ asset('images/satunama-ctga.jpg') }}"
+                             class="h-10 w-auto sm:h-12 md:h-14 object-contain"
+                             alt="CTGA Satunama Logo">
+                    </a>
                 </div>
             </div>
             <div class="hidden md:flex space-x-8">
-                <a href="#about" id="link-about" class="nav-link text-gray-700 hover:text-green-500 transition-colors">Tentang Kami</a>
-                <a href="#programs" id="link-programs" class="nav-link text-gray-700 hover:text-green-500 transition-colors">Kelas Pelatihan</a>
-                <a href="#impact" id="link-impact" class="nav-link text-gray-700 hover:text-green-500 transition-colors">Program</a>
-                <a href="#testimonials" id="link-testimonials" class="nav-link text-gray-700 hover:text-green-500 transition-colors">Testimonial</a>
+                <a href="#about" id="link-about" class="nav-link text-gray-700 hover:text-green-500 transition-colors">Tentang
+                    Kami</a>
+                <a href="#cita-cita" id="link-cita-cita"
+                   class="nav-link text-gray-700 hover:text-green-500 transition-colors">Cita-Cita</a>
+                <a href="#programs" id="link-programs"
+                   class="nav-link text-gray-700 hover:text-green-500 transition-colors">Kelas Pelatihan</a>
+                <a href="#impact" id="link-impact"
+                   class="nav-link text-gray-700 hover:text-green-500 transition-colors">Program</a>
+                <a href="#testimonials" id="link-testimonials"
+                   class="nav-link text-gray-700 hover:text-green-500 transition-colors">Testimonial</a>
             </div>
             <a
-                href="{{route('daftar.ctga')}}"
+                href="{{route('detail.ctga')}}"
                 class="bg-ctga-orange text-white px-6 py-2 rounded-full font-medium hover:shadow-lg transition-all duration-300">
                 Daftar MS CtGA Batch 4
             </a>
@@ -189,17 +197,33 @@
                     <span style="color: #58c7f1;">G</span><span style="color: #7cb342;">A</span><span
                         style="color: #f40000;">M</span><span style="color: #FF6B47FF;">E</span>
                     <br>
-                    <span class="text-xl md:text-2xl font-normal" style="color: #d1d5db;">ACADEMY INDONESIA</span>
+                    <span class="md:text-5xl font-normal" style="color: #d1d5db;">ACADEMY</span>
+                    <p class="text-xl md:text-2xl font-normal" style="color: #d1d5db;">INDONESIA</p>
                 </h1>
                 <p class="text-base md:text-lg leading-relaxed mb-6" style="color: #e5e7eb;">
                     Memperkuat kapasitas Organisasi Masyarakat Sipil
                     melalui mobilisasi dukungan & diversifikasi pendanaan
                 </p>
-                <a href="{{route('daftar.ctga')}}"
-                   class="text-white px-6 py-3 rounded-full text-base font-semibold hover:shadow-xl transition-all duration-300"
-                   style="background-color: #438848;">
-                    Daftar MOBILIZING SUPPORT (MS) – Batch 4
-                </a>
+
+            </div>
+            <!-- column -->
+            <div class="absolute bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-gray-100 z-20">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                    <a href="{{route('detail.ctga')}}">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-center">
+                            <div>
+                                <div class="text-sm md:text-xl font-bold text-black">PELATIHAN TERDEKAT :</div>
+                            </div>
+                            <div>
+
+                                <div class="text-sm md:text-xl font-bold text-black">MOBILIZING SUPPORT (MS) – Batch 4
+                                    <br>17 – 22 November 2025
+                                </div>
+
+                            </div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -302,14 +326,15 @@
     }
 </script>
 
-<!-- About Section -->
+<!-- Tentang Kami Section -->
 <section id="about" class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">About us</h2>
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Tentang Kami</h2>
                 <p class="text-lg text-gray-600 mb-6 leading-relaxed">
-                    CHANGE THE GAME ACADEMY adalah sebuah inisiasi global yang mendedikasikan diri untuk memperkuat
+                    <strong>CHANGE THE GAME ACADEMY</strong> adalah sebuah inisiasi global yang mendedikasikan diri
+                    untuk memperkuat
                     Organisasi Masyarakat Sipil. Sejak tahun 2015, program ini mendorong penguatan kapasitas lembaga
                     melalui pelatihan-pelatihan di berbagai belahan dunia. Saat ini, anggota aliansi Change the Game
                     Academy berjumlah 15 negara.
@@ -317,29 +342,9 @@
 
                 <div class="space-y-6">
                     <div class="border-l-4 border-ctga-orange pl-6">
-                        {{--                        <h3 class="text-xl font-bold text-gray-900 mb-2">Changing the 'rules' of the development--}}
-                        {{--                            game</h3>--}}
                         <p class="text-gray-600">
                             Pada tahun 2022, Yayasan SATUNAMA bergabung ke dalam aliansi global, dan menjadi lembaga
                             penyelenggara kelas-kelas pelatihan di wilayah Republik Indonesia.
-                        </p>
-                    </div>
-
-                    <div class="border-l-4 border-ctga-blue pl-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Cita-Cita</h3>
-                        <p class="text-gray-600">
-                            Aliansi Change the Game Academy memiliki cita-cita bersama bagi Organisasi Masyarakat Sipil:
-                        <ul class="text-gray-600">
-                            <li> * Organisasi Masyarakat Sipil (OMS) memiliki skema diversifikasi pendanaan untuk
-                                mendukung
-                                kerja-kerjanya dalam memperjuangkan kepentingan komunitas.
-                            </li>
-                            <li> * Organisasi Masyarakat Sipil (OMS) memiliki kapasitas dalam berkolaborasi dengan
-                                berbagai
-                                pemangku kepentingan dalam memperjuangkan kepentingan komunitas melalui kerja sama yang
-                                relevan.
-                            </li>
-                        </ul>
                         </p>
                     </div>
                 </div>
@@ -367,6 +372,60 @@
                 <img src="{{asset('images/Picture8.png')}}" class="absolute -bottom-6 -left-6 w-8 h-8">
             </div>
         </div>
+    </div>
+</section>
+
+<section id="cita-cita" class="py-20 bg-white">
+    <div class="container mx-auto px-6 max-w-6xl">
+        <div class="text-center mb-16">
+            <div class="inline-block">
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4 relative">
+                    Cita-cita
+                </h2>
+            </div>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto mt-8">
+                Change the Game Academy (CtGA) di Indonesia menawarkan 2 pelatihan bagi Organisasi Masyarakat Sipil
+            </p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 border-l-4 border-green-600">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">
+                Aliansi Change the Game Academy memiliki cita-cita bersama bagi Organisasi Masyarakat Sipil:
+            </h3>
+
+            <div class="space-y-6">
+                <div class="flex gap-4 group hover:translate-x-2 transition-transform duration-300">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-600 to-green-400 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">
+                        1
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-700 leading-relaxed text-lg">
+                            Organisasi Masyarakat Sipil (OMS) memiliki <span class="font-semibold text-green-600">skema diversifikasi pendanaan</span>
+                            untuk mendukung kerja-kerjanya dalam memperjuangkan kepentingan komunitas.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 group hover:translate-x-2 transition-transform duration-300">
+                    <div
+                        class="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-green-600 to-green-400 rounded-lg flex items-center justify-center text-white font-bold shadow-lg">
+                        2
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-700 leading-relaxed text-lg">
+                            Organisasi Masyarakat Sipil (OMS) memiliki <span class="font-semibold text-green-600">kapasitas dalam berkolaborasi</span>
+                            dengan berbagai pemangku kepentingan dalam memperjuangkan kepentingan komunitas melalui
+                            kerja sama yang relevan.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decorative elements -->
+        <div class="absolute top-10 right-10 w-20 h-20 bg-green-200 rounded-full opacity-20 blur-xl"></div>
+        <div class="absolute bottom-10 left-10 w-32 h-32 bg-green-300 rounded-full opacity-20 blur-2xl"></div>
     </div>
 </section>
 
@@ -470,11 +529,10 @@
         <!-- TERBARU -->
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">✨ TERBARU</h2>
-            <div
-                class="bg-white border border-gray-200 rounded-2xl shadow-lg h-48 flex items-center justify-center mb-6">
-                <span class="text-gray-400 text-lg">Banner Kelas MS 4</span>
+            <div class="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden mb-6">
+                <img src="{{asset('images/banner-ctga.jpg')}}" class="w-full h-full object-cover object-center" alt="Banner CTGA">
             </div>
-            <a href="{{route('daftar.ctga')}}"
+            <a href="{{route('detail.ctga')}}"
                class="inline-block px-8 py-3 bg-green-600 text-white font-semibold rounded-xl shadow hover:shadow-lg hover:scale-105 transition transform">
                 Daftar Sekarang
             </a>
@@ -826,7 +884,7 @@
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <a href="{{route('daftar.ctga')}}"
+            <a href="{{route('detail.ctga')}}"
                class="bg-white text-green-600 px-10 py-4 rounded-2xl text-lg font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                 Bergabung
             </a>
@@ -848,15 +906,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col md:flex-row justify-between items-center">
             <div class="flex items-center space-x-3 mb-6 md:mb-0">
-                <img src="{{asset('images/ctga-satunama.png')}}" class="w-50 h-12">
+                <img src="{{asset('images/satunama-ctga.jpg')}}" class="w-50 h-12">
             </div>
 
             <div class="text-center md:text-right">
                 <p class="text-gray-400 text-sm">
-                    Strengthening social changemakers worldwide
-                </p>
-                <p class="text-gray-400 text-sm">
-                    © 2025 Change the Game Academy Alliance
+                    © 2025 Yayasan SATUNAMA Yogyakarta
                 </p>
             </div>
         </div>
@@ -881,7 +936,7 @@
                     }
                 });
             },
-            { threshold: 0.6 } // aktif kalau 60% section terlihat
+            {threshold: 0.6} // aktif kalau 60% section terlihat
         );
 
         sections.forEach((section) => {
