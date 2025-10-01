@@ -537,10 +537,12 @@
         </div>
 
         <!-- STATISTIK -->
-        <div class="text-center mb-5">
+        <div class="text-center mb-3">
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10">📊 Statistik</h2>
+                <p class="text-lg text-gray-700 leading-relaxed mb-5">
+                   Pelatihan Change the Game Academy tahun 2023 - saat ini.
+                </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-
                 <div class="bg-white rounded-2xl p-8 shadow hover:shadow-xl transition transform hover:-translate-y-1">
                     <div
                         class="w-12 h-12 mx-auto mb-4 flex items-center justify-center bg-orange-100 text-orange-600 rounded-full">

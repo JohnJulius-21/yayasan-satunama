@@ -197,6 +197,14 @@
             </div>
         </div>
 
+        <div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Timeline</h3>
+            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                <p>• Periode Pendaftaran : 1 - 24 Oktober 2025</p>
+                <p>• Leader's Meeting: 30 Oktober 2025 (daring)</p>
+            </div>
+        </div>
+
         <!-- Contact -->
         <div>
             <h3 class="text-xl font-bold text-gray-900 mb-3">Kontak</h3>
@@ -220,10 +228,17 @@
 
         </div>
         <h3 class="text-xl font-bold text-gray-900 mb-3">Email</h3>
-        <div>
+        <div class="mb-3">
             <p class="text-gray-600">✉️ training@satunama.org</p>
         </div>
-
+        <button
+            onclick="window.location.href='{{route('daftar.ctga')}}'"
+            class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-3 cursor-pointer">
+            DAFTAR SEKARANG
+        </button>
+        <div class="text-center">
+            <span>Segera daftarkan organisasi anda</span>
+        </div>
     </div>
 
 </div>

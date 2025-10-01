@@ -413,6 +413,10 @@
                                                 <i class="fas fa-check text-green-500 mt-1 text-xs"></i>
                                                 <span>Gunakan email pribadi dan kontak person yang aktif agar dapat dihubungi oleh tim kami</span>
                                             </li>
+                                            <li class="flex items-start gap-2">
+                                                <i class="fas fa-info text-green-500 mt-1 text-xs"></i>
+                                                <span>Setelah mendaftar anda diharuskan menghadiri leader's meeting pada <strong>30 Oktober 2025 </strong>(daring). Tautan meeting akan dibagikan melalui alamat email yang didaftarkan</span>
+                                            </li>
                                         </ul>
                                     </div>
                                 </div>
