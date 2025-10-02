@@ -141,7 +141,7 @@
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Ketentuan Peserta Pelatihan</h2>
             <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r mb-6">
                 <p class="text-gray-700">
-                    Kelas pelatihan ini diperuntukkan diperuntukkan bagi organisasi (NGO, CSO, CBO, kelompok swadaya)
+                    Kelas pelatihan ini diperuntukkan bagi organisasi (NGO, CSO, CBO, kelompok swadaya)
                     yang memiliki
                     <strong>legalitas</strong>, berbasis di Indonesia, dan sedang menjalankan program kerja.
                 </p>
