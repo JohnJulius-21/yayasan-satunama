@@ -685,7 +685,7 @@
                 $(this).val(value);
             });
 
-            // Email validation on blur
+            // Email validation on blur test
             $('input[type="email"]').on('blur', function() {
                 const email = $(this).val();
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
