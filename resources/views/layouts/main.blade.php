@@ -18,7 +18,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
     <!-- Vite CSS & JS -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+{{--    @vite(['resources/css/app.css', 'resources/js/app.js'])--}}
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- Select2 (tetap menggunakan jQuery untuk komponen ini) -->
     <script src="{{ asset('select2/dist/js/jquery.min.js') }}"></script>
