@@ -386,6 +386,7 @@
     </div>
 </div>
 
+
 <!-- Modal Lupa Password -->
 <div id="forgotPasswordModal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
     <div class="modal-overlay absolute inset-0 bg-black opacity-50"></div>
@@ -407,14 +408,14 @@
 
                 <h5 class="text-center text-lg font-semibold mb-4">Reset Password</h5>
 
-                <form action="{{ route('password.whatsapp') }}" method="POST">
+                <form action="{{ route('password.email') }}" method="POST">
                     @csrf
                     <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Nomor WhatsApp*</label>
+                        <label class="block text-gray-700 mb-2">Email*</label>
                         <div class="relative">
-                            <input type="text" name="no_hp"
+                            <input type="text" name="email"
                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-green-500 focus:border-green-500"
-                                   placeholder="08xxxxxxxxxx" required>
+                                   placeholder="example@email.com" required>
                             <span class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <i class="fab fa-whatsapp text-gray-400"></i>
                                 </span>
@@ -422,7 +423,7 @@
                     </div>
                     <button type="submit"
                             class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg font-medium">
-                        Kirim Link via WhatsApp
+                        Kirim
                     </button>
                 </form>
 
