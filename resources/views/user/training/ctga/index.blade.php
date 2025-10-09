@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/stc.png') }}">
     <title>Change The Game Academy - Local Fundraising & Community Mobilisation</title>
     <!-- Vite CSS & JS -->
@@ -150,7 +151,7 @@
                    class="nav-link text-gray-700 hover:text-green-500 transition-colors">Testimoni</a>
             </div>
             <a
-                href="{{route('detail.ctga')}}"
+                href="{{route('detail.ctga')}}" data-track-register="header-cta"
                 class="bg-ctga-orange text-white px-6 py-2 rounded-full font-medium hover:shadow-lg transition-all duration-300">
                 Daftar MS CtGA Batch 4
             </a>
@@ -216,7 +217,8 @@
                             </div>
                             <div>
 
-                                <div class="text-sm md:text-xl font-bold text-green-500 hover:text-green-600 hover:underline transition-all duration-300 cursor-pointer">
+                                <div
+                                    class="text-sm md:text-xl font-bold text-green-500 hover:text-green-600 hover:underline transition-all duration-300 cursor-pointer">
                                     MOBILIZING SUPPORT (MS) – Batch 4
                                     <br>17 – 22 November 2025
                                 </div>
@@ -528,9 +530,10 @@
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-6 tracking-tight">✨ Terbaru</h2>
             <div class="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden mb-6">
-                <img src="{{asset('images/banner-ctga.jpg')}}" class="w-full h-full object-cover object-center" alt="Banner CTGA">
+                <img src="{{asset('images/banner-ctga.jpg')}}" class="w-full h-full object-cover object-center"
+                     alt="Banner CTGA">
             </div>
-            <a href="{{route('detail.ctga')}}"
+            <a href="{{route('detail.ctga')}}" data-track-register="mid-content-cta"
                class="inline-block px-8 py-3 bg-green-600 text-white font-semibold rounded-xl shadow hover:shadow-lg hover:scale-105 transition transform">
                 Daftar Sekarang
             </a>
@@ -539,9 +542,9 @@
         <!-- STATISTIK -->
         <div class="text-center mb-3">
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-10">📊 Statistik</h2>
-                <p class="text-lg text-gray-700 leading-relaxed mb-5">
-                   Pelatihan Change the Game Academy tahun 2023 - saat ini.
-                </p>
+            <p class="text-lg text-gray-700 leading-relaxed mb-5">
+                Pelatihan Change the Game Academy tahun 2023 - saat ini.
+            </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-white rounded-2xl p-8 shadow hover:shadow-xl transition transform hover:-translate-y-1">
                     <div
@@ -884,7 +887,7 @@
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <a href="{{route('detail.ctga')}}"
+            <a href="{{route('detail.ctga')}}" data-track-register="footer-cta"
                class="bg-white text-green-600 px-10 py-4 rounded-2xl text-lg font-bold hover:shadow-xl transform hover:scale-105 transition-all duration-300">
                 Bergabung
             </a>
@@ -917,6 +920,7 @@
         </div>
     </div>
 </footer>
+<script src="{{ asset('js/tracking.js') }}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const sections = document.querySelectorAll("section");
@@ -943,6 +947,31 @@
             observer.observe(section);
         });
     });
+
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let pageLoad = Date.now();
+
+        window.addEventListener("beforeunload", function (e) {
+            let duration = Math.round((Date.now() - pageLoad) / 1000);
+
+            // navigator.sendBeacon
+            // kalau tetap mau AJAX, ganti dengan fetch:
+            fetch("{{ url('/api/tracking/time-on-page') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    url: window.location.href,
+                    duration: duration
+                })
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

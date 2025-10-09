@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/stc.png') }}">
     <title>Form Registrasi MS CtGA Batch - 4</title>
     <!-- Vite CSS & JS -->
@@ -130,7 +131,7 @@
         <div class="flex justify-between items-center h-16">
             <div class="flex items-center space-x-3">
                 <div>
-                    <a href="{{route('ctga')}}">
+                    <a href="{{route('ctga')}}" data-track-register="mid-content-cta">
                         <img src="{{ asset('images/satunama-ctga.jpg') }}"
                              class="h-10 w-auto sm:h-12 md:h-14 object-contain"
                              alt="CTGA Satunama Logo">
@@ -456,6 +457,7 @@
         </div>
     </div>
 </footer>
+<script src="{{ asset('js/tracking.js') }}"></script>
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
@@ -745,6 +747,29 @@
             }
         });
     });
+
+
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let pageLoad = Date.now();
+
+        window.addEventListener("beforeunload", function() {
+            let duration = Math.round((Date.now() - pageLoad) / 1000);
+
+            const payload = {
+                url: window.location.href,
+                duration: duration,
+                visitor_id: "{{ session('visitor_id') ?? '' }}"
+            };
+
+            const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+
+            navigator.sendBeacon("{{ url('/api/tracking/time-on-page') }}", blob);
+        });
+    });
+</script>
+
+
 </body>
 </html>

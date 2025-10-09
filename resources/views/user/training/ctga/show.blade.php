@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="icon" type="image/png" href="{{ asset('images/stc.png') }}">
     <title>Detail Pelatihan MS CTGA</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -105,7 +106,7 @@
                 </div>
             </div>
             <button
-                onclick="window.location.href='{{route('daftar.ctga')}}'"
+                onclick="window.location.href='{{route('daftar.ctga')}}'" data-track-register="mid-content-cta"
                 class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-3 cursor-pointer">
                 DAFTAR SEKARANG
             </button>
@@ -232,7 +233,7 @@
             <p class="text-gray-600">✉️ training@satunama.org</p>
         </div>
         <button
-            onclick="window.location.href='{{route('daftar.ctga')}}'"
+            onclick="window.location.href='{{route('daftar.ctga')}}'" data-track-register="footer-cta"
             class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-3 cursor-pointer">
             DAFTAR SEKARANG
         </button>
@@ -259,6 +260,26 @@
         </div>
     </div>
 </footer>
+<script src="{{ asset('js/tracking.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let pageLoad = Date.now();
+
+        window.addEventListener("beforeunload", function() {
+            let duration = Math.round((Date.now() - pageLoad) / 1000);
+
+            const payload = {
+                url: window.location.href,
+                duration: duration,
+                visitor_id: "{{ session('visitor_id') ?? '' }}"
+            };
+
+            const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+
+            navigator.sendBeacon("{{ url('/api/tracking/time-on-page') }}", blob);
+        });
+    });
+</script>
 
 </body>
 </html>

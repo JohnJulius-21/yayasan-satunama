@@ -8,18 +8,239 @@ use App\Models\reguler;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Services\PageViewService;
 
 class CtgaController extends Controller
 {
-    public function index()
+    protected $pageViewService;
+
+    public function __construct(PageViewService $pageViewService)
     {
-        return view('user.training.ctga.index', [
+        $this->pageViewService = $pageViewService;
+    }
+
+    /**
+     * Track scroll depth untuk engagement measurement
+     */
+    public function trackScrollDepth(Request $request)
+    {
+        $request->validate([
+            'depth' => 'required|integer|min:0|max:100',
+            'page_url' => 'required|url'
+        ]);
+
+        $this->pageViewService->recordConversion($request, 'scroll_depth', [
+            'depth' => $request->get('depth'),
+            'page_url' => $request->get('page_url'),
+            'timestamp' => now()->toISOString()
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Track external link clicks
+     */
+    public function trackExternalLink(Request $request)
+    {
+        $request->validate([
+            'destination' => 'required|url',
+            'page_url' => 'required|url',
+            'link_text' => 'nullable|string'
+        ]);
+
+        $this->pageViewService->recordConversion($request, 'external_link_click', [
+            'destination' => $request->get('destination'),
+            'page_url' => $request->get('page_url'),
+            'link_text' => $request->get('link_text'),
+            'timestamp' => now()->toISOString()
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Track registration button click
+     */
+    public function trackRegistrationClick(Request $request)
+    {
+        $request->validate([
+            'button_id' => 'nullable|string',
+            'page_url' => 'required|url'
+        ]);
+
+        $this->pageViewService->recordConversion($request, 'registration_click', [
+            'button_id' => $request->get('button_id'),
+            'page_url' => $request->get('page_url'),
+            'timestamp' => now()->toISOString()
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Track form submission
+     */
+    public function trackRegistrationSubmit(Request $request)
+    {
+        $request->validate([
+            'form_id' => 'nullable|string',
+            'batch' => 'nullable|string'
+        ]);
+
+        $this->pageViewService->recordConversion($request, 'registration_submit', [
+            'form_id' => $request->get('form_id'),
+            'batch' => $request->get('batch'),
+            'timestamp' => now()->toISOString()
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Get statistics via API
+     */
+    public function getViewStats(Request $request)
+    {
+        $url = $request->get('url');
+
+        if (!$url) {
+            return response()->json(['error' => 'URL required'], 400);
+        }
+
+        $stats = $this->pageViewService->getStats($url);
+        $dailyStats = $this->pageViewService->getDailyStats($url, 30);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'stats' => $stats,
+                'daily_stats' => $dailyStats
+            ]
+        ]);
+    }
+
+    public function recordTimeOnPage(Request $request)
+    {
+        // Ambil raw JSON (karena sendBeacon biasanya kirim sebagai text/plain)
+        $data = json_decode($request->getContent(), true);
+
+        if (!$data) {
+            return response()->json(['success' => false, 'message' => 'Invalid payload'], 400);
+        }
+
+        // Validasi manual
+        $validator = \Validator::make($data, [
+            'url' => 'required|string|max:500',
+            'duration' => 'required|integer|min:1',
+            'visitor_id' => 'nullable|string|max:36',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $validated = $validator->validated();
+
+        // Cari page view terakhir berdasarkan visitor + url
+        $query = PageView::where('url', $validated['url'])
+            ->orderBy('viewed_at', 'desc');
+
+        if (!empty($validated['visitor_id'])) {
+            $query->where('visitor_id', $validated['visitor_id']);
+        }
+
+        $pageView = $query->first();
+
+        if ($pageView) {
+            $pageView->duration_seconds = $validated['duration'];
+            $pageView->exited_at = now();
+            $pageView->save();
+        }
+
+        return response()->json(['success' => true]);
+    }
+
+
+    /**
+     * Admin Dashboard untuk melihat statistik semua halaman
+     * Route: GET /admin/ctga/stats
+     */
+    public function statsDashboard(Request $request)
+    {
+        $urls = [
+            'main' => 'https://training.satunama.org/change-the-game-academy',
+            'detail' => 'https://training.satunama.org/change-the-game-academy/detail-informasi-ms-ctga-batch-4',
+            'batch4' => 'https://training.satunama.org/change-the-game-academy/ms-ctga-batch-4',
+        ];
+
+        $allStats = [];
+        foreach ($urls as $key => $url) {
+            $allStats[$key] = [
+                'url' => $url,
+                'stats' => $this->pageViewService->getStats($url),
+                'daily_stats' => $this->pageViewService->getDailyStats($url, 30),
+                'campaign_performance' => $this->pageViewService->getCampaignPerformance($url, 30)
+            ];
+        }
+
+        return view('admin.ctga.stats', compact('allStats'));
+    }
+
+    public function indexAdmin()
+    {
+        return view('admin.ctga.index', [
+            'title' => 'CTGA',
+        ]);
+    }
+
+    public function showAdmin()
+    {
+        $lembaga = ctga::with(['negara', 'provinsi', 'kabupaten'])->get();
+        return view('admin.ctga.show', compact('lembaga'),[
+            'title' => 'CTGA',
+        ]);
+    }
+
+    public function download($id)
+    {
+        $lembaga = ctga::findOrFail($id);
+
+        // Jika file di storage/app/public
+        $filePath = storage_path('app/public/' . $lembaga->legalitas_lembaga);
+
+//        dd($filePath, file_exists($filePath)); // Cek path dan apakah file ada
+
+        if (!file_exists($filePath)) {
+            return back()->with('error', 'File tidak ditemukan');
+        }
+
+        $originalName = preg_replace('/^\d+_/', '', basename($lembaga->legalitas_lembaga));
+
+        return response()->download($filePath, $originalName);
+    }
+
+    public function index(Request $request)
+    {
+        $trackingUrl = 'https://training.satunama.org/change-the-game-academy';
+
+        // Record page view dengan UTM tracking
+        $this->pageViewService->recordView($request, $trackingUrl);
+
+        // Get stats
+        $stats = $this->pageViewService->getStats($trackingUrl);
+        $campaignPerformance = $this->pageViewService->getCampaignPerformance($trackingUrl, 30);
+        return view('user.training.ctga.index', compact('stats', 'campaignPerformance'), [
             'title' => 'CTGA',
         ]);
     }
 
     public function create(Request $request)
     {
+        $trackingUrl = 'https://training.satunama.org/change-the-game-academy/ms-ctga-batch-4';
+
+        $this->pageViewService->recordView($request, $trackingUrl);
+        $stats = $this->pageViewService->getStats($trackingUrl);
 //        $id = $this->decodeHash($hash);
         $user = auth()->user();
 //        $reguler = reguler::findOrFail($id);
@@ -29,15 +250,19 @@ class CtgaController extends Controller
 //            'reguler',
             'user',
             'negara',
-            'jumlahPeserta'
+            'jumlahPeserta',
+            'stats',
         ), [
             'title' => 'CTGA',
         ]);
     }
 
-    public function show()
+    public function show(request $request)
     {
-        return view('user.training.ctga.show', [
+        $trackingUrl = 'https://training.satunama.org/change-the-game-academy/detail-informasi-ms-ctga-batch-4';
+        $this->pageViewService->recordView($request, $trackingUrl);
+        $stats = $this->pageViewService->getStats($trackingUrl);
+        return view('user.training.ctga.show', compact('stats'), [
             'title' => 'CTGA',
         ]);
     }

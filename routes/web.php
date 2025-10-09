@@ -241,7 +241,24 @@ Route::get('/pelatihan-saya/materi/konsultasi/{id}', [TrainingController::class,
 Route::get('/pelatihan-saya/sertifikat/konsultasi/{id}', [TrainingController::class, 'konsultasiListShowSertifikat'])
     ->name('konsultasi.pelatihan.sertfikat');
 
+// API tracking endpoints
+Route::prefix('api/tracking')->name('tracking.')->group(function () {
+    Route::post('/registration-click', [CtgaController::class, 'trackRegistrationClick']);
+    Route::post('/registration-submit', [CtgaController::class, 'trackRegistrationSubmit']);
+    Route::post('/scroll-depth', [CtgaController::class, 'trackScrollDepth']);
+    Route::post('/external-link-click', [CtgaController::class, 'trackExternalLink']);
+    Route::post('/time-on-page', [CtgaController::class, 'recordTimeOnPage']);
+    Route::get('/stats', [CtgaController::class, 'getViewStats']);
+});
+
 Route::middleware(['admin'])->group(function () {
+    Route::get('/admin/change-the-game-academy', [CtgaController::class, 'indexAdmin'])
+        ->name('ctga.admin');
+    Route::get('/admin/change-the-game-academy/ms-ctga-batch-4', [CtgaController::class, 'showAdmin'])
+        ->name('ctga.admin.show');
+    Route::get('/admin/change-the-game-academy/ms-ctga-batch-4/stats', [CtgaController::class, 'statsDashboard'])
+        ->name('ctga.admin.stats');
+    Route::get('/admin/change-the-game-academy/download/{id}', [CtgaController::class, 'download'])->name('ctga.admin.download');
     Route::get('/admin/dashboard', [HomeController::class, 'indexAdmin'])->name('indexAdmin');
     Route::get('/admin/asal', [HomeController::class, 'asal'])->name('adminAsal');
     Route::get('/admin/rentang-usia', [HomeController::class, 'usia'])->name('adminUsia');
