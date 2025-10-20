@@ -107,7 +107,7 @@
             </div>
             <button
                 onclick="window.location.href='{{route('daftar.ctga')}}'" data-track-register="mid-content-cta"
-                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-3 cursor-pointer">
+                class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-3 cursor-pointer">
                 DAFTAR SEKARANG
             </button>
             <div class="text-center">
@@ -234,7 +234,7 @@
         </div>
         <button
             onclick="window.location.href='{{route('daftar.ctga')}}'" data-track-register="footer-cta"
-            class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-3 cursor-pointer">
+            class="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors mb-3 cursor-pointer">
             DAFTAR SEKARANG
         </button>
         <div class="text-center">
