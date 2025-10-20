@@ -276,8 +276,9 @@ class CtgaController extends Controller
         $validated = $request->validate([
             'nama_lembaga' => 'required|string|max:100',
             'kontak_lembaga' => 'required|string|max:100',
+            'email_lembaga' => 'required|email',
             'nama_pemimpin_lembaga' => 'required|string|max:100',
-            'legalitas_lembaga' => 'required|file|mimes:pdf|max:2048',
+            'legalitas_lembaga' => 'required|file|mimes:pdf,jpg,jpeg,png,doc,docx|max:5120',
             'id_negara' => 'required|exists:negara,id',
             'id_provinsi' => 'required|exists:provinsi,id',
             'id_kabupaten' => 'required|exists:kabupaten_kota,id',
@@ -285,6 +286,8 @@ class CtgaController extends Controller
         ], [
             'nama_lembaga.required' => 'Nama lembaga wajib diisi',
             'kontak_lembaga.required' => 'Kontak person wajib diisi',
+            'email_lembaga.required' => 'Email wajib diisi',
+            'email_lembaga.email' => 'Format email harus benar',
             'nama_pemimpin_lembaga.required' => 'Nama pemimpin lembaga wajib diisi',
             'legalitas_lembaga.required' => 'File legalitas lembaga wajib diupload',
             'legalitas_lembaga.mimes' => 'File harus berformat PDF',

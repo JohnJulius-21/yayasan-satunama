@@ -147,32 +147,40 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
+                title: 'Berhasil',
                 text: "{{ session('success') }}",
-                timer: 4000,
-                showConfirmButton: false,
-                toast: true,
-                position: 'bottom-end'
+                icon: 'success',
+                confirmButtonText: 'OKE',
+                reverseButtons: true,
             });
         });
     </script>
 @endif
-@if (session('warning'))
+
+@if ($errors->any())
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            let errorList = `
+                <ul style="text-align:left;">
+                    @foreach ($errors->all() as $error)
+            <li>- {{ $error }}</li>
+                    @endforeach
+            </ul>
+`;
+
             Swal.fire({
-                icon: 'warning',
-                title: 'Berhasil!',
-                text: "{{ session('warning') }}",
-                timer: 4000,
-                showConfirmButton: false,
-                toast: true,
-                position: 'bottom-end'
+                icon: 'error',
+                title: 'Validasi Gagal!',
+                html: errorList,
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'swal-wide'
+                }
             });
         });
     </script>
 @endif
+
 
 <!-- What We Offer -->
 <section id="programs" class="py-20 bg-gradient-to-br from-gray-50 to-green-50">
@@ -308,8 +316,8 @@
                                     @enderror
                                     <div class="mt-2 text-xs text-gray-500">
                                         <ul class="list-disc list-inside">
-                                            <li>File tidak boleh lebih dari 2MB</li>
-                                            <li>Format yang diterima: PDF</li>
+                                            <li><strong>File tidak boleh lebih dari 5MB</strong></li>
+                                            <li><strong>Format yang diterima: pdf,jpg,jpeg,png,doc,docx</strong></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -751,10 +759,10 @@
 
 </script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         let pageLoad = Date.now();
 
-        window.addEventListener("beforeunload", function() {
+        window.addEventListener("beforeunload", function () {
             let duration = Math.round((Date.now() - pageLoad) / 1000);
 
             const payload = {
@@ -763,7 +771,7 @@
                 visitor_id: "{{ session('visitor_id') ?? '' }}"
             };
 
-            const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+            const blob = new Blob([JSON.stringify(payload)], {type: 'application/json'});
 
             navigator.sendBeacon("{{ url('/api/tracking/time-on-page') }}", blob);
         });
