@@ -321,6 +321,7 @@ class CtgaController extends Controller
             $inserted = DB::table('registrasi_ctga')->insert([
                 'nama_lembaga' => $validated['nama_lembaga'],
                 'kontak_lembaga' => $validated['kontak_lembaga'],
+                'email_lembaga' => $validated['email_lembaga'],
                 'nama_pemimpin_lembaga' => $validated['nama_pemimpin_lembaga'],
                 'legalitas_lembaga' => $legalitasPath,
                 'id_negara' => $validated['id_negara'],
