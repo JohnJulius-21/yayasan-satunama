@@ -95,6 +95,14 @@
                             <th>Request Khusus : </th>
                             <td>{!! $item['request_khusus'] !!}</td>
                         </tr>
+                        <tr>
+                            <th>Tanggal dan Waktu Form Dikirim : </th>
+                            <td>
+                                {{ \Carbon\Carbon::parse($item->created_at)
+                                    ->locale('id')
+                                    ->isoFormat('D MMMM Y HH:mm A') }}
+                            </td>
+                        </tr>
                     @endforeach
                 </table>
                 {{-- <a class="btn btn-secondary mt-4" href="{{ route('konsultasiAdmin') }}">Kembali</a> --}}
