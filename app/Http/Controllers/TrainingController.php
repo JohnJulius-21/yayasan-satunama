@@ -13,6 +13,7 @@ use App\Models\pelatihan;
 use App\Models\konsultasi;
 use App\Models\permintaan;
 use App\Models\rentang_usia;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\kabupaten_kota;
 use App\Models\jenis_organisasi;
@@ -837,6 +838,8 @@ class TrainingController extends Controller
             $permintaan->tanggal_mulai = $request->input('tanggal_waktu_mulai');
             $permintaan->tanggal_selesai = $request->input('tanggal_waktu_selesai');
             $permintaan->request_khusus = $request->input('request_khusus');
+            $permintaan->created_at = Carbon::now();
+            $permintaan->updated_at = Carbon::now();
             $permintaan->save();
 
             // Debug: Log participants data specifically
