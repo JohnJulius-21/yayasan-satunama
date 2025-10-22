@@ -838,8 +838,6 @@ class TrainingController extends Controller
             $permintaan->tanggal_mulai = $request->input('tanggal_waktu_mulai');
             $permintaan->tanggal_selesai = $request->input('tanggal_waktu_selesai');
             $permintaan->request_khusus = $request->input('request_khusus');
-            $permintaan->created_at = Carbon::now();
-            $permintaan->updated_at = Carbon::now();
             $permintaan->save();
 
             // Debug: Log participants data specifically

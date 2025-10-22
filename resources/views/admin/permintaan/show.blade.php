@@ -98,9 +98,10 @@
                         <tr>
                             <th>Tanggal dan Waktu Form Dikirim : </th>
                             <td>
-                                {{ \Carbon\Carbon::parse($item->created_at)
-                                    ->locale('id')
-                                    ->isoFormat('D MMMM Y HH:mm A') }}
+                                {{ $item->created_at
+                                    ? \Carbon\Carbon::parse($item->created_at)
+                                        ->isoFormat('D MMMM Y h:mm A')
+                                    : '-' }}
                             </td>
                         </tr>
                     @endforeach

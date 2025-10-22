@@ -12,7 +12,6 @@ class permintaan extends Model
     protected $table = 'permintaan';
     protected $primaryKey = 'id_permintaan';
 
-    public $timestamps = false;
 
     protected $fillable = [
         'id_tema',
